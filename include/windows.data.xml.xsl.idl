@@ -1,0 +1,76 @@
+/*
+ * Copyright (C) 2026 Olivia Ryan
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
+ */
+
+#ifdef __WIDL__
+#pragma winrt ns_prefix
+#endif
+
+import "inspectable.idl";
+import "windowscontracts.idl";
+import "windows.data.xml.dom.idl";
+
+namespace Windows.Data.Xml.Xsl {
+    interface IXsltProcessor;
+    interface IXsltProcessor2;
+    interface IXsltProcessorFactory;
+
+    runtimeclass XsltProcessor;
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.Data.Xml.Xsl.XsltProcessor),
+        uuid(7b64703f-550c-48c6-a90f-93a5b964518f)
+    ]
+    interface IXsltProcessor : IInspectable
+    {
+        HRESULT TransformToString( [in] Windows.Data.Xml.Dom.IXmlNode *inputNode, [out, retval] HSTRING *value );
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.Data.Xml.Xsl.XsltProcessor),
+        uuid(8da45c56-97a5-44cb-a8be-27d86280c70a)
+    ]
+    interface IXsltProcessor2 : IInspectable
+    {
+        HRESULT TransformToDocument( [in] Windows.Data.Xml.Dom.IXmlNode *inputNode, [out, retval] Windows.Data.Xml.Dom.XmlDocument **value );
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.Data.Xml.Xsl.XsltProcessor),
+        uuid(274146c0-9a51-4663-bf30-0ef742146f20)
+    ]
+    interface IXsltProcessorFactory : IInspectable
+    {
+        HRESULT Create( [in] Windows.Data.Xml.Dom.XmlDocument *document, [out, retval] Windows.Data.Xml.Xsl.XsltProcessor **value );
+    }
+
+    [
+        activatable(Windows.Data.Xml.Xsl.IXsltProcessorFactory, Windows.Foundation.UniversalApiContract, 1.0),
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile),
+        threading(both)
+    ]
+    runtimeclass XsltProcessor
+    {
+        [default] interface Windows.Data.Xml.Xsl.IXsltProcessor;
+        interface Windows.Data.Xml.Xsl.IXsltProcessor2;
+    }
+
+}
