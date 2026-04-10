@@ -1,0 +1,537 @@
+/*
+ * Copyright (C) 2026 Olivia Ryan
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
+ */
+
+#ifdef __WIDL__
+#pragma winrt ns_prefix
+#endif
+
+import "inspectable.idl";
+import "asyncinfo.idl";
+import "eventtoken.idl";
+import "windowscontracts.idl";
+import "windows.foundation.idl";
+import "windows.ui.text.core.idl";
+
+namespace Windows.Data.Text {
+    typedef enum AlternateNormalizationFormat AlternateNormalizationFormat;
+    typedef enum TextPredictionOptions TextPredictionOptions;
+    typedef enum UnicodeGeneralCategory UnicodeGeneralCategory;
+    typedef enum UnicodeNumericType UnicodeNumericType;
+
+    typedef struct TextSegment TextSegment;
+
+    interface IAlternateWordForm;
+    interface ISelectableWordSegment;
+    interface ISelectableWordsSegmenter;
+    interface ISelectableWordsSegmenterFactory;
+    interface ISemanticTextQuery;
+    interface ISemanticTextQueryFactory;
+    interface ITextConversionGenerator;
+    interface ITextConversionGeneratorFactory;
+    interface ITextPhoneme;
+    interface ITextPredictionGenerator;
+    interface ITextPredictionGenerator2;
+    interface ITextPredictionGeneratorFactory;
+    interface ITextReverseConversionGenerator;
+    interface ITextReverseConversionGenerator2;
+    interface ITextReverseConversionGeneratorFactory;
+    interface IUnicodeCharactersStatics;
+    interface IWordSegment;
+    interface IWordsSegmenter;
+    interface IWordsSegmenterFactory;
+
+    runtimeclass AlternateWordForm;
+    runtimeclass SelectableWordSegment;
+    runtimeclass SelectableWordsSegmenter;
+    runtimeclass SemanticTextQuery;
+    runtimeclass TextConversionGenerator;
+    runtimeclass TextPhoneme;
+    runtimeclass TextPredictionGenerator;
+    runtimeclass TextReverseConversionGenerator;
+    runtimeclass UnicodeCharacters;
+    runtimeclass WordSegment;
+    runtimeclass WordsSegmenter;
+
+    declare {
+        interface Windows.Foundation.Collections.IIterable<Windows.Data.Text.SelectableWordSegment *>;
+        interface Windows.Foundation.Collections.IIterable<Windows.Data.Text.WordSegment *>;
+        interface Windows.Foundation.Collections.IIterator<Windows.Data.Text.SelectableWordSegment *>;
+        interface Windows.Foundation.Collections.IIterator<Windows.Data.Text.WordSegment *>;
+        interface Windows.Foundation.Collections.IVectorView<HSTRING>;
+        interface Windows.Foundation.Collections.IVectorView<Windows.Data.Text.AlternateWordForm *>;
+        interface Windows.Foundation.Collections.IVectorView<Windows.Data.Text.SelectableWordSegment *>;
+        interface Windows.Foundation.Collections.IVectorView<Windows.Data.Text.TextPhoneme *>;
+        interface Windows.Foundation.Collections.IVectorView<Windows.Data.Text.TextSegment>;
+        interface Windows.Foundation.Collections.IVectorView<Windows.Data.Text.WordSegment *>;
+
+        interface Windows.Foundation.AsyncOperationCompletedHandler<Windows.Foundation.Collections.IVectorView<HSTRING> *>;
+        interface Windows.Foundation.AsyncOperationCompletedHandler<Windows.Foundation.Collections.IVectorView<Windows.Data.Text.TextPhoneme *> *>;
+        interface Windows.Foundation.IAsyncOperation<Windows.Foundation.Collections.IVectorView<HSTRING> *>;
+        interface Windows.Foundation.IAsyncOperation<Windows.Foundation.Collections.IVectorView<Windows.Data.Text.TextPhoneme *> *>;
+    }
+
+    [contract(Windows.Foundation.UniversalApiContract, 1.0)]
+    enum AlternateNormalizationFormat
+    {
+        NotNormalized   = 0,
+        Number          = 1,
+        Currency        = 2,
+        Date            = 3,
+        Time            = 4,
+    };
+
+    [contract(Windows.Foundation.UniversalApiContract, 7.0)]
+    enum TextPredictionOptions
+    {
+        None    = 0,
+        Predictions = 1,
+        Corrections = 2
+    };
+
+    [contract(Windows.Foundation.UniversalApiContract, 1.0)]
+    enum UnicodeGeneralCategory
+    {
+        UppercaseLetter         = 0,
+        LowercaseLetter         = 1,
+        TitlecaseLetter         = 2,
+        ModifierLetter          = 3,
+        OtherLetter             = 4,
+        NonspacingMark          = 5,
+        SpacingCombiningMark    = 6,
+        EnclosingMark           = 7,
+        DecimalDigitNumber      = 8,
+        LetterNumber            = 9,
+        OtherNumber             = 10,
+        SpaceSeparator          = 11,
+        LineSeparator           = 12,
+        ParagraphSeparator      = 13,
+        Control                 = 14,
+        Format                  = 15,
+        Surrogate               = 16,
+        PrivateUse              = 17,
+        ConnectorPunctuation    = 18,
+        DashPunctuation         = 19,
+        OpenPunctuation         = 20,
+        ClosePunctuation        = 21,
+        InitialQuotePunctuation = 22,
+        FinalQuotePunctuation   = 23,
+        OtherPunctuation        = 24,
+        MathSymbol              = 25,
+        CurrencySymbol          = 26,
+        ModifierSymbol          = 27,
+        OtherSymbol             = 28,
+        NotAssigned             = 29,
+    };
+
+    [contract(Windows.Foundation.UniversalApiContract, 1.0)]
+    enum UnicodeNumericType
+    {
+        None    = 0,
+        Decimal = 1,
+        Digit   = 2,
+        Numeric = 3,
+    };
+
+    [contract(Windows.Foundation.UniversalApiContract, 1.0)]
+    struct TextSegment
+    {
+        UINT32 StartPosition;
+        UINT32 Length;
+    };
+}
+
+namespace Windows.Data.Text {
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.Data.Text.AlternateWordForm),
+        uuid(47396c1e-51b9-4207-9146-248e636a1d1d)
+    ]
+    interface IAlternateWordForm : IInspectable
+    {
+        [propget] HRESULT SourceTextSegment([out, retval] Windows.Data.Text.TextSegment *value);
+        [propget] HRESULT AlternateText([out, retval] HSTRING *value);
+        [propget] HRESULT NormalizationFormat([out, retval] Windows.Data.Text.AlternateNormalizationFormat *value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile),
+        threading(both)
+    ]
+    runtimeclass AlternateWordForm
+    {
+        [default] interface Windows.Data.Text.IAlternateWordForm;
+    }
+}
+
+namespace Windows.Data.Text {
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.Data.Text.SelectableWordSegment),
+        uuid(916a4cb7-8aa7-4c78-b374-5dedb752e60b)
+    ]
+    interface ISelectableWordSegment : IInspectable
+    {
+        [propget] HRESULT Text([out, retval] HSTRING *value);
+        [propget] HRESULT SourceTextSegment([out, retval] Windows.Data.Text.TextSegment *value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile),
+        threading(both)
+    ]
+    runtimeclass SelectableWordSegment
+    {
+        [default] interface Windows.Data.Text.ISelectableWordSegment;
+    }
+}
+
+namespace Windows.Data.Text {
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        uuid(3a3dfc9c-aede-4dc7-9e6c-41c044bd3592)
+    ]
+    delegate HRESULT SelectableWordSegmentsTokenizingHandler([in] Windows.Foundation.Collections.IIterable<Windows.Data.Text.SelectableWordSegment *> *preceding, [in] Windows.Foundation.Collections.IIterable<Windows.Data.Text.SelectableWordSegment *> *words);
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.Data.Text.SelectableWordsSegmenter),
+        uuid(f6dc31e7-4b13-45c5-8897-7d71269e085d)
+    ]
+    interface ISelectableWordsSegmenter : IInspectable
+    {
+        [propget] HRESULT ResolvedLanguage([out, retval] HSTRING *value);
+        HRESULT GetTokenAt([in] HSTRING text, [in] UINT32 index, [out, retval] Windows.Data.Text.SelectableWordSegment **value);
+        HRESULT GetTokens([in] HSTRING text, [out, retval] Windows.Foundation.Collections.IVectorView<Windows.Data.Text.SelectableWordSegment *> **value);
+        HRESULT Tokenize([in] HSTRING text, [in] UINT32 index, [in] Windows.Data.Text.SelectableWordSegmentsTokenizingHandler *handler);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.Data.Text.SelectableWordsSegmenter),
+        uuid(8c7a7648-6057-4339-bc70-f210010a4150)
+    ]
+    interface ISelectableWordsSegmenterFactory : IInspectable
+    {
+        HRESULT Create([in] HSTRING language, [out, retval] Windows.Data.Text.SelectableWordsSegmenter **value);
+    }
+
+    [
+        activatable(Windows.Data.Text.ISelectableWordsSegmenterFactory, Windows.Foundation.UniversalApiContract, 1.0),
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile),
+        threading(both)
+    ]
+    runtimeclass SelectableWordsSegmenter
+    {
+        [default] interface Windows.Data.Text.ISelectableWordsSegmenter;
+    }
+}
+
+namespace Windows.Data.Text {
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.Data.Text.SemanticTextQuery),
+        uuid(6a1cab51-1fb2-4909-80b8-35731a2b3e7f)
+    ]
+    interface ISemanticTextQuery : IInspectable
+    {
+        HRESULT Find([in] HSTRING content, [out, retval] Windows.Foundation.Collections.IVectorView<Windows.Data.Text.TextSegment> **value);
+        HRESULT FindInProperty([in] HSTRING content, [in] HSTRING property, [out, retval] Windows.Foundation.Collections.IVectorView<Windows.Data.Text.TextSegment> **value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.Data.Text.SemanticTextQuery),
+        uuid(238c0503-f995-4587-8777-a2b7d80acfef)
+    ]
+    interface ISemanticTextQueryFactory : IInspectable
+    {
+        HRESULT Create([in] HSTRING filter, [out, retval] Windows.Data.Text.SemanticTextQuery **value);
+        HRESULT CreateWithLanguage([in] HSTRING filter, [in] HSTRING language, [out, retval] Windows.Data.Text.SemanticTextQuery **value);
+    }
+
+    [
+        activatable(Windows.Data.Text.ISemanticTextQueryFactory, Windows.Foundation.UniversalApiContract, 1.0),
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile)
+    ]
+    runtimeclass SemanticTextQuery
+    {
+        [default] interface Windows.Data.Text.ISemanticTextQuery;
+    }
+}
+
+namespace Windows.Data.Text {
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.Data.Text.TextConversionGenerator),
+        uuid(03606a5e-2aa9-4ab6-af8b-a562b63a8992)
+    ]
+    interface ITextConversionGenerator : IInspectable
+    {
+        [propget] HRESULT ResolvedLanguage([out, retval] HSTRING *value);
+        [propget] HRESULT LanguageAvailableButNotInstalled([out, retval] boolean *value);
+        [overload("GetCandidatesAsync")] HRESULT GetCandidatesAsync([in] HSTRING input, [out, retval] Windows.Foundation.IAsyncOperation<Windows.Foundation.Collections.IVectorView<HSTRING> *> **value);
+        [overload("GetCandidatesAsync")] HRESULT GetCandidatesWithMaxAsync([in] HSTRING input, [in] UINT32 max, [out, retval] Windows.Foundation.IAsyncOperation<Windows.Foundation.Collections.IVectorView<HSTRING> *> **value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.Data.Text.TextConversionGenerator),
+        uuid(fcaa3781-3083-49ab-be15-56dfbbb74d6f)
+    ]
+    interface ITextConversionGeneratorFactory : IInspectable
+    {
+        HRESULT Create([in] HSTRING language, [out, retval] Windows.Data.Text.TextConversionGenerator **value);
+    }
+
+    [
+        activatable(Windows.Data.Text.ITextConversionGeneratorFactory, Windows.Foundation.UniversalApiContract, 1.0),
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile),
+        threading(both)
+    ]
+    runtimeclass TextConversionGenerator
+    {
+        [default] interface Windows.Data.Text.ITextConversionGenerator;
+    }
+}
+
+namespace Windows.Data.Text {
+    [
+        contract(Windows.Foundation.UniversalApiContract, 3.0),
+        exclusiveto(Windows.Data.Text.TextPhoneme),
+        uuid(9362a40a-9b7a-4569-94cf-d84f2f38cf9b)
+    ]
+    interface ITextPhoneme : IInspectable
+    {
+        [propget] HRESULT DisplayText([out, retval] HSTRING *value);
+        [propget] HRESULT ReadingText([out, retval] HSTRING *value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 3.0),
+        marshaling_behavior(agile),
+        threading(both)
+    ]
+    runtimeclass TextPhoneme
+    {
+        [default] interface Windows.Data.Text.ITextPhoneme;
+    }
+}
+
+namespace Windows.Data.Text {
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.Data.Text.TextPredictionGenerator),
+        uuid(5eacab07-abf1-4cb6-9d9e-326f2b468756)
+    ]
+    interface ITextPredictionGenerator : IInspectable
+    {
+        [propget] HRESULT ResolvedLanguage([out, retval] HSTRING *value);
+        [propget] HRESULT LanguageAvailableButNotInstalled([out, retval] boolean *value);
+        [overload("GetCandidatesAsync")] HRESULT GetCandidatesAsync([in] HSTRING input, [out, retval] Windows.Foundation.IAsyncOperation<Windows.Foundation.Collections.IVectorView<HSTRING> *> **value);
+        [overload("GetCandidatesAsync")] HRESULT GetCandidatesWithMaxAsync([in] HSTRING input, [in] UINT32 max, [out, retval] Windows.Foundation.IAsyncOperation<Windows.Foundation.Collections.IVectorView<HSTRING> *> **value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 7.0),
+        exclusiveto(Windows.Data.Text.TextPredictionGenerator),
+        uuid(b84723b8-2c77-486a-900a-a3453eedc15d)
+    ]
+    interface ITextPredictionGenerator2 : IInspectable
+    {
+        [overload("GetCandidatesAsync")] HRESULT GetCandidatesWithMaxAndOptionsAsync([in] HSTRING input, [in] UINT32 max, [in] Windows.Data.Text.TextPredictionOptions options, [in] Windows.Foundation.Collections.IIterable<HSTRING> *previous, [out, retval] Windows.Foundation.IAsyncOperation<Windows.Foundation.Collections.IVectorView<HSTRING> *> **value);
+        HRESULT GetNextWordCandidatesAsync([in] UINT32 max, [in] Windows.Foundation.Collections.IIterable<HSTRING> *previous, [out, retval] Windows.Foundation.IAsyncOperation<Windows.Foundation.Collections.IVectorView<HSTRING> *> **value);
+        [propget] HRESULT InputScope([out, retval] Windows.UI.Text.Core.CoreTextInputScope *value);
+        [propput] HRESULT InputScope([in] Windows.UI.Text.Core.CoreTextInputScope value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.Data.Text.TextPredictionGenerator),
+        uuid(7257b416-8ba2-4751-9d30-9d85435653a2)
+    ]
+    interface ITextPredictionGeneratorFactory : IInspectable
+    {
+        HRESULT Create([in] HSTRING language, [out, retval] Windows.Data.Text.TextPredictionGenerator **value);
+    }
+
+    [
+        activatable(Windows.Data.Text.ITextPredictionGeneratorFactory, Windows.Foundation.UniversalApiContract, 1.0),
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile),
+        threading(both)
+    ]
+    runtimeclass TextPredictionGenerator
+    {
+        [default] interface Windows.Data.Text.ITextPredictionGenerator;
+        [contract(Windows.Foundation.UniversalApiContract, 7.0)] interface Windows.Data.Text.ITextPredictionGenerator2;
+    }
+}
+
+namespace Windows.Data.Text {
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.Data.Text.TextReverseConversionGenerator),
+        uuid(51e7f514-9c51-4d86-ae1b-b498fbad8313)
+    ]
+    interface ITextReverseConversionGenerator : IInspectable
+    {
+        [propget] HRESULT ResolvedLanguage([out, retval] HSTRING *value);
+        [propget] HRESULT LanguageAvailableButNotInstalled([out, retval] boolean *value);
+        HRESULT ConvertBackAsync([in] HSTRING input, [out, retval] Windows.Foundation.IAsyncOperation<HSTRING> **value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 3.0),
+        exclusiveto(Windows.Data.Text.TextReverseConversionGenerator),
+        uuid(1aafd2ec-85d6-46fd-828a-3a4830fa6e18)
+    ]
+    interface ITextReverseConversionGenerator2 : IInspectable
+    {
+        HRESULT GetPhonemesAsync([in] HSTRING input, [out, retval] Windows.Foundation.IAsyncOperation<Windows.Foundation.Collections.IVectorView<Windows.Data.Text.TextPhoneme *> *> **value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.Data.Text.TextReverseConversionGenerator),
+        uuid(63bed326-1fda-41f6-89d5-23ddea3c729a)
+    ]
+    interface ITextReverseConversionGeneratorFactory : IInspectable
+    {
+        HRESULT Create([in] HSTRING language, [out, retval] Windows.Data.Text.TextReverseConversionGenerator **value);
+    }
+
+    [
+        activatable(Windows.Data.Text.ITextReverseConversionGeneratorFactory, Windows.Foundation.UniversalApiContract, 1.0),
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile),
+        threading(both)
+    ]
+    runtimeclass TextReverseConversionGenerator
+    {
+        [default] interface Windows.Data.Text.ITextReverseConversionGenerator;
+        [contract(Windows.Foundation.UniversalApiContract, 3.0)] interface Windows.Data.Text.ITextReverseConversionGenerator2;
+    }
+}
+
+namespace Windows.Data.Text {
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.Data.Text.UnicodeCharacters),
+        uuid(97909e87-9291-4f91-b6c8-b6e359d7a7fb)
+    ]
+    interface IUnicodeCharactersStatics : IInspectable
+    {
+        HRESULT GetCodepointFromSurrogatePair([in] UINT32 high, [in] UINT32 low, [out, retval] UINT32 *value);
+        HRESULT GetSurrogatePairFromCodepoint([in] UINT32 codepoint, [out] WCHAR *high, [out] WCHAR *low);
+        HRESULT IsHighSurrogate([in] UINT32 codepoint, [out, retval] boolean *value);
+        HRESULT IsLowSurrogate([in] UINT32 codepoint, [out, retval] boolean *value);
+        HRESULT IsSupplementary([in] UINT32 codepoint, [out, retval] boolean *value);
+        HRESULT IsNoncharacter([in] UINT32 codepoint, [out, retval] boolean *value);
+        HRESULT IsWhitespace([in] UINT32 codepoint, [out, retval] boolean *value);
+        HRESULT IsAlphabetic([in] UINT32 codepoint, [out, retval] boolean *value);
+        HRESULT IsCased([in] UINT32 codepoint, [out, retval] boolean *value);
+        HRESULT IsUppercase([in] UINT32 codepoint, [out, retval] boolean *value);
+        HRESULT IsLowercase([in] UINT32 codepoint, [out, retval] boolean *value);
+        HRESULT IsIdStart([in] UINT32 codepoint, [out, retval] boolean *value);
+        HRESULT IsIdContinue([in] UINT32 codepoint, [out, retval] boolean *value);
+        HRESULT IsGraphemeBase([in] UINT32 codepoint, [out, retval] boolean *value);
+        HRESULT IsGraphemeExtended([in] UINT32 codepoint, [out, retval] boolean *value);
+        HRESULT GetNumericType([in] UINT32 codepoint, [out, retval] Windows.Data.Text.UnicodeNumericType *value);
+        HRESULT GetGeneralCategory([in] UINT32 codepoint, [out, retval] Windows.Data.Text.UnicodeGeneralCategory *value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile),
+        static(Windows.Data.Text.IUnicodeCharactersStatics, Windows.Foundation.UniversalApiContract, 1.0),
+        threading(both)
+    ]
+    runtimeclass UnicodeCharacters
+    {}
+}
+
+namespace Windows.Data.Text {
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.Data.Text.WordSegment),
+        uuid(d2d4ba6d-987c-4cc0-b6bd-d49a11b38f9a)
+    ]
+    interface IWordSegment : IInspectable
+    {
+        [propget] HRESULT Text([out, retval] HSTRING *value);
+        [propget] HRESULT SourceTextSegment([out, retval] Windows.Data.Text.TextSegment *value);
+        [propget] HRESULT AlternateForms([out, retval] Windows.Foundation.Collections.IVectorView<Windows.Data.Text.AlternateWordForm *> **value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile),
+        threading(both)
+    ]
+    runtimeclass WordSegment
+    {
+        [default] interface Windows.Data.Text.IWordSegment;
+    }
+}
+
+namespace Windows.Data.Text {
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        uuid(a5dd6357-bf2a-4c4f-a31f-29e71c6f8b35)
+    ]
+    delegate HRESULT WordsSegmentsTokenizingHandler([in] Windows.Foundation.Collections.IIterable<Windows.Data.Text.WordSegment *> *preceding, [in] Windows.Foundation.Collections.IIterable<Windows.Data.Text.WordSegment *> *words);
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.Data.Text.WordsSegmenter),
+        uuid(86b4d4d1-b2fe-4e34-a81d-66640300454f)
+    ]
+    interface IWordsSegmenter : IInspectable
+    {
+        [propget] HRESULT ResolvedLanguage([out, retval] HSTRING *value);
+        HRESULT GetTokenAt([in] HSTRING text, [in] UINT32 index, Windows.Data.Text.WordSegment **value);
+        HRESULT GetTokens([in] HSTRING text, [out, retval] Windows.Foundation.Collections.IVectorView<Windows.Data.Text.WordSegment *> **value);
+        HRESULT Tokenize([in] HSTRING text, [in] UINT32 index, [in] Windows.Data.Text.WordsSegmentsTokenizingHandler *handler);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.Data.Text.WordsSegmenter),
+        uuid(e6977274-fc35-455c-8bfb-6d7f4653ca97)
+    ]
+    interface IWordsSegmenterFactory : IInspectable
+    {
+        HRESULT Create([in] HSTRING language, [out, retval] Windows.Data.Text.WordsSegmenter **value);
+    }
+
+    [
+        activatable(Windows.Data.Text.IWordsSegmenterFactory, Windows.Foundation.UniversalApiContract, 1.0),
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile),
+        threading(both)
+    ]
+    runtimeclass WordsSegmenter
+    {
+        [default] interface Windows.Data.Text.IWordsSegmenter;
+    }
+}
