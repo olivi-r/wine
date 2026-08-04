@@ -1222,6 +1222,14 @@ static BOOL request_set_option( struct object_header *hdr, DWORD option, void *b
         return TRUE;
     }
 
+    // Asphalt Legends set this option and fails if this returns an error.
+    // While actually not requireing this feature.
+    case WINHTTP_OPTION_DECOMPRESSION:
+    {
+        FIXME("WINHTTP_OPTION_DECOMPRESSION: stub!\n");
+        return TRUE;
+    }
+
     default:
         FIXME( "unimplemented option %lu\n", option );
         SetLastError( ERROR_WINHTTP_INVALID_OPTION );
