@@ -1,0 +1,43 @@
+diff --git a/dlls/xgameruntime/main.c b/dlls/xgameruntime/main.c
+index 44778e1..46eec2e 100644
+--- a/dlls/xgameruntime/main.c
++++ b/dlls/xgameruntime/main.c
+@@ -29,6 +29,10 @@ char *msaAppId = NULL;
+ BOOLEAN fullTrust = FALSE;
+ BOOLEAN initializeCalled = FALSE;
+ DWORD tlsIndex;
++HMODULE xgameruntime;
++
++typedef HRESULT (WINAPI *QueryApiImpl_t)( REFCLSID, REFIID, void** );
++QueryApiImpl_t QueryApiImpl_f;
+ 
+ BOOL WINAPI DllMain( HINSTANCE hinst, DWORD reason, void *reserved )
+ {
+@@ -38,11 +42,14 @@ BOOL WINAPI DllMain( HINSTANCE hinst, DWORD reason, void *reserved )
+     {
+         case DLL_PROCESS_ATTACH:
+             if ((tlsIndex = TlsAlloc()) == TLS_OUT_OF_INDEXES) return FALSE;
++            xgameruntime = LoadLibraryA( "xgameruntime.dll.threading" );
++            QueryApiImpl_f = (QueryApiImpl_t)GetProcAddress( xgameruntime, "QueryApiImpl" );
+         case DLL_THREAD_ATTACH:
+             TlsSetValue( tlsIndex, FALSE );
+             break;
+         case DLL_PROCESS_DETACH:
+             if (msaAppId) free( msaAppId );
++            FreeLibrary( xgameruntime );
+             TlsFree( tlsIndex );
+             break;
+     }
+@@ -174,11 +181,11 @@ HRESULT WINAPI QueryApiImpl( REFCLSID clsid, REFIID iid, void **out )
+     if (IsEqualGUID( clsid, &CLSID_XSystemAnalyticsImpl ))
+         return IXSystemAnalyticsImpl_QueryInterface( x_system_analytics_impl, iid, out );
+     if (IsEqualGUID( clsid, &CLSID_XThreadingImpl ))
+-        return IXThreadingImpl_QueryInterface( x_threading_impl, iid, out );
++        return QueryApiImpl_f( clsid, iid, out );
+     if (IsEqualGUID( clsid, &CLSID_XUserImpl ))
+         return IXUserImpl_QueryInterface( x_user_impl, iid, out );
+     if (IsEqualGUID( clsid, &CLSID_XUserDeviceImpl ))
+         return IXUserDeviceImpl_QueryInterface( x_user_device_impl, iid, out );
+ 
+     return HRESULT_FROM_WIN32( ERROR_NOT_SUPPORTED );
+ }

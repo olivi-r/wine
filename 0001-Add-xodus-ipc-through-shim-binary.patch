@@ -1,0 +1,424 @@
+From 0c968f8930cd665eb9f3b5177767b27289ebc6fe Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Pawe=C5=82=20Lidwin?= <lidwinpawel@gmail.com>
+Date: Fri, 7 Aug 2026 21:34:11 +0200
+Subject: [PATCH 1/3] Add xodus ipc through shim binary
+
+---
+ dlls/xgameruntime/Makefile.in   |   1 +
+ dlls/xgameruntime/xodus_utils.c | 172 ++++++++++++++++++++++++++++++++++++++++++++++++++
+ dlls/xgameruntime/xodus_utils.h |  50 +++++++++++++++
+ dlls/xgameruntime/xuser.c       | 106 +++++++++++++++++++++++++++++--
+ 4 files changed, 322 insertions(+), 7 deletions(-)
+ create mode 100644 xodus_utils.c
+ create mode 100644 xodus_utils.h
+
+diff --git a/dlls/xgameruntime/Makefile.in b/dlls/xgameruntime/Makefile.in
+index 17c2126..8e7f502 100644
+--- a/dlls/xgameruntime/Makefile.in
++++ b/dlls/xgameruntime/Makefile.in
+@@ -35,6 +35,7 @@ SOURCES = \
+ 	xgameui.idl \
+ 	xnetworking.c \
+ 	xnetworking.idl \
++	xodus_utils.c \
+ 	xpackage.c \
+ 	xpackage.idl \
+ 	xpersistentlocalstorage.c \
+diff --git a/dlls/xgameruntime/xodus_utils.c b/dlls/xgameruntime/xodus_utils.c
+new file mode 100644
+index 0000000..e9fafa1
+--- /dev/null
++++ b/dlls/xgameruntime/xodus_utils.c
+@@ -0,0 +1,172 @@
++/*
++ * Copyright 2026 Paweł Lidwin
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2.1 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General Public
++ * License along with this library; if not, write to the Free Software
++ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
++ */
++
++#include "private.h"
++#include "xodus_utils.h"
++
++WINE_DEFAULT_DEBUG_CHANNEL(gdkc);
++
++static BOOL pipe_write_full( HANDLE h, const void *buf, DWORD len )
++{
++    const BYTE *ptr = buf;
++    DWORD written;
++
++    while (len)
++    {
++        if (!WriteFile( h, ptr, len, &written, NULL ) || !written) return FALSE;
++        ptr += written;
++        len -= written;
++    }
++    return TRUE;
++}
++
++static BOOL pipe_read_full( HANDLE h, void *buf, DWORD len )
++{
++    BYTE *ptr = buf;
++    DWORD got;
++
++    while (len)
++    {
++        if (!ReadFile( h, ptr, len, &got, NULL ) || !got) return FALSE;
++        ptr += got;
++        len -= got;
++    }
++    return TRUE;
++}
++
++HRESULT shim_start( struct shim_channel *shim, const WCHAR *envVar )
++{
++    HANDLE childStdin = INVALID_HANDLE_VALUE, childStdout = INVALID_HANDLE_VALUE, childStderr = INVALID_HANDLE_VALUE, parentStdError;
++    SECURITY_ATTRIBUTES sa = { .nLength = sizeof(sa), .lpSecurityDescriptor = NULL, .bInheritHandle = TRUE };
++    STARTUPINFOW si = { .cb = sizeof(si), .dwFlags = STARTF_USESTDHANDLES };
++    WCHAR *proxyPath = NULL;
++    PROCESS_INFORMATION pi;
++    HRESULT hr = S_OK;
++    DWORD pathSize;
++
++    TRACE( "shim %p, envVar %s.\n", shim, debugstr_w( envVar ) );
++
++    parentStdError = GetStdHandle( STD_ERROR_HANDLE );
++    if (parentStdError && parentStdError != INVALID_HANDLE_VALUE)
++        DuplicateHandle( GetCurrentProcess(), parentStdError, GetCurrentProcess(), &childStderr, 0, TRUE, DUPLICATE_SAME_ACCESS );
++
++    pathSize = GetEnvironmentVariableW( envVar, NULL, 0 );
++    if (pathSize == 0 && GetLastError() == ERROR_ENVVAR_NOT_FOUND) goto error;
++    if (!(proxyPath = calloc( pathSize + 2, sizeof(WCHAR) ))) return E_OUTOFMEMORY;
++    proxyPath[0] = L'\"';
++    if (!GetEnvironmentVariableW( envVar, proxyPath + 1, pathSize )) goto error;
++    wcscat( proxyPath, L"\"" );
++
++    if (!CreatePipe( &childStdin, &shim->toShim, &sa, 0 )) goto error;
++    if (!CreatePipe( &shim->fromShim, &childStdout, &sa, 0 )) goto error;
++    SetHandleInformation( shim->toShim, HANDLE_FLAG_INHERIT, 0 );
++    SetHandleInformation( shim->fromShim, HANDLE_FLAG_INHERIT, 0 );
++
++    si.hStdInput = childStdin;
++    si.hStdOutput = childStdout;
++    si.hStdError = childStderr;
++
++    if (!CreateProcessW( NULL, proxyPath, NULL, NULL, TRUE,
++                          CREATE_NEW_PROCESS_GROUP | CREATE_NO_WINDOW,
++                          NULL, NULL, &si, &pi )) goto error;
++
++    CloseHandle( pi.hThread );
++    InitializeCriticalSection( &shim->lock );
++    shim->process = pi.hProcess;
++    shim->pid = pi.dwProcessId;
++    shim->active = TRUE;
++    goto cleanup;
++
++error:
++    hr = HRESULT_FROM_WIN32( GetLastError() );
++cleanup:
++    if (proxyPath) free( proxyPath );
++    if (childStdin != INVALID_HANDLE_VALUE) CloseHandle( childStdin );
++    if (childStdout != INVALID_HANDLE_VALUE) CloseHandle( childStdout );
++    if (childStderr != INVALID_HANDLE_VALUE) CloseHandle( childStderr );
++    return hr;
++}
++
++void shim_stop( struct shim_channel *shim )
++{
++    if (!shim->active) return;
++
++    TRACE( "shim %p.\n", shim );
++
++    CloseHandle( shim->toShim );
++    GenerateConsoleCtrlEvent( CTRL_BREAK_EVENT, shim->pid );
++    if (WaitForSingleObject( shim->process, 1000 ) == WAIT_TIMEOUT)
++        TerminateProcess( shim->process, 1 );
++    CloseHandle( shim->fromShim );
++    CloseHandle( shim->process );
++    DeleteCriticalSection( &shim->lock );
++    shim->active = FALSE;
++}
++
++HRESULT shim_call( struct shim_channel *shim, UINT16 type, const char *payload, UINT16 payloadLen,
++                    UINT16 *respType, char **resp, UINT16 *respLen )
++{
++    struct shim_header hdr = { XML_MAGIC, type, payloadLen };
++    struct shim_header rhdr;
++    HRESULT hr = S_OK;
++
++    TRACE( "shim %p, type %u, payload %p, payloadLen %u.\n", shim, type, payload, payloadLen );
++
++    EnterCriticalSection( &shim->lock );
++
++    if (!shim->active)
++    {
++        hr = E_ABORT;
++        goto done;
++    }
++
++    if (!pipe_write_full( shim->toShim, &hdr, sizeof(hdr) ) ||
++        (payloadLen && !pipe_write_full( shim->toShim, payload, payloadLen )))
++    {
++        shim->active = FALSE;
++        hr = HRESULT_FROM_WIN32( GetLastError() );
++        goto done;
++    }
++
++    if (!pipe_read_full( shim->fromShim, &rhdr, sizeof(rhdr) ) || rhdr.magic != XML_MAGIC)
++    {
++        shim->active = FALSE;
++        hr = E_FAIL;
++        goto done;
++    }
++
++    if (!(*resp = calloc( 1, (SIZE_T)rhdr.length + 1 )))
++    {
++        hr = E_OUTOFMEMORY;
++        goto done;
++    }
++    if (rhdr.length && !pipe_read_full( shim->fromShim, *resp, rhdr.length ))
++    {
++        free( *resp );
++        *resp = NULL;
++        shim->active = FALSE;
++        hr = E_FAIL;
++        goto done;
++    }
++    *respType = rhdr.type;
++    *respLen = rhdr.length;
++
++done:
++    LeaveCriticalSection( &shim->lock );
++    return hr;
++}
+diff --git a/dlls/xgameruntime/xodus_utils.h b/dlls/xgameruntime/xodus_utils.h
+new file mode 100644
+index 0000000..03766ec
+--- /dev/null
++++ b/dlls/xgameruntime/xodus_utils.h
+@@ -0,0 +1,50 @@
++/*
++ * Copyright 2026 Paweł Lidwin
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2.1 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General Public
++ * License along with this library; if not, write to the Free Software
++ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
++ */
++
++#ifndef __WINE_XGAMERUNTIME_XODUS_UTILS_H
++#define __WINE_XGAMERUNTIME_XODUS_UTILS_H
++
++struct shim_header
++{
++    UINT32 magic;
++    UINT16 type;
++    UINT16 length;
++};
++
++#define XML_MAGIC 0x58445358
++#define PING_REQUEST 1
++#define PING_RESPONSE 2
++#define MSA_TOKEN_REQUEST  3
++#define MSA_TOKEN_RESPONSE  4
++
++struct shim_channel
++{
++    HANDLE process;
++    DWORD pid;
++    HANDLE toShim;    /* parent's write end -> child's stdin  */
++    HANDLE fromShim;  /* parent's read end  <- child's stdout */
++    CRITICAL_SECTION lock;
++    BOOL active;
++};
++
++HRESULT shim_start( struct shim_channel *shim, const WCHAR *envVar );
++void shim_stop( struct shim_channel *shim );
++HRESULT shim_call( struct shim_channel *shim, UINT16 type, const char *payload, UINT16 payloadLen,
++                    UINT16 *respType, char **resp, UINT16 *respLen );
++
++#endif
+diff --git a/dlls/xgameruntime/xuser.c b/dlls/xgameruntime/xuser.c
+index 8d53b28..9b37413 100644
+--- a/dlls/xgameruntime/xuser.c
++++ b/dlls/xgameruntime/xuser.c
+@@ -22,8 +22,10 @@
+ #include "private.h"
+ #include "userprovider.h"
+ #include "util.h"
++#include "xodus_utils.h"
+ #include <bcrypt.h>
+ #include <dbghelp.h>
++#include <libxml/parser.h>
+ #include <ntdef.h>
+ #include <wininet.h>
+ 
+@@ -99,6 +101,8 @@ struct XUser
+     struct policy *policies;
+     struct endpoint *endpoints;
+ 
++    struct shim_channel shim;
++
+     char gamertag[16];
+     char modernGamertag[97];
+     char modernGamertagSuffix[15];
+@@ -125,12 +129,15 @@ static ULONG WINAPI user_Release( IUser *iface )
+     TRACE( "iface %p decreasing refcount to %lu.\n", iface, ref );
+     if (!ref)
+     {
++        shim_stop( &impl->shim );
+         if (impl->key) BCryptDestroyKey( impl->key );
+         if (impl->proofKey) free( impl->proofKey );
+         if (impl->userToken) free( impl->userToken );
+         if (impl->policies) free( impl->policies );
+-        if (impl->endpoints) {
+-            for(UINT32 i = 0; i < impl->endpointsLen; i++) {
++        if (impl->endpoints)
++        {
++            for(UINT32 i = 0; i < impl->endpointsLen; i++)
++            {
+                 WindowsDeleteString(impl->endpoints[i].protocol);
+                 WindowsDeleteString(impl->endpoints[i].host);
+                 WindowsDeleteString(impl->endpoints[i].path);
+@@ -143,10 +150,93 @@ static ULONG WINAPI user_Release( IUser *iface )
+     return ref;
+ }
+ 
+-static HRESULT get_rps_tickets( BOOLEAN allowUi, char **userTicket, char **deviceTicket )
++static HRESULT build_msa_token_request( BOOLEAN allowUi, char **payload, UINT16 *payloadLen )
+ {
+-    FIXME( "allowUi %d, userTicket %p, deviceTicket %p stub!\n", allowUi, userTicket, deviceTicket );
+-    return E_NOTIMPL;
++    xmlNodePtr root;
++    xmlChar *buffer;
++    xmlDocPtr doc;
++    int size;
++
++    TRACE( "allowUi %d, payload %p, payloadLen %p.\n", allowUi, payload, payloadLen );
++
++    if (!(doc = xmlNewDoc( BAD_CAST "1.0" ))) return E_OUTOFMEMORY;
++    if (!(root = xmlNewNode( NULL, BAD_CAST "MSATokenRequest" )))
++    {
++        xmlFreeDoc( doc );
++        return E_OUTOFMEMORY;
++    }
++    xmlDocSetRootElement( doc, root );
++
++    xmlNewTextChild( root, NULL, BAD_CAST "ClientId", BAD_CAST (msaAppId ? msaAppId : "") );
++    xmlNewTextChild( root, NULL, BAD_CAST "AllowUi", BAD_CAST (allowUi ? "true" : "false") );
++    xmlNewTextChild( root, NULL, BAD_CAST "MsaFullTrust", BAD_CAST (fullTrust ? "true" : "false") );
++
++    xmlDocDumpMemory( doc, &buffer, &size );
++    xmlFreeDoc( doc );
++    if (!buffer) return E_OUTOFMEMORY;
++
++    if (size <= 0 || size > 0xffff)
++    {
++        xmlFree( buffer );
++        return E_FAIL; /* the wire format's length field is a UINT16 */
++    }
++    if (!(*payload = malloc( size )))
++    {
++        xmlFree( buffer );
++        return E_OUTOFMEMORY;
++    }
++    memcpy( *payload, buffer, size );
++    *payloadLen = (UINT16)size;
++    xmlFree( buffer );
++    return S_OK;
++}
++
++static HRESULT parse_msa_token_response( const char *payload, UINT16 payloadLen, char **userTicket, char **deviceTicket )
++{
++    xmlNodePtr child, root;
++    xmlDocPtr doc;
++    HRESULT hr = S_OK;
++
++    TRACE( "payload %p, payloadLen %u, userTicket %p, deviceTicket %p.\n", payload, payloadLen, userTicket, deviceTicket );
++
++    if (!(doc = xmlReadMemory( payload, payloadLen, NULL, NULL, 0 ))) return E_FAIL;
++    if (!(root = xmlDocGetRootElement( doc )) || strcmp( (char *)root->name, "MSATokenResponse" ))
++    {
++        hr = E_FAIL;
++        goto cleanup;
++    }
++
++    for (child = root->children; child; child = child->next)
++    {
++        if (child->type != XML_ELEMENT_NODE) continue;
++        if (!strcmp( (char *)child->name, "Token" )) *userTicket = (char *)xmlNodeGetContent( child );
++        else if (!strcmp( (char *)child->name, "DeviceRps" )) *deviceTicket = (char *)xmlNodeGetContent( child );
++        /* Expiry / DeviceExpiry: expiration timestamps, not consumed here yet */
++    }
++
++    if (!*userTicket || !*deviceTicket) hr = E_FAIL;
++
++cleanup:
++    xmlFreeDoc( doc );
++    return hr;
++}
++
++static HRESULT get_rps_tickets( XUserHandle user, BOOLEAN allowUi, char **userTicket, char **deviceTicket )
++{
++    char *payload = NULL, *resp = NULL;
++    UINT16 payloadLen, respType, respLen;
++    HRESULT hr;
++
++    TRACE( "user %p, allowUi %d, userTicket %p, deviceTicket %p.\n", user, allowUi, userTicket, deviceTicket );
++
++    if (FAILED(hr = build_msa_token_request( allowUi, &payload, &payloadLen ))) return hr;
++    hr = shim_call( &user->shim, MSA_TOKEN_REQUEST, payload, payloadLen, &respType, &resp, &respLen );
++    free( payload );
++    if (FAILED(hr)) return hr;
++
++    hr = parse_msa_token_response( resp, respLen, userTicket, deviceTicket );
++    free( resp );
++    return hr;
+ }
+ 
+ static HRESULT device_auth( XUserHandle user, const char *deviceTicket, char **deviceToken )
+@@ -291,7 +381,7 @@ static HRESULT load_endpoints( XUserHandle user, BYTE *buffer, SIZE_T size )
+     IJsonObject *payload = NULL, *tmpObject = NULL;
+     IJsonArray *jsonEndpoints = NULL, *jsonPolicies = NULL;
+     IVector_IJsonValue *jsonEndpointsVector = NULL, *jsonPoliciesVector = NULL;
+-    struct policy *policyCursor = NULL;
++    struct policy *policyCursor = NULL
+     struct endpoint *endpointCursor = NULL;
+     DOUBLE jsonNumber;
+     UINT32 arraySize;
+@@ -408,9 +498,11 @@ static HRESULT WINAPI user_Initialize( IUser *iface, const XUserAddOptions optio
+     if (FAILED(hr = encode_base64_url( 32, blob + sizeof(BCRYPT_ECCKEY_BLOB) + 32, 43, y, FALSE ))) return hr;
+     strcat( impl->proofKey, "\"}" );
+ 
++    // shim is optional
++    shim_start( &impl->shim, L"XODUS_IPC_PROXY" );
+     if (FAILED(hr = http_request( L"GET", L"https://title.mgt.xboxlive.com/titles/default/endpoints?type=1", NULL, NULL, ACCEPT_JSON, &defaultBuffer, &size ))) return hr;
+     if (FAILED(hr = load_endpoints( impl, defaultBuffer, size ))) goto cleanup;
+-    if (FAILED(hr = get_rps_tickets( options & XUserAddOptions_AddDefaultUserAllowingUI, &userTicket, &deviceTicket ))) goto cleanup;
++    if (FAILED(hr = get_rps_tickets( impl, options & XUserAddOptions_AddDefaultUserAllowingUI, &userTicket, &deviceTicket ))) goto cleanup;
+     if (FAILED(hr = device_auth( impl, deviceTicket, &deviceToken ))) goto cleanup;
+     if (FAILED(hr = sisu_auth( impl, userTicket, deviceToken, &auth ))) goto cleanup;
+     if (FAILED(hr = http_request( L"GET", L"https://title.mgt.xboxlive.com/titles/current/endpoints", NULL, auth, ACCEPT_JSON, &currentBuffer, &size ))) goto cleanup;
+-- 
+2.55.0
+
