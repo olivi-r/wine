@@ -1,0 +1,3 @@
+[submodule "dlls/xgameruntime"]
+	path = dlls/xgameruntime
+	url = https://github.com/xodus-gaming/xgameruntime
