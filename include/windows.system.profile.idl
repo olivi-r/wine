@@ -34,10 +34,14 @@ namespace Windows.System.Profile {
     interface IAnalyticsInfoStatics2;
     interface IAnalyticsVersionInfo;
     interface IAnalyticsVersionInfo2;
+    interface IHardwareIdentification;
+    interface IHardwareIdentificationStatics;
     interface ISystemIdentificationInfo;
     interface ISystemIdentificationStatics;
     runtimeclass AnalyticsVersionInfo;
     runtimeclass AnalyticsInfo;
+    runtimeclass HardwareIdentification;
+    runtimeclass HardwareToken;
     runtimeclass SystemIdentification;
     runtimeclass SystemIdentificationInfo;
 
@@ -71,6 +75,24 @@ namespace Windows.System.Profile {
     {
         [propget] HRESULT DeviceFamily([out, retval] HSTRING *value);
         [propget] HRESULT DeviceFamilyVersion([out, retval] HSTRING *value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.System.Profile.HardwareIdentification),
+        uuid(971260e0-f170-4a42-bd55-a900b212dae2)
+    ]
+    interface IHardwareIdentificationStatics : IInspectable
+    {
+        HRESULT GetPackageSpecificToken([in] Windows.Storage.Streams.IBuffer *nonce, [out, retval] Windows.System.Profile.HardwareToken **value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.System.Profile.HardwareToken)
+    ]
+    interface IHardwareToken : IInspectable
+    {
     }
 
     [
@@ -115,6 +137,24 @@ namespace Windows.System.Profile {
     ]
     runtimeclass AnalyticsInfo
     {
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(standard),
+        static(Windows.System.Profile.IHardwareIdentificationStatics, Windows.Foundation.UniversalApiContract, 1.0)
+    ]
+    runtimeclass HardwareIdentification
+    {
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile)
+    ]
+    runtimeclass HardwareToken
+    {
+        [default] interface Windows.System.Profile.IHardwareToken;
     }
 
     [
