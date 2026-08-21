@@ -29,6 +29,7 @@
 
 #define WIDL_using_Windows_Security_Cryptography
 #include "windows.security.cryptography.h"
+#include "roapi.h"
 #include "robuffer.h"
 
 WINE_DEFAULT_DEBUG_CHANNEL(crypto);
@@ -148,9 +149,30 @@ static HRESULT STDMETHODCALLTYPE cryptobuffer_statics_Compare(
 static HRESULT STDMETHODCALLTYPE cryptobuffer_statics_GenerateRandom(
         ICryptographicBufferStatics *iface, UINT32 length, IBuffer **buffer)
 {
-    FIXME("iface %p, length %u, buffer %p stub!\n", iface, length, buffer);
+    static const WCHAR *class_name = RuntimeClass_Windows_Storage_Streams_Buffer;
+    IBufferByteAccess *access;
+    IBufferFactory *factory;
+    HSTRING_HEADER header;
+    IBuffer *output;
+    HSTRING class;
+    BYTE *data;
+    HRESULT hr;
 
-    return E_NOTIMPL;
+    TRACE( "iface %p, length %u, buffer %p.\n", iface, length, buffer );
+
+    WindowsCreateStringReference( class_name, wcslen( class_name ), &header, &class );
+    if (FAILED(hr = RoGetActivationFactory( class, &IID_IBufferFactory, (void **)&factory ))) return hr;
+    hr = IBufferFactory_Create( factory, length, &output );
+    IBufferFactory_Release( factory );
+    if (FAILED(hr)) return hr;
+    IBuffer_put_Length( output, length );
+    IBuffer_QueryInterface( output, &IID_IBufferByteAccess, (void **)&access );
+    IBufferByteAccess_Buffer( access, &data );
+    BCryptGenRandom( NULL, data, length, BCRYPT_USE_SYSTEM_PREFERRED_RNG );
+    IBufferByteAccess_Release( access );
+
+    *buffer = output;
+    return S_OK;
 }
 
 static HRESULT STDMETHODCALLTYPE cryptobuffer_statics_GenerateRandomNumber(
@@ -189,9 +211,28 @@ static HRESULT STDMETHODCALLTYPE cryptobuffer_statics_DecodeFromHexString(
 static HRESULT STDMETHODCALLTYPE cryptobuffer_statics_EncodeToHexString(
         ICryptographicBufferStatics *iface, IBuffer *buffer, HSTRING *value)
 {
-    FIXME("iface %p, buffer %p, value %p stub!\n", iface, buffer, value);
+    IBufferByteAccess *access;
+    HSTRING_BUFFER handle;
+    UINT32 length;
+    HRESULT hr;
+    WCHAR *str;
+    BYTE *data;
 
-    return E_NOTIMPL;
+    TRACE( "iface %p, buffer %p, value %p.\n", iface, buffer, value );
+
+    if (FAILED(hr = IBuffer_get_Length( buffer, &length ))) return hr;
+    if (FAILED(hr = WindowsPreallocateStringBuffer( length * 2, &str, &handle ))) return hr;
+    IBuffer_QueryInterface( buffer, &IID_IBufferByteAccess, (void **)&access );
+    IBufferByteAccess_Buffer( access, &data );
+    IBufferByteAccess_Release( access );
+
+    for (UINT32 i = 0; i < length; i++)
+    {
+        str[2 * i] = (data[i] >> 4) + ((data[i] >> 4) > 9 ? 0x37 : 0x30);
+        str[2 * i + 1] = (data[i] & 0xf) + ((data[i] & 0xf) > 9 ? 0x37 : 0x30);
+    }
+
+    return WindowsPromoteStringBuffer( handle, value );
 }
 
 static HRESULT STDMETHODCALLTYPE cryptobuffer_statics_DecodeFromBase64String(
