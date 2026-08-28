@@ -3923,6 +3923,16 @@ fail:
 }
 
 /******************************************************************
+ *		LdrResolveDelayLoadsFromDll  (NTDLL.@)
+ *
+ */
+NTSTATUS WINAPI LdrResolveDelayLoadsFromDll( void *base, const char *name, ULONG flags )
+{
+    FIXME( "(%p, %p, 0x%08lx)\n", base, name, flags );
+    return STATUS_DLL_NOT_FOUND;
+}
+
+/******************************************************************
  *		LdrShutdownProcess (NTDLL.@)
  *
  */

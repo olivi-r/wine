@@ -112,6 +112,7 @@
 @ stdcall LdrRegisterDllNotification(long ptr ptr ptr)
 @ stdcall LdrRemoveDllDirectory(ptr)
 @ stdcall LdrResolveDelayLoadedAPI(ptr ptr ptr ptr ptr long)
+@ stdcall LdrResolveDelayLoadsFromDll(ptr str long)
 @ stub LdrSetAppCompatDllRedirectionCallback
 @ stdcall LdrSetDefaultDllDirectories(long)
 @ stdcall LdrSetDllDirectory(ptr)
