@@ -1,6 +1,7 @@
 /* WinRT Windows.UI.Core.CoreWindow Implementation
  *
  * Copyright 2025 Zhiyi Zhang for CodeWeavers
+ * Copyright 2026 Olivia Ryan
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,6 +23,448 @@
 #include "wine/debug.h"
 
 WINE_DEFAULT_DEBUG_CHANNEL(ui);
+
+struct corewindow
+{
+    ICoreWindow ICoreWindow_iface;
+    LONG ref;
+};
+
+static inline struct corewindow *impl_from_ICoreWindow( ICoreWindow *iface )
+{
+    return CONTAINING_RECORD( iface, struct corewindow, ICoreWindow_iface );
+}
+
+static HRESULT WINAPI corewindow_QueryInterface( ICoreWindow *iface, REFIID iid, void **out )
+{
+    struct corewindow *impl = impl_from_ICoreWindow( iface );
+
+    TRACE( "iface %p, iid %s, out %p.\n", iface, debugstr_guid( iid ), out );
+
+    if (IsEqualGUID( iid, &IID_IUnknown ) ||
+        IsEqualGUID( iid, &IID_IInspectable ) ||
+        IsEqualGUID( iid, &IID_ICoreWindow ))
+    {
+        *out = &impl->ICoreWindow_iface;
+        ICoreWindow_AddRef( &impl->ICoreWindow_iface );
+        return S_OK;
+    }
+
+    FIXME( "%s not implemented, returning E_NOINTERFACE.\n", debugstr_guid( iid ) );
+    *out = NULL;
+    return E_NOINTERFACE;
+}
+
+static ULONG WINAPI corewindow_AddRef( ICoreWindow *iface )
+{
+    struct corewindow *impl = impl_from_ICoreWindow( iface );
+    ULONG ref = InterlockedIncrement( &impl->ref );
+    TRACE( "iface %p, ref %lu.\n", iface, ref );
+    return ref;
+}
+
+static ULONG WINAPI corewindow_Release( ICoreWindow *iface )
+{
+    struct corewindow *impl = impl_from_ICoreWindow( iface );
+    ULONG ref = InterlockedDecrement( &impl->ref );
+    TRACE( "iface %p, ref %lu.\n", iface, ref );
+    if (!ref) free( impl );
+    return ref;
+}
+
+static HRESULT WINAPI corewindow_GetIids( ICoreWindow *iface, ULONG *iid_count, IID **iids )
+{
+    FIXME( "iface %p, iid_count %p, iids %p stub!\n", iface, iid_count, iids );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_GetRuntimeClassName( ICoreWindow *iface, HSTRING *class_name )
+{
+    FIXME( "iface %p, class_name %p stub!\n", iface, class_name );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_GetTrustLevel( ICoreWindow *iface, TrustLevel *trust_level )
+{
+    FIXME( "iface %p, trust_level %p stub!\n", iface, trust_level );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_get_AutomationHostProvider( ICoreWindow *iface, IInspectable **value )
+{
+    FIXME( "iface %p, value %p stub!\n", iface, value );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_get_Bounds( ICoreWindow *iface, Rect *value )
+{
+    FIXME( "iface %p, value %p stub!\n", iface, value );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_get_CustomProperties( ICoreWindow *iface, IPropertySet **value )
+{
+    FIXME( "iface %p, value %p stub!\n", iface, value );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_get_Dispatcher( ICoreWindow *iface, ICoreDispatcher **value )
+{
+    FIXME( "iface %p, value %p stub!\n", iface, value );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_get_FlowDirection( ICoreWindow *iface, CoreWindowFlowDirection *value )
+{
+    FIXME( "iface %p, value %p stub!\n", iface, value );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_put_FlowDirection( ICoreWindow *iface, CoreWindowFlowDirection value )
+{
+    FIXME( "iface %p, value %p stub!\n", iface, &value );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_get_IsInputEnabled( ICoreWindow *iface, BOOLEAN *value )
+{
+    FIXME( "iface %p, value %p stub!\n", iface, value );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_put_IsInputEnabled( ICoreWindow *iface, BOOLEAN value )
+{
+    FIXME( "iface %p, value %d stub!\n", iface, value );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_get_PointerCursor( ICoreWindow *iface, ICoreCursor **value )
+{
+    FIXME( "iface %p, value %p stub!\n", iface, value );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_put_PointerCursor( ICoreWindow *iface, ICoreCursor *value )
+{
+    FIXME( "iface %p, value %p stub!\n", iface, value );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_get_PointerPosition( ICoreWindow *iface, Point *value )
+{
+    FIXME( "iface %p, value %p stub!\n", iface, value );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_get_Visible( ICoreWindow *iface, BOOLEAN *value )
+{
+    FIXME( "iface %p, value %p stub!\n", iface, value );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_Activate( ICoreWindow *iface )
+{
+    FIXME( "iface %p stub!\n", iface );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_Close( ICoreWindow *iface )
+{
+    FIXME( "iface %p stub!\n", iface );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_GetAsyncKeyState( ICoreWindow *iface, VirtualKey key, CoreVirtualKeyStates *state )
+{
+    FIXME( "iface %p key, %d, state %p stub!\n", iface, key, state );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_GetKeyState( ICoreWindow *iface, VirtualKey key, CoreVirtualKeyStates *state )
+{
+    FIXME( "iface %p key, %d, state %p stub!\n", iface, key, state );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_ReleasePointerCapture( ICoreWindow *iface )
+{
+    FIXME( "iface %p stub!\n", iface );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_SetPointerCapture( ICoreWindow *iface )
+{
+    FIXME( "iface %p stub!\n", iface );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_eventadd_Activated( ICoreWindow *iface, ITypedEventHandler_CoreWindow_WindowActivatedEventArgs *handler, EventRegistrationToken *cookie )
+{
+    FIXME( "iface %p, handler %p, cookie %p stub!\n", iface, handler, cookie );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_eventremove_Activated( ICoreWindow *iface, EventRegistrationToken cookie )
+{
+    FIXME( "iface %p, cookie %p stub!\n", iface, &cookie );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_eventadd_AutomationProviderRequested( ICoreWindow *iface, ITypedEventHandler_CoreWindow_AutomationProviderRequestedEventArgs *handler, EventRegistrationToken *cookie )
+{
+    FIXME( "iface %p, handler %p, cookie %p stub!\n", iface, handler, cookie );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_eventremove_AutomationProviderRequested( ICoreWindow *iface, EventRegistrationToken cookie )
+{
+    FIXME( "iface %p, cookie %p stub!\n", iface, &cookie );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_eventadd_CharacterReceived( ICoreWindow *iface, ITypedEventHandler_CoreWindow_CharacterReceivedEventArgs *handler, EventRegistrationToken *cookie )
+{
+    FIXME( "iface %p, handler %p, cookie %p stub!\n", iface, handler, cookie );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_eventremove_CharacterReceived( ICoreWindow *iface, EventRegistrationToken cookie )
+{
+    FIXME( "iface %p, cookie %p stub!\n", iface, &cookie );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_eventadd_Closed( ICoreWindow *iface, ITypedEventHandler_CoreWindow_CoreWindowEventArgs *handler, EventRegistrationToken *cookie )
+{
+    FIXME( "iface %p, handler %p, cookie %p stub!\n", iface, handler, cookie );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_eventremove_Closed( ICoreWindow *iface, EventRegistrationToken cookie )
+{
+    FIXME( "iface %p, cookie %p stub!\n", iface, &cookie );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_eventadd_InputEnabled( ICoreWindow *iface, ITypedEventHandler_CoreWindow_InputEnabledEventArgs *handler, EventRegistrationToken *cookie )
+{
+    FIXME( "iface %p, handler %p, cookie %p stub!\n", iface, handler, cookie );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_eventremove_InputEnabled( ICoreWindow *iface, EventRegistrationToken cookie )
+{
+    FIXME( "iface %p, cookie %p stub!\n", iface, &cookie );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_eventadd_KeyDown( ICoreWindow *iface, ITypedEventHandler_CoreWindow_KeyEventArgs *handler, EventRegistrationToken *cookie )
+{
+    FIXME( "iface %p, handler %p, cookie %p stub!\n", iface, handler, cookie );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_eventremove_KeyDown( ICoreWindow *iface, EventRegistrationToken cookie )
+{
+    FIXME( "iface %p, cookie %p stub!\n", iface, &cookie );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_eventadd_KeyUp( ICoreWindow *iface, ITypedEventHandler_CoreWindow_KeyEventArgs *handler, EventRegistrationToken *cookie )
+{
+    FIXME( "iface %p, handler %p, cookie %p stub!\n", iface, handler, cookie );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_eventremove_KeyUp( ICoreWindow *iface, EventRegistrationToken cookie )
+{
+    FIXME( "iface %p, cookie %p stub!\n", iface, &cookie );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_eventadd_PointerCaptureLost( ICoreWindow *iface, ITypedEventHandler_CoreWindow_PointerEventArgs *handler, EventRegistrationToken *cookie )
+{
+    FIXME( "iface %p, handler %p, cookie %p stub!\n", iface, handler, cookie );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_eventremove_PointerCaptureLost( ICoreWindow *iface, EventRegistrationToken cookie )
+{
+    FIXME( "iface %p, cookie %p stub!\n", iface, &cookie );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_eventadd_PointerEntered( ICoreWindow *iface, ITypedEventHandler_CoreWindow_PointerEventArgs *handler, EventRegistrationToken *cookie )
+{
+    FIXME( "iface %p, handler %p, cookie %p stub!\n", iface, handler, cookie );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_eventremove_PointerEntered( ICoreWindow *iface, EventRegistrationToken cookie )
+{
+    FIXME( "iface %p, cookie %p stub!\n", iface, &cookie );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_eventadd_PointerExited( ICoreWindow *iface, ITypedEventHandler_CoreWindow_PointerEventArgs *handler, EventRegistrationToken *cookie )
+{
+    FIXME( "iface %p, handler %p, cookie %p stub!\n", iface, handler, cookie );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_eventremove_PointerExited( ICoreWindow *iface, EventRegistrationToken cookie )
+{
+    FIXME( "iface %p, cookie %p stub!\n", iface, &cookie );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_eventadd_PointerMoved( ICoreWindow *iface, ITypedEventHandler_CoreWindow_PointerEventArgs *handler, EventRegistrationToken *cookie )
+{
+    FIXME( "iface %p, handler %p, cookie %p stub!\n", iface, handler, cookie );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_eventremove_PointerMoved( ICoreWindow *iface, EventRegistrationToken cookie )
+{
+    FIXME( "iface %p, cookie %p stub!\n", iface, &cookie );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_eventadd_PointerPressed( ICoreWindow *iface, ITypedEventHandler_CoreWindow_PointerEventArgs *handler, EventRegistrationToken *cookie )
+{
+    FIXME( "iface %p, handler %p, cookie %p stub!\n", iface, handler, cookie );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_eventremove_PointerPressed( ICoreWindow *iface, EventRegistrationToken cookie )
+{
+    FIXME( "iface %p, cookie %p stub!\n", iface, &cookie );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_eventadd_PointerReleased( ICoreWindow *iface, ITypedEventHandler_CoreWindow_PointerEventArgs *handler, EventRegistrationToken *cookie )
+{
+    FIXME( "iface %p, handler %p, cookie %p stub!\n", iface, handler, cookie );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_eventremove_PointerReleased( ICoreWindow *iface, EventRegistrationToken cookie )
+{
+    FIXME( "iface %p, cookie %p stub!\n", iface, &cookie );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_eventadd_TouchHitTesting( ICoreWindow *iface, ITypedEventHandler_CoreWindow_TouchHitTestingEventArgs *handler, EventRegistrationToken *cookie )
+{
+    FIXME( "iface %p, handler %p, cookie %p stub!\n", iface, handler, cookie );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_eventremove_TouchHitTesting( ICoreWindow *iface, EventRegistrationToken cookie )
+{
+    FIXME( "iface %p, cookie %p stub!\n", iface, &cookie );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_eventadd_PointerWheelChanged( ICoreWindow *iface, ITypedEventHandler_CoreWindow_PointerEventArgs *handler, EventRegistrationToken *cookie )
+{
+    FIXME( "iface %p, handler %p, cookie %p stub!\n", iface, handler, cookie );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_eventremove_PointerWheelChanged( ICoreWindow *iface, EventRegistrationToken cookie )
+{
+    FIXME( "iface %p, cookie %p stub!\n", iface, &cookie );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_eventadd_SizeChanged( ICoreWindow *iface, ITypedEventHandler_CoreWindow_WindowSizeChangedEventArgs *handler, EventRegistrationToken *cookie )
+{
+    FIXME( "iface %p, handler %p, cookie %p stub!\n", iface, handler, cookie );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_eventremove_SizeChanged( ICoreWindow *iface, EventRegistrationToken cookie )
+{
+    FIXME( "iface %p, cookie %p stub!\n", iface, &cookie );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_eventadd_VisibilityChanged( ICoreWindow *iface, ITypedEventHandler_CoreWindow_VisibilityChangedEventArgs *handler, EventRegistrationToken *cookie )
+{
+    FIXME( "iface %p, handler %p, cookie %p stub!\n", iface, handler, cookie );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI corewindow_eventremove_VisibilityChanged( ICoreWindow *iface, EventRegistrationToken cookie )
+{
+    FIXME( "iface %p, cookie %p stub!\n", iface, &cookie );
+    return E_NOTIMPL;
+}
+
+static const struct ICoreWindowVtbl corewindow_vtbl =
+{
+    corewindow_QueryInterface,
+    corewindow_AddRef,
+    corewindow_Release,
+    /* IInspectable methods */
+    corewindow_GetIids,
+    corewindow_GetRuntimeClassName,
+    corewindow_GetTrustLevel,
+    /* ICoreWindow methods */
+    corewindow_get_AutomationHostProvider,
+    corewindow_get_Bounds,
+    corewindow_get_CustomProperties,
+    corewindow_get_Dispatcher,
+    corewindow_get_FlowDirection,
+    corewindow_put_FlowDirection,
+    corewindow_get_IsInputEnabled,
+    corewindow_put_IsInputEnabled,
+    corewindow_get_PointerCursor,
+    corewindow_put_PointerCursor,
+    corewindow_get_PointerPosition,
+    corewindow_get_Visible,
+    corewindow_Activate,
+    corewindow_Close,
+    corewindow_GetAsyncKeyState,
+    corewindow_GetKeyState,
+    corewindow_ReleasePointerCapture,
+    corewindow_SetPointerCapture,
+    corewindow_eventadd_Activated,
+    corewindow_eventremove_Activated,
+    corewindow_eventadd_AutomationProviderRequested,
+    corewindow_eventremove_AutomationProviderRequested,
+    corewindow_eventadd_CharacterReceived,
+    corewindow_eventremove_CharacterReceived,
+    corewindow_eventadd_Closed,
+    corewindow_eventremove_Closed,
+    corewindow_eventadd_InputEnabled,
+    corewindow_eventremove_InputEnabled,
+    corewindow_eventadd_KeyDown,
+    corewindow_eventremove_KeyDown,
+    corewindow_eventadd_KeyUp,
+    corewindow_eventremove_KeyUp,
+    corewindow_eventadd_PointerCaptureLost,
+    corewindow_eventremove_PointerCaptureLost,
+    corewindow_eventadd_PointerEntered,
+    corewindow_eventremove_PointerEntered,
+    corewindow_eventadd_PointerExited,
+    corewindow_eventremove_PointerExited,
+    corewindow_eventadd_PointerMoved,
+    corewindow_eventremove_PointerMoved,
+    corewindow_eventadd_PointerPressed,
+    corewindow_eventremove_PointerPressed,
+    corewindow_eventadd_PointerReleased,
+    corewindow_eventremove_PointerReleased,
+    corewindow_eventadd_TouchHitTesting,
+    corewindow_eventremove_TouchHitTesting,
+    corewindow_eventadd_PointerWheelChanged,
+    corewindow_eventremove_PointerWheelChanged,
+    corewindow_eventadd_SizeChanged,
+    corewindow_eventremove_SizeChanged,
+    corewindow_eventadd_VisibilityChanged,
+    corewindow_eventremove_VisibilityChanged,
+};
 
 struct corewindow_statics
 {
@@ -119,9 +562,15 @@ DEFINE_IINSPECTABLE( corewindow_static, ICoreWindowStatic, struct corewindow_sta
 
 static HRESULT STDMETHODCALLTYPE corewindow_static_GetForCurrentThread( ICoreWindowStatic *iface, ICoreWindow **windows )
 {
-    FIXME( "iface %p, windows %p stub!\n", iface, windows );
+    struct corewindow *impl;
 
-    *windows = NULL;
+    TRACE( "iface %p, windows %p.\n", iface, windows );
+
+    if (!(impl = calloc( 1, sizeof(*impl) ))) return E_OUTOFMEMORY;
+    impl->ICoreWindow_iface.lpVtbl = &corewindow_vtbl;
+    impl->ref = 1;
+
+    *windows = &impl->ICoreWindow_iface;
     return S_OK;
 }
 
