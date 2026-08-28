@@ -30,7 +30,11 @@
 #include "activation.h"
 
 #define WIDL_using_Windows_Foundation
+#define WIDL_using_Windows_Foundation_Collections
 #include "windows.foundation.h"
+#include "windows.foundation.collections.h"
+#define WIDL_using_Windows_System
+#include "windows.system.h"
 #define WIDL_using_Windows_UI
 #include "windows.ui.h"
 #define WIDL_using_Windows_UI_Core
