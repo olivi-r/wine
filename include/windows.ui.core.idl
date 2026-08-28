@@ -351,6 +351,20 @@ namespace Windows.UI.Core {
 
     [
         contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Core.CoreDispatcher),
+        uuid(bafaecad-484d-41be-ba80-1d58c65263ea)
+    ]
+    interface ICoreDispatcherWithTaskPriority : IInspectable
+    {
+        [propget] HRESULT CurrentPriority( [out, retval] Windows.UI.Core.CoreDispatcherPriority *value );
+        [propput] HRESULT CurrentPriority( [in] Windows.UI.Core.CoreDispatcherPriority value );
+        [overload("ShouldYield")] HRESULT ShouldYield( [out, retval] BOOLEAN *value );
+        [overload("ShouldYield")] HRESULT ShouldYieldWithArg( [in] Windows.UI.Core.CoreDispatcherPriority priority, [out, retval] BOOLEAN *value );
+        HRESULT StopProcessEvents();
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
         uuid(79b9d5f2-879e-4b89-b798-79e47598030c)
     ]
     interface ICoreWindow : IInspectable
@@ -638,7 +652,7 @@ namespace Windows.UI.Core {
     {
         [default] interface Windows.UI.Core.ICoreDispatcher;
         interface Windows.UI.Core.ICoreAcceleratorKeys;
-        /* [contract(Windows.Foundation.UniversalApiContract, 1.0)] interface Windows.UI.Core.ICoreDispatcherWithTaskPriority; */
+        [contract(Windows.Foundation.UniversalApiContract, 1.0)] interface Windows.UI.Core.ICoreDispatcherWithTaskPriority;
         /* [contract(Windows.Foundation.UniversalApiContract, 1.0)] interface Windows.UI.Core.ICoreDispatcher2; */
     }
 

@@ -24,6 +24,206 @@
 
 WINE_DEFAULT_DEBUG_CHANNEL(ui);
 
+struct coredispatcher
+{
+    ICoreDispatcher ICoreDispatcher_iface;
+    ICoreAcceleratorKeys ICoreAcceleratorKeys_iface;
+    ICoreDispatcherWithTaskPriority ICoreDispatcherWithTaskPriority_iface;
+    LONG ref;
+};
+
+static inline struct coredispatcher *impl_from_ICoreDispatcher( ICoreDispatcher *iface )
+{
+    return CONTAINING_RECORD( iface, struct coredispatcher, ICoreDispatcher_iface );
+}
+
+static HRESULT WINAPI coredispatcher_QueryInterface( ICoreDispatcher *iface, REFIID iid, void **out )
+{
+    struct coredispatcher *impl = impl_from_ICoreDispatcher( iface );
+
+    TRACE( "iface %p, iid %s, out %p.\n", iface, debugstr_guid( iid ), out );
+
+    if (IsEqualGUID( iid, &IID_IUnknown ) ||
+        IsEqualGUID( iid, &IID_IInspectable ) ||
+        IsEqualGUID( iid, &IID_IAgileObject ) ||
+        IsEqualGUID( iid, &IID_ICoreDispatcher ))
+    {
+        *out = &impl->ICoreDispatcher_iface;
+        ICoreDispatcher_AddRef( &impl->ICoreDispatcher_iface );
+        return S_OK;
+    }
+
+    if (IsEqualGUID( iid, &IID_ICoreAcceleratorKeys ))
+    {
+        *out = &impl->ICoreAcceleratorKeys_iface;
+        ICoreAcceleratorKeys_AddRef( &impl->ICoreAcceleratorKeys_iface );
+        return S_OK;
+    }
+
+    if (IsEqualGUID( iid, &IID_ICoreDispatcherWithTaskPriority ))
+    {
+        *out = &impl->ICoreDispatcherWithTaskPriority_iface;
+        ICoreDispatcherWithTaskPriority_AddRef( &impl->ICoreDispatcherWithTaskPriority_iface );
+        return S_OK;
+    }
+
+    FIXME( "%s not implemented, returning E_NOINTERFACE.\n", debugstr_guid( iid ) );
+    *out = NULL;
+    return E_NOINTERFACE;
+}
+
+static ULONG WINAPI coredispatcher_AddRef( ICoreDispatcher *iface )
+{
+    struct coredispatcher *impl = impl_from_ICoreDispatcher( iface );
+    ULONG ref = InterlockedIncrement( &impl->ref );
+    TRACE( "iface %p, ref %lu.\n", iface, ref );
+    return ref;
+}
+
+static ULONG WINAPI coredispatcher_Release( ICoreDispatcher *iface )
+{
+    struct coredispatcher *impl = impl_from_ICoreDispatcher( iface );
+    ULONG ref = InterlockedDecrement( &impl->ref );
+    TRACE( "iface %p, ref %lu.\n", iface, ref );
+    if (!ref) free( impl );
+    return ref;
+}
+
+static HRESULT WINAPI coredispatcher_GetIids( ICoreDispatcher *iface, ULONG *iid_count, IID **iids )
+{
+    FIXME( "iface %p, iid_count %p, iids %p stub!\n", iface, iid_count, iids );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI coredispatcher_GetRuntimeClassName( ICoreDispatcher *iface, HSTRING *class_name )
+{
+    FIXME( "iface %p, class_name %p stub!\n", iface, class_name );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI coredispatcher_GetTrustLevel( ICoreDispatcher *iface, TrustLevel *trust_level )
+{
+    FIXME( "iface %p, trust_level %p stub!\n", iface, trust_level );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI coredispatcher_get_HasThreadAccess( ICoreDispatcher *iface, BOOLEAN *value )
+{
+    FIXME( "iface %p, value %p stub!\n", iface, value );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI coredispatcher_ProcessEvents( ICoreDispatcher *iface, CoreProcessEventsOption options )
+{
+    FIXME( "iface %p, options %d stub!\n", iface, options );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI coredispatcher_RunAsync( ICoreDispatcher *iface, CoreDispatcherPriority priority, IDispatchedHandler *callback, IAsyncAction **action )
+{
+    FIXME( "iface %p, priority %d, callback %p, action %p stub!\n", iface, priority, callback, action );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI coredispatcher_RunIdleAsync( ICoreDispatcher *iface, IIdleDispatchedHandler *callback, IAsyncAction **action )
+{
+    FIXME( "iface %p, callback %p, action %p stub!\n", iface, callback, action );
+    return E_NOTIMPL;
+}
+
+static const struct ICoreDispatcherVtbl coredispatcher_vtbl =
+{
+    coredispatcher_QueryInterface,
+    coredispatcher_AddRef,
+    coredispatcher_Release,
+    /* IInspectable methods */
+    coredispatcher_GetIids,
+    coredispatcher_GetRuntimeClassName,
+    coredispatcher_GetTrustLevel,
+    /* ICoreDispatcher methods */
+    coredispatcher_get_HasThreadAccess,
+    coredispatcher_ProcessEvents,
+    coredispatcher_RunAsync,
+    coredispatcher_RunIdleAsync,
+};
+
+DEFINE_IINSPECTABLE( accelerator_keys, ICoreAcceleratorKeys, struct coredispatcher, ICoreDispatcher_iface )
+
+static HRESULT WINAPI accelerator_keys_eventadd_AcceleratorKeyActivated( ICoreAcceleratorKeys *iface, ITypedEventHandler_CoreDispatcher_AcceleratorKeyEventArgs *handler, EventRegistrationToken *cookie )
+{
+    FIXME( "iface %p, handler %p, cookie %p stub!\n", iface, handler, cookie );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI accelerator_keys_eventremove_AcceleratorKeyActivated( ICoreAcceleratorKeys *iface, EventRegistrationToken cookie )
+{
+    FIXME( "iface %p, cookie %p stub!\n", iface, &cookie );
+    return E_NOTIMPL;
+}
+
+static const struct ICoreAcceleratorKeysVtbl accelerator_keys_vtbl =
+{
+    accelerator_keys_QueryInterface,
+    accelerator_keys_AddRef,
+    accelerator_keys_Release,
+    /* IInspectable methods */
+    accelerator_keys_GetIids,
+    accelerator_keys_GetRuntimeClassName,
+    accelerator_keys_GetTrustLevel,
+    /* ICoreAcceleratorKeys methods */
+    accelerator_keys_eventadd_AcceleratorKeyActivated,
+    accelerator_keys_eventremove_AcceleratorKeyActivated,
+};
+
+DEFINE_IINSPECTABLE( coredispatcher_priority, ICoreDispatcherWithTaskPriority, struct coredispatcher, ICoreDispatcher_iface )
+
+static HRESULT WINAPI coredispatcher_priority_get_CurrentPriority( ICoreDispatcherWithTaskPriority *iface, CoreDispatcherPriority *value )
+{
+    FIXME( "iface %p, value %p stub!\n", iface, value );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI coredispatcher_priority_put_CurrentPriority( ICoreDispatcherWithTaskPriority *iface, CoreDispatcherPriority value )
+{
+    FIXME( "iface %p, value %d stub!\n", iface, value );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI coredispatcher_priority_ShouldYield( ICoreDispatcherWithTaskPriority *iface, BOOLEAN *value )
+{
+    FIXME( "iface %p, value %p stub!\n", iface, value );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI coredispatcher_priority_ShouldYieldWithArg( ICoreDispatcherWithTaskPriority *iface, CoreDispatcherPriority priority, BOOLEAN *value )
+{
+    FIXME( "iface %p, priority %d, value %p stub!\n", iface, priority, value );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI coredispatcher_priority_StopProcessEvents( ICoreDispatcherWithTaskPriority *iface )
+{
+    FIXME( "iface %p stub!\n", iface );
+    return E_NOTIMPL;
+}
+
+static const struct ICoreDispatcherWithTaskPriorityVtbl coredispatcher_priority_vtbl =
+{
+    coredispatcher_priority_QueryInterface,
+    coredispatcher_priority_AddRef,
+    coredispatcher_priority_Release,
+    /* IInspectable methods */
+    coredispatcher_priority_GetIids,
+    coredispatcher_priority_GetRuntimeClassName,
+    coredispatcher_priority_GetTrustLevel,
+    /* ICoreDispatcherWithTaskPriority methods */
+    coredispatcher_priority_get_CurrentPriority,
+    coredispatcher_priority_put_CurrentPriority,
+    coredispatcher_priority_ShouldYield,
+    coredispatcher_priority_ShouldYieldWithArg,
+    coredispatcher_priority_StopProcessEvents,
+};
+
 struct corewindow
 {
     ICoreWindow ICoreWindow_iface;
@@ -110,8 +310,18 @@ static HRESULT WINAPI corewindow_get_CustomProperties( ICoreWindow *iface, IProp
 
 static HRESULT WINAPI corewindow_get_Dispatcher( ICoreWindow *iface, ICoreDispatcher **value )
 {
-    FIXME( "iface %p, value %p stub!\n", iface, value );
-    return E_NOTIMPL;
+    struct coredispatcher *impl;
+
+    TRACE( "iface %p, value %p.\n", iface, value );
+
+    if (!(impl = calloc( 1, sizeof(*impl) ))) return E_OUTOFMEMORY;
+    impl->ICoreDispatcher_iface.lpVtbl = &coredispatcher_vtbl;
+    impl->ICoreAcceleratorKeys_iface.lpVtbl = &accelerator_keys_vtbl;
+    impl->ICoreDispatcherWithTaskPriority_iface.lpVtbl = &coredispatcher_priority_vtbl;
+    impl->ref = 1;
+
+    *value = &impl->ICoreDispatcher_iface;
+    return S_OK;
 }
 
 static HRESULT WINAPI corewindow_get_FlowDirection( ICoreWindow *iface, CoreWindowFlowDirection *value )
