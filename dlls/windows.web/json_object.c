@@ -27,7 +27,7 @@ struct json_object
 {
     IJsonObject IJsonObject_iface;
     LONG ref;
-    IMap_HSTRING_IInspectable *members;
+    IInspectable *inner;
 };
 
 static inline struct json_object *impl_from_IJsonObject( IJsonObject *iface )
@@ -51,6 +51,8 @@ static HRESULT WINAPI json_object_QueryInterface( IJsonObject *iface, REFIID iid
         return S_OK;
     }
 
+    if (SUCCEEDED(IInspectable_QueryInterface( impl->inner, iid, out ))) return S_OK;
+
     FIXME( "%s not implemented, returning E_NOINTERFACE.\n", debugstr_guid( iid ) );
     *out = NULL;
     return E_NOINTERFACE;
@@ -73,7 +75,7 @@ static ULONG WINAPI json_object_Release( IJsonObject *iface )
 
     if (!ref)
     {
-        IMap_HSTRING_IInspectable_Release( impl->members );
+        IInspectable_Release( impl->inner );
         free( impl );
     }
     return ref;
@@ -100,27 +102,43 @@ static HRESULT WINAPI json_object_GetTrustLevel( IJsonObject *iface, TrustLevel 
 static HRESULT WINAPI json_object_GetNamedValue( IJsonObject *iface, HSTRING name, IJsonValue **value )
 {
     struct json_object *impl = impl_from_IJsonObject( iface );
+    IMap_HSTRING_IJsonValue *map;
     boolean exists;
     HRESULT hr;
 
     TRACE( "iface %p, name %s, value %p.\n", iface, debugstr_hstring( name ), value );
 
     if (!value) return E_POINTER;
+    if (FAILED(hr = IInspectable_QueryInterface( impl->inner, &IID_IMap_HSTRING_IJsonValue, (void **)&map )))
+        return hr;
 
-    hr = IMap_HSTRING_IInspectable_HasKey( impl->members, name, &exists );
-    if (FAILED(hr) || !exists) return WEB_E_JSON_VALUE_NOT_FOUND;
+    hr = IMap_HSTRING_IJsonValue_HasKey( map, name, &exists );
+    if (FAILED(hr) || !exists)
+    {
+        IMap_HSTRING_IJsonValue_Release( map );
+        return WEB_E_JSON_VALUE_NOT_FOUND;
+    }
 
-    return IMap_HSTRING_IInspectable_Lookup( impl->members, name, (IInspectable **)value );
+    hr = IMap_HSTRING_IJsonValue_Lookup( map, name, value );
+    IMap_HSTRING_IJsonValue_Release( map );
+    return hr;
 }
 
 static HRESULT WINAPI json_object_SetNamedValue( IJsonObject *iface, HSTRING name, IJsonValue *value )
 {
     struct json_object *impl = impl_from_IJsonObject( iface );
+    IMap_HSTRING_IJsonValue *map;
     boolean dummy;
+    HRESULT hr;
 
     TRACE( "iface %p, name %s, value %p.\n", iface, debugstr_hstring( name ), value );
 
-    return IMap_HSTRING_IInspectable_Insert( impl->members, name, (IInspectable *)value, &dummy );
+    if (FAILED(hr = IInspectable_QueryInterface( impl->inner, &IID_IMap_HSTRING_IJsonValue, (void **)&map )))
+        return hr;
+
+    hr = IMap_HSTRING_IJsonValue_Insert( map, name, value, &dummy );
+    IMap_HSTRING_IJsonValue_Release( map );
+    return hr;
 }
 
 static HRESULT WINAPI json_object_GetNamedObject( IJsonObject *iface, HSTRING name, IJsonObject **value )
@@ -305,34 +323,33 @@ static HRESULT WINAPI factory_GetTrustLevel( IActivationFactory *iface, TrustLev
 
 static HRESULT WINAPI factory_ActivateInstance( IActivationFactory *iface, IInspectable **instance )
 {
-    IPropertySet *property_set;
-    HSTRING property_set_class;
     struct json_object *impl;
-    HSTRING_HEADER header;
     HRESULT hr;
+
+    static const struct map_iids iids =
+    {
+        .map = &IID_IMap_HSTRING_IJsonValue,
+        .view = &IID_IMapView_HSTRING_IJsonValue,
+        .iterable = &IID_IIterable_IKeyValuePair_HSTRING_IJsonValue,
+        .iterator = &IID_IIterator_IKeyValuePair_HSTRING_IJsonValue,
+        .pair = &IID_IKeyValuePair_HSTRING_IJsonValue,
+    };
 
     TRACE( "iface %p, instance %p.\n", iface, instance );
 
     *instance = NULL;
     if (!(impl = calloc( 1, sizeof(*impl) ))) return E_OUTOFMEMORY;
-
     impl->IJsonObject_iface.lpVtbl = &json_object_vtbl;
     impl->ref = 1;
 
-    WindowsCreateStringReference( RuntimeClass_Windows_Foundation_Collections_PropertySet, wcslen( RuntimeClass_Windows_Foundation_Collections_PropertySet ),
-                                  &header, &property_set_class );
-    if (FAILED(hr = RoActivateInstance( property_set_class, (IInspectable **)&property_set ))) goto failed;
-
-    hr = IPropertySet_QueryInterface( property_set, &IID_IMap_HSTRING_IInspectable, (void **)&impl->members );
-    IPropertySet_Release( property_set );
-    if (FAILED(hr)) goto failed;
+    if (FAILED(hr = multi_threaded_map_create( &iids, (IInspectable *)&impl->IJsonObject_iface, &impl->inner )))
+    {
+        free( impl );
+        return hr;
+    }
 
     *instance = (IInspectable *)&impl->IJsonObject_iface;
     return S_OK;
-
-failed:
-    free( impl );
-    return hr;
 }
 
 static const struct IActivationFactoryVtbl factory_vtbl =
