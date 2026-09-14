@@ -92,6 +92,7 @@ static void test_JsonArrayStatics(void)
     check_interface( factory, &IID_IUnknown );
     check_interface( factory, &IID_IInspectable );
     check_interface( factory, &IID_IAgileObject );
+    check_interface( factory, &IID_IActivationFactory );
 
     hr = IActivationFactory_QueryInterface( factory, &IID_IJsonArray, (void **)&json_array );
     ok( hr == E_NOINTERFACE, "got hr %#lx.\n", hr );
@@ -102,10 +103,15 @@ static void test_JsonArrayStatics(void)
     ok( hr == S_OK, "got hr %#lx.\n", hr );
     WindowsDeleteString( str );
 
+    check_interface( inspectable, &IID_IUnknown );
+    check_interface( inspectable, &IID_IInspectable );
+    check_interface( inspectable, &IID_IAgileObject );
+    check_interface( inspectable, &IID_IJsonArray );
+    check_interface( inspectable, &IID_IVector_IJsonValue );
+    check_interface( inspectable, &IID_IIterable_IJsonValue );
+
     hr = IInspectable_QueryInterface( inspectable, &IID_IJsonArray, (void **)&json_array );
     ok( hr == S_OK, "got hr %#lx.\n", hr );
-
-    check_interface( inspectable, &IID_IAgileObject );
 
     hr = IJsonArray_GetObjectAt( json_array, 0, NULL );
     ok( hr == E_INVALIDARG, "got hr %#lx.\n", hr );

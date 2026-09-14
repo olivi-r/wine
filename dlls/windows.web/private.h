@@ -50,8 +50,16 @@ struct map_iids
     const GUID *pair;
 };
 
-HRESULT json_array_push( IJsonArray *iface, IJsonValue *value );
+struct vector_iids
+{
+    const GUID *vector;
+    const GUID *view;
+    const GUID *iterable;
+    const GUID *iterator;
+};
+
 HRESULT multi_threaded_map_create( const struct map_iids *iids, IInspectable *outer, IInspectable **out );
+HRESULT vector_create( const struct vector_iids *iids, IInspectable *outer, IInspectable **out );
 
 #define DEFINE_IINSPECTABLE_( pfx, iface_type, impl_type, impl_from, iface_mem, expr )             \
     static inline impl_type *impl_from( iface_type *iface )                                        \
