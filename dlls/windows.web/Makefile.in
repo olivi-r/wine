@@ -7,4 +7,5 @@ SOURCES = \
 	json_object.c \
 	json_value.c \
 	main.c \
-	map.c
+	map.c \
+	vector.c
