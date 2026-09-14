@@ -286,6 +286,7 @@ static void test_JsonObjectStatics(void)
     check_interface( factory, &IID_IUnknown );
     check_interface( factory, &IID_IInspectable );
     check_interface( factory, &IID_IAgileObject );
+    check_interface( factory, &IID_IActivationFactory );
 
     hr = IActivationFactory_QueryInterface( factory, &IID_IJsonObject, (void **)&json_object );
     ok( hr == E_NOINTERFACE, "got hr %#lx.\n", hr );
@@ -296,10 +297,15 @@ static void test_JsonObjectStatics(void)
     ok( hr == S_OK, "got hr %#lx.\n", hr );
     WindowsDeleteString( str );
 
+    check_interface( inspectable, &IID_IUnknown );
+    check_interface( inspectable, &IID_IInspectable );
+    check_interface( inspectable, &IID_IAgileObject );
+    check_interface( inspectable, &IID_IJsonObject );
+    check_interface( inspectable, &IID_IMap_HSTRING_IJsonValue );
+    check_interface( inspectable, &IID_IIterable_IKeyValuePair_HSTRING_IJsonValue );
+
     hr = IInspectable_QueryInterface( inspectable, &IID_IJsonObject, (void **)&json_object );
     ok( hr == S_OK, "got hr %#lx.\n", hr );
-
-    check_interface( inspectable, &IID_IAgileObject );
     IInspectable_Release( inspectable );
 
     hr = WindowsCreateString( L"key", wcslen( L"key" ), &str );

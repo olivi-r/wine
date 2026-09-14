@@ -41,7 +41,17 @@ extern IActivationFactory *json_array_factory;
 extern IActivationFactory *json_object_factory;
 extern IActivationFactory *json_value_factory;
 
+struct map_iids
+{
+    const GUID *map;
+    const GUID *view;
+    const GUID *iterable;
+    const GUID *iterator;
+    const GUID *pair;
+};
+
 HRESULT json_array_push( IJsonArray *iface, IJsonValue *value );
+HRESULT multi_threaded_map_create( const struct map_iids *iids, IInspectable *outer, IInspectable **out );
 
 #define DEFINE_IINSPECTABLE_( pfx, iface_type, impl_type, impl_from, iface_mem, expr )             \
     static inline impl_type *impl_from( iface_type *iface )                                        \
@@ -80,5 +90,7 @@ HRESULT json_array_push( IJsonArray *iface, IJsonValue *value );
     }
 #define DEFINE_IINSPECTABLE( pfx, iface_type, impl_type, base_iface )                              \
     DEFINE_IINSPECTABLE_( pfx, iface_type, impl_type, impl_from_##iface_type, iface_type##_iface, &impl->base_iface )
+#define DEFINE_IINSPECTABLE_OUTER( pfx, iface_type, impl_type, outer_iface )                       \
+    DEFINE_IINSPECTABLE_( pfx, iface_type, impl_type, impl_from_##iface_type, iface_type##_iface, impl->outer_iface )
 
 #endif
