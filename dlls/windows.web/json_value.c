@@ -217,10 +217,99 @@ static HRESULT WINAPI json_value_get_ValueType( IJsonValue *iface, JsonValueType
     return S_OK;
 }
 
+HRESULT escape_string( HSTRING in, HSTRING *out )
+{
+    UINT32 out_length = 2, in_length;
+    const WCHAR *in_buffer = WindowsGetStringRawBuffer( in, &in_length );
+    WCHAR *out_buffer, *ptr;
+    HSTRING_BUFFER handle;
+    HRESULT hr;
+
+    TRACE( "in %s, out %p.\n", debugstr_hstring( in ), out );
+
+    for (UINT32 i = 0; i < in_length; i++)
+    {
+        if (in_buffer[i] == '\"') out_length += 2;
+        else if (in_buffer[i] == '\\') out_length += 2;
+        else if (in_buffer[i] == '\b') out_length += 2;
+        else if (in_buffer[i] == '\f') out_length += 2;
+        else if (in_buffer[i] == '\n') out_length += 2;
+        else if (in_buffer[i] == '\r') out_length += 2;
+        else if (in_buffer[i] == '\t') out_length += 2;
+        else if (in_buffer[i] < ' ') out_length += 6;
+        else out_length++;
+    }
+
+    if (FAILED(hr = WindowsPreallocateStringBuffer( out_length, &out_buffer, &handle ))) return hr;
+    ptr = out_buffer;
+    *(ptr++) = '"';
+    for (UINT32 i = 0; i < in_length; i++)
+    {
+        if (in_buffer[i] == '"') { *(ptr++) = '\\'; *(ptr++) = '"'; }
+        else if (in_buffer[i] == '\\') { *(ptr++) = '\\'; *(ptr++) = '\\'; }
+        else if (in_buffer[i] == '\b') { *(ptr++) = '\\'; *(ptr++) = 'b'; }
+        else if (in_buffer[i] == '\f') { *(ptr++) = '\\'; *(ptr++) = 'f'; }
+        else if (in_buffer[i] == '\n') { *(ptr++) = '\\'; *(ptr++) = 'n'; }
+        else if (in_buffer[i] == '\r') { *(ptr++) = '\\'; *(ptr++) = 'r'; }
+        else if (in_buffer[i] == '\t') { *(ptr++) = '\\'; *(ptr++) = 't'; }
+        else if (in_buffer[i] < ' ')
+        {
+            memcpy( ptr, L"\\u00", 4 * sizeof(WCHAR) );
+            ptr += 4;
+            if (in_buffer[i] > 0x0F) *(ptr++) = '1';
+            else *(ptr++) = '0';
+            if ((in_buffer[i] & 0x0F) > 0x09) *(ptr++) = (in_buffer[i] & 0x0F) + 'a';
+            else *(ptr++) = (in_buffer[i] & 0x0F) + '0';
+        }
+        else *(ptr++) = in_buffer[i];
+    }
+
+    out_buffer[out_length - 1] = '"';
+    hr = WindowsPromoteStringBuffer( handle, out );
+    if (FAILED(hr)) WindowsDeleteStringBuffer( handle );
+    return hr;
+}
+
 static HRESULT WINAPI json_value_Stringify( IJsonValue *iface, HSTRING *value )
 {
-    FIXME( "iface %p, value %p stub!\n", iface, value );
-    return E_NOTIMPL;
+    LCID lcid = MAKELCID( MAKELANGID( LANG_ENGLISH, SUBLANG_ENGLISH_US ), SORT_DEFAULT );
+    struct json_value *impl = impl_from_IJsonValue( iface );
+    IJsonValue *child;
+    VARIANT vd, vs;
+    HRESULT hr;
+
+    TRACE( "iface %p, value %p.\n", iface, value );
+
+    switch (impl->json_value_type)
+    {
+        case JsonValueType_Null:
+            return WindowsCreateString( L"null", wcslen( L"null" ), value );
+        case JsonValueType_Boolean:
+            if (impl->boolean_value) return WindowsCreateString( L"true", wcslen( L"true" ), value );
+            return WindowsCreateString( L"false", wcslen( L"false" ), value );
+        case JsonValueType_Number:
+            vs.vt = VT_R8;
+            vd.vt = VT_EMPTY;
+            vs.dblVal = impl->number_value;
+            if (FAILED(hr = VariantChangeTypeEx( &vd, &vs, lcid, 0, VT_BSTR ))) return hr;
+            hr = WindowsCreateString( (WCHAR *)vd.pbstrVal, wcslen( (WCHAR *)vd.pbstrVal ), value );
+            free( vd.pbstrVal );
+            return hr;
+        case JsonValueType_String:
+            return escape_string( impl->string_value, value );
+        case JsonValueType_Array:
+            if (FAILED(hr = IJsonArray_QueryInterface( impl->array_value, &IID_IJsonValue, (void **)&child ))) return hr;
+            hr = IJsonValue_Stringify( child, value );
+            IJsonValue_Release( child );
+            return hr;
+        case JsonValueType_Object:
+            if (FAILED(hr = IJsonObject_QueryInterface( impl->object_value, &IID_IJsonValue, (void **)&child ))) return hr;
+            hr = IJsonValue_Stringify( child, value );
+            IJsonValue_Release( child );
+            return hr;
+        default:
+            return E_NOTIMPL;
+    }
 }
 
 static HRESULT WINAPI json_value_GetString( IJsonValue *iface, HSTRING *value )
