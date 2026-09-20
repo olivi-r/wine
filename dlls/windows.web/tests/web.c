@@ -56,6 +56,7 @@ static void test_JsonArrayStatics(void)
     IJsonArray *child_array = (void *)0xdeadbeef;
     IJsonArray *json_array = (void *)0xdeadbeef;
     IJsonValue *json_value = (void *)0xdeadbeef;
+    JsonValueType value_type;
     BOOLEAN child_boolean;
     HSTRING child_string;
     DOUBLE child_number;
@@ -107,8 +108,40 @@ static void test_JsonArrayStatics(void)
     check_interface( inspectable, &IID_IInspectable );
     check_interface( inspectable, &IID_IAgileObject );
     check_interface( inspectable, &IID_IJsonArray );
+    check_interface( inspectable, &IID_IJsonValue );
     check_interface( inspectable, &IID_IVector_IJsonValue );
     check_interface( inspectable, &IID_IIterable_IJsonValue );
+
+    hr = IInspectable_QueryInterface( inspectable, &IID_IJsonValue, (void **)&json_value );
+    ok( hr == S_OK, "got hr %#lx.\n", hr );
+
+    hr = IJsonValue_get_ValueType( json_value, &value_type );
+    ok( hr == S_OK, "got hr %#lx.\n", hr );
+    ok( value_type == JsonValueType_Array, "got value_type %d.\n", value_type );
+
+    hr = IJsonValue_GetString( json_value, NULL );
+    ok( hr == E_ILLEGAL_METHOD_CALL, "got hr %#lx.\n", hr );
+    hr = IJsonValue_GetString( json_value, &child_string );
+    ok( hr == E_ILLEGAL_METHOD_CALL, "got hr %#lx.\n", hr );
+    hr = IJsonValue_GetNumber( json_value, NULL );
+    ok( hr == E_ILLEGAL_METHOD_CALL, "got hr %#lx.\n", hr );
+    hr = IJsonValue_GetNumber( json_value, &child_number );
+    ok( hr == E_ILLEGAL_METHOD_CALL, "got hr %#lx.\n", hr );
+    hr = IJsonValue_GetBoolean( json_value, NULL );
+    ok( hr == E_ILLEGAL_METHOD_CALL, "got hr %#lx.\n", hr );
+    hr = IJsonValue_GetBoolean( json_value, &child_boolean );
+    ok( hr == E_ILLEGAL_METHOD_CALL, "got hr %#lx.\n", hr );
+    hr = IJsonValue_GetArray( json_value, NULL );
+    ok( hr == E_INVALIDARG, "got hr %#lx.\n", hr );
+    hr = IJsonValue_GetArray( json_value, &child_array );
+    ok( hr == S_OK, "got hr %#lx.\n", hr );
+    if (SUCCEEDED(hr)) IJsonArray_Release( child_array );
+    hr = IJsonValue_GetObject( json_value, NULL );
+    ok( hr == E_ILLEGAL_METHOD_CALL, "got hr %#lx.\n", hr );
+    hr = IJsonValue_GetObject( json_value, &child_object );
+    ok( hr == E_ILLEGAL_METHOD_CALL, "got hr %#lx.\n", hr );
+
+    IJsonValue_Release( json_value );
 
     hr = IInspectable_QueryInterface( inspectable, &IID_IJsonArray, (void **)&json_array );
     ok( hr == S_OK, "got hr %#lx.\n", hr );
@@ -256,6 +289,8 @@ static void test_JsonObjectStatics(void)
     IJsonObject *json_object = (void *)0xdeadbeef;
     IJsonArray *child_array = (void *)0xdeadbeef;
     IJsonValue *child_value = (void *)0xdeadbeef;
+    IJsonValue *json_value = (void *)0xdeadbeef;
+    JsonValueType value_type;
     BOOLEAN child_boolean;
     HSTRING child_string;
     DOUBLE child_number;
@@ -307,8 +342,40 @@ static void test_JsonObjectStatics(void)
     check_interface( inspectable, &IID_IInspectable );
     check_interface( inspectable, &IID_IAgileObject );
     check_interface( inspectable, &IID_IJsonObject );
+    check_interface( inspectable, &IID_IJsonValue );
     check_interface( inspectable, &IID_IMap_HSTRING_IJsonValue );
     check_interface( inspectable, &IID_IIterable_IKeyValuePair_HSTRING_IJsonValue );
+
+    hr = IInspectable_QueryInterface( inspectable, &IID_IJsonValue, (void **)&json_value );
+    ok( hr == S_OK, "got hr %#lx.\n", hr );
+
+    hr = IJsonValue_get_ValueType( json_value, &value_type );
+    ok( hr == S_OK, "got hr %#lx.\n", hr );
+    ok( value_type == JsonValueType_Object, "got value_type %d.\n", value_type );
+
+    hr = IJsonValue_GetString( json_value, NULL );
+    ok( hr == E_ILLEGAL_METHOD_CALL, "got hr %#lx.\n", hr );
+    hr = IJsonValue_GetString( json_value, &child_string );
+    ok( hr == E_ILLEGAL_METHOD_CALL, "got hr %#lx.\n", hr );
+    hr = IJsonValue_GetNumber( json_value, NULL );
+    ok( hr == E_ILLEGAL_METHOD_CALL, "got hr %#lx.\n", hr );
+    hr = IJsonValue_GetNumber( json_value, &child_number );
+    ok( hr == E_ILLEGAL_METHOD_CALL, "got hr %#lx.\n", hr );
+    hr = IJsonValue_GetBoolean( json_value, NULL );
+    ok( hr == E_ILLEGAL_METHOD_CALL, "got hr %#lx.\n", hr );
+    hr = IJsonValue_GetBoolean( json_value, &child_boolean );
+    ok( hr == E_ILLEGAL_METHOD_CALL, "got hr %#lx.\n", hr );
+    hr = IJsonValue_GetArray( json_value, NULL );
+    ok( hr == E_ILLEGAL_METHOD_CALL, "got hr %#lx.\n", hr );
+    hr = IJsonValue_GetArray( json_value, &child_array );
+    ok( hr == E_ILLEGAL_METHOD_CALL, "got hr %#lx.\n", hr );
+    hr = IJsonValue_GetObject( json_value, NULL );
+    ok( hr == E_POINTER, "got hr %#lx.\n", hr );
+    hr = IJsonValue_GetObject( json_value, &child_object );
+    ok( hr == S_OK, "got hr %#lx.\n", hr );
+    if (SUCCEEDED(hr)) IJsonObject_Release( child_object );
+
+    IJsonValue_Release( json_value );
 
     hr = IInspectable_QueryInterface( inspectable, &IID_IJsonObject, (void **)&json_object );
     ok( hr == S_OK, "got hr %#lx.\n", hr );
@@ -489,10 +556,10 @@ static void test_JsonObjectStatics(void)
     ok( ref == 1, "got ref %ld.\n", ref );
 }
 
-#define check_json( json_value_statics, json, expected_json_value_type, valid ) check_json_( __LINE__, json_value_statics, json, expected_json_value_type, valid )
-static void check_json_( unsigned int line, IJsonValueStatics *json_value_statics, const WCHAR *json, JsonValueType expected_json_value_type, boolean valid )
+#define check_json( json_value_statics, json, expected_json_value_type, valid, expected ) check_json_( __LINE__, json_value_statics, json, expected_json_value_type, valid, expected )
+static void check_json_( unsigned int line, IJsonValueStatics *json_value_statics, const WCHAR *json, JsonValueType expected_json_value_type, boolean valid, const WCHAR *expected )
 {
-    HSTRING str = NULL, parsed_str = NULL, empty_space = NULL;
+    HSTRING str = NULL, parsed_str = NULL, empty_space = NULL, expected_str = NULL, stringified = NULL;
     IJsonObject *json_object = (void *)0xdeadbeef;
     IJsonArray *json_array = (void *)0xdeadbeef;
     IJsonValue *json_value = (void *)0xdeadbeef;
@@ -516,6 +583,16 @@ static void check_json_( unsigned int line, IJsonValueStatics *json_value_static
         WindowsDeleteString( str );
         return;
     }
+
+    hr = WindowsCreateString( expected, wcslen( expected ), &expected_str );
+    ok_(__FILE__, line)( hr == S_OK, "got hr %#lx.\n", hr );
+    hr = IJsonValue_Stringify( json_value, &stringified );
+    ok_(__FILE__, line)( hr == S_OK, "got hr %#lx.\n", hr );
+    hr = WindowsCompareStringOrdinal( expected_str, stringified, &res );
+    ok_(__FILE__, line)( hr == S_OK, "got hr %#lx.\n", hr );
+    /* unclear precision round-off for Number and insertion order not preserved for Object */
+    flaky_wine_if( expected_json_value_type == JsonValueType_Number || expected_json_value_type == JsonValueType_Object )
+    ok_(__FILE__, line)( res == 0, "got %s, expected %s.\n", debugstr_hstring( stringified ), debugstr_hstring( expected_str ) );
 
     ok_(__FILE__, line)( hr == S_OK, "got hr %#lx.\n", hr );
     if (FAILED(hr)) return;
@@ -597,7 +674,9 @@ static void check_json_( unsigned int line, IJsonValueStatics *json_value_static
             break;
     }
 
+    WindowsDeleteString( expected_str );
     WindowsDeleteString( empty_space );
+    WindowsDeleteString( stringified );
     WindowsDeleteString( parsed_str );
     WindowsDeleteString( str );
     ref = IJsonValue_Release( json_value );
@@ -623,7 +702,7 @@ WCHAR *create_non_null_terminated( const WCHAR *str )
 static void check_non_null_terminated_json_( unsigned int line, IJsonValueStatics *json_value_statics, const WCHAR *json, JsonValueType expected_json_value_type )
 {
     WCHAR *str = create_non_null_terminated( json );
-    check_json_( line, json_value_statics, str, expected_json_value_type, FALSE );
+    check_json_( line, json_value_statics, str, expected_json_value_type, FALSE, NULL );
     free( str );
 }
 
@@ -634,8 +713,8 @@ static void test_JsonValueStatics(void)
     IActivationFactory *factory = (void *)0xdeadbeef;
     IJsonValue *json_value = (void *)0xdeadbeef;
     JsonValueType json_value_type;
+    const WCHAR *expected, *json;
     HSTRING str = NULL;
-    const WCHAR *json;
     HRESULT hr;
     LONG ref;
 
@@ -654,6 +733,8 @@ static void test_JsonValueStatics(void)
     check_interface( factory, &IID_IUnknown );
     check_interface( factory, &IID_IInspectable );
     check_interface( factory, &IID_IAgileObject );
+    check_interface( factory, &IID_IActivationFactory );
+    check_interface( factory, &IID_IJsonValueStatics );
 
     hr = IActivationFactory_QueryInterface( factory, &IID_IJsonValueStatics, (void **)&json_value_statics );
     ok( hr == S_OK, "got hr %#lx.\n", hr );
@@ -749,7 +830,7 @@ static void test_JsonValueStatics(void)
     WindowsDeleteString( str );
     if (SUCCEEDED(hr))
     {
-        HSTRING parsed_str = NULL;
+        HSTRING expected_str = NULL, parsed_str = NULL, stringified = NULL;
         int res;
 
         json = L"\"\\/\b\f\n\r\t\0Wine\U000BF0EF";
@@ -763,30 +844,59 @@ static void test_JsonValueStatics(void)
 
         WindowsDeleteString( parsed_str );
         WindowsDeleteString( str );
+
+        expected = L"\"\\\"\\\\/\\b\\f\\n\\r\\t\\u0000Wine\U000BF0EF\"";
+        hr = WindowsCreateString( expected, wcslen( expected ), &expected_str );
+        ok( hr == S_OK, "got hr %#lx.\n", hr );
+        hr = IJsonValue_Stringify( json_value, &stringified );
+        ok( hr == S_OK, "got hr %#lx.\n", hr );
+        hr = WindowsCompareStringOrdinal( expected_str, stringified, &res );
+        ok( hr == S_OK, "got hr %#lx.\n", hr );
+        ok( res == 0, "got different HSTRINGS expected_str = %s, stringified = %s.\n", wine_dbgstr_hstring( expected_str ), wine_dbgstr_hstring( stringified ) );
+        WindowsDeleteString( expected_str );
+        WindowsDeleteString( stringified );
         IJsonValue_Release( json_value );
     }
 
     json = L"null";
-    check_json( json_value_statics, json, JsonValueType_Null, TRUE );
+    expected = L"null";
+    check_json( json_value_statics, json, JsonValueType_Null, TRUE, expected );
     json = L"false";
-    check_json( json_value_statics, json, JsonValueType_Boolean, TRUE );
+    expected = L"false";
+    check_json( json_value_statics, json, JsonValueType_Boolean, TRUE, expected );
     json = L" true ";
-    check_json( json_value_statics, json, JsonValueType_Boolean, TRUE );
+    expected = L"true";
+    check_json( json_value_statics, json, JsonValueType_Boolean, TRUE, expected );
     json = L"\"true\"";
-    check_json( json_value_statics, json, JsonValueType_String, TRUE );
+    expected = L"\"true\"";
+    check_json( json_value_statics, json, JsonValueType_String, TRUE, expected );
     json = L" 9.22 ";
-    check_json( json_value_statics, json, JsonValueType_Number, TRUE );
+    expected = L"9.22";
+    check_json( json_value_statics, json, JsonValueType_Number, TRUE, expected );
+    json = L"9.33333333333333333333333333";
+    expected = L"9.3333333333333339";
+    check_json( json_value_statics, json, JsonValueType_Number, TRUE, expected );
+    json = L"100.0";
+    expected = L"100";
+    check_json( json_value_statics, json, JsonValueType_Number, TRUE, expected );
     json = L" \"The Wine     Project\"";
-    check_json( json_value_statics, json, JsonValueType_String, TRUE );
+    expected = L"\"The Wine     Project\"";
+    check_json( json_value_statics, json, JsonValueType_String, TRUE, expected );
     json = L"\r\t\n \"The Wine     Project\"";
-    check_json( json_value_statics, json, JsonValueType_String, TRUE );
+    expected = L"\"The Wine     Project\"";
+    check_json( json_value_statics, json, JsonValueType_String, TRUE, expected );
     json = L"[\"Wine\", \"Linux\"]";
-    check_json( json_value_statics, json, JsonValueType_Array, TRUE );
+    expected = L"[\"Wine\",\"Linux\"]";
+    check_json( json_value_statics, json, JsonValueType_Array, TRUE, expected );
     json = L"{"
             "    \"Wine\": \"The Wine Project\","
             "    \"Linux\": [\"Arch\", \"BTW\"]"
             "}";
-    check_json( json_value_statics, json, JsonValueType_Object, TRUE );
+    expected = L"{"
+                "\"Wine\":\"The Wine Project\","
+                "\"Linux\":[\"Arch\",\"BTW\"]"
+                "}";
+    check_json( json_value_statics, json, JsonValueType_Object, TRUE, expected );
 
     /* Invalid JSON */
 
@@ -818,35 +928,35 @@ static void test_JsonValueStatics(void)
     WindowsDeleteString( str );
 
     json = L"True";
-    check_json( json_value_statics, json, JsonValueType_Boolean, FALSE );
+    check_json( json_value_statics, json, JsonValueType_Boolean, FALSE, NULL );
     json = L"1.7976931348623158e+3080";
-    check_json( json_value_statics, json, JsonValueType_Number, FALSE );
+    check_json( json_value_statics, json, JsonValueType_Number, FALSE, NULL );
     json = L"2.2250738585072014e-3080";
-    check_json( json_value_statics, json, JsonValueType_Number, FALSE );
+    check_json( json_value_statics, json, JsonValueType_Number, FALSE, NULL );
     json = L" \"Wine\":";
-    check_json( json_value_statics, json, JsonValueType_String, FALSE );
+    check_json( json_value_statics, json, JsonValueType_String, FALSE, NULL );
     json = L" \"The Wine \t Project\"";
-    check_json( json_value_statics, json, JsonValueType_String, FALSE );
+    check_json( json_value_statics, json, JsonValueType_String, FALSE, NULL );
     json = L"\v \"The Wine     Project\"";
-    check_json( json_value_statics, json, JsonValueType_String, FALSE );
+    check_json( json_value_statics, json, JsonValueType_String, FALSE, NULL );
     json = L"\"\\\"";
-    check_json( json_value_statics, json, JsonValueType_String, FALSE );
+    check_json( json_value_statics, json, JsonValueType_String, FALSE, NULL );
     json = L"\"\\u123\"";
-    check_json( json_value_statics, json, JsonValueType_String, FALSE );
+    check_json( json_value_statics, json, JsonValueType_String, FALSE, NULL );
     json = L"[\"Wine\" \"Linux\"]";
-    check_json( json_value_statics, json, JsonValueType_Array, FALSE );
+    check_json( json_value_statics, json, JsonValueType_Array, FALSE, NULL );
     json = L"[\"Wine\", \"Linux\",]";
-    check_json( json_value_statics, json, JsonValueType_Array, FALSE );
+    check_json( json_value_statics, json, JsonValueType_Array, FALSE, NULL );
     json = L"{"
             "    \"Wine\": \"The Wine Project\","
             "    \"Linux\": [\"Arch\", \"BTW\"]"
             "";
-    check_json( json_value_statics, json, JsonValueType_Object, FALSE );
+    check_json( json_value_statics, json, JsonValueType_Object, FALSE, NULL );
     json = L"{"
             "    \"Wine\": \"The Wine Project\","
             "    \"Linux\": [\"Arch\", \"BTW\"],"
             "}";
-    check_json( json_value_statics, json, JsonValueType_Object, FALSE );
+    check_json( json_value_statics, json, JsonValueType_Object, FALSE, NULL );
 
     ref = IJsonValueStatics_Release( json_value_statics );
     ok( ref == 2, "got ref %ld.\n", ref );

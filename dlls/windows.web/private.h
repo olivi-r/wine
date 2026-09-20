@@ -58,6 +58,7 @@ struct vector_iids
     const GUID *iterator;
 };
 
+HRESULT escape_string( HSTRING in, HSTRING *out );
 HRESULT multi_threaded_map_create( const struct map_iids *iids, IInspectable *outer, IInspectable **out );
 HRESULT vector_create( const struct vector_iids *iids, IInspectable *outer, IInspectable **out );
 
