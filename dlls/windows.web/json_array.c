@@ -26,6 +26,7 @@ struct json_array
 {
     IJsonArray IJsonArray_iface;
     IJsonValue IJsonValue_iface;
+    IStringable IStringable_iface;
     LONG ref;
     IInspectable *inner;
 };
@@ -54,6 +55,13 @@ static HRESULT WINAPI json_array_QueryInterface( IJsonArray *iface, REFIID iid, 
     if (IsEqualGUID( iid, &IID_IJsonValue ))
     {
         *out = &impl->IJsonValue_iface;
+        IInspectable_AddRef( *out );
+        return S_OK;
+    }
+
+    if (IsEqualGUID( iid, &IID_IStringable ))
+    {
+        *out = &impl->IStringable_iface;
         IInspectable_AddRef( *out );
         return S_OK;
     }
@@ -353,6 +361,27 @@ static const struct IJsonValueVtbl json_value_vtbl =
     json_value_GetObject,
 };
 
+DEFINE_IINSPECTABLE( stringable, IStringable, struct json_array, IJsonArray_iface )
+
+static HRESULT WINAPI stringable_ToString( IStringable *iface, HSTRING *value )
+{
+    struct json_array *impl = impl_from_IStringable( iface );
+    return IJsonValue_Stringify( &impl->IJsonValue_iface, value );
+}
+
+static const struct IStringableVtbl stringable_vtbl =
+{
+    stringable_QueryInterface,
+    stringable_AddRef,
+    stringable_Release,
+    /* IInspectable methods */
+    stringable_GetIids,
+    stringable_GetRuntimeClassName,
+    stringable_GetTrustLevel,
+    /* IStringable methods */
+    stringable_ToString,
+};
+
 struct json_array_statics
 {
     IActivationFactory IActivationFactory_iface;
@@ -439,6 +468,7 @@ static HRESULT WINAPI factory_ActivateInstance( IActivationFactory *iface, IInsp
 
     impl->IJsonArray_iface.lpVtbl = &json_array_vtbl;
     impl->IJsonValue_iface.lpVtbl = &json_value_vtbl;
+    impl->IStringable_iface.lpVtbl = &stringable_vtbl;
     impl->ref = 1;
 
     if (FAILED(hr = vector_create( &iids, (IInspectable *)&impl->IJsonArray_iface, &impl->inner )))
