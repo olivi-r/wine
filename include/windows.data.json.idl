@@ -101,6 +101,21 @@ namespace Windows.Data.Json {
 
     [
         contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.Data.Json.JsonObject),
+        uuid(d960d2a2-b7f0-4f00-8e44-d82cf415ea13)
+    ]
+    interface IJsonObjectWithDefaultValues : IInspectable
+    {
+        [overload("GetNamedValue")] HRESULT GetNamedValueOrDefault([in] HSTRING name, [in] Windows.Data.Json.JsonValue *default_value, [out, retval] Windows.Data.Json.JsonValue **value);
+        [overload("GetNamedObject")] HRESULT GetNamedObjectOrDefault([in] HSTRING name, [in] Windows.Data.Json.JsonObject *default_value, [out, retval] Windows.Data.Json.JsonObject **value);
+        [overload("GetNamedString")] HRESULT GetNamedStringOrDefault([in] HSTRING name, [in] HSTRING default_value, [out, retval] HSTRING *value);
+        [overload("GetNamedArray")] HRESULT GetNamedArrayOrDefault([in] HSTRING name, [in] Windows.Data.Json.JsonArray *default_value, [out, retval] Windows.Data.Json.JsonArray **value);
+        [overload("GetNamedNumber")] HRESULT GetNamedNumberOrDefault([in] HSTRING name, [in] DOUBLE default_value, [out, retval] DOUBLE *value);
+        [overload("GetNamedBoolean")] HRESULT GetNamedBooleanOrDefault([in] HSTRING name, [in] boolean default_value, [out, retval] boolean *value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
         uuid(a3219ecb-f0b3-4dcd-beee-19d48cd3ed1e)
     ]
     interface IJsonValue : IInspectable
@@ -157,7 +172,7 @@ namespace Windows.Data.Json {
         interface Windows.Data.Json.IJsonValue;
         interface Windows.Foundation.Collections.IMap<HSTRING, Windows.Data.Json.IJsonValue *>;
         interface Windows.Foundation.Collections.IIterable<Windows.Foundation.Collections.IKeyValuePair<HSTRING, Windows.Data.Json.IJsonValue *> *>;
-        /* [contract(Windows.Foundation.UniversalApiContract, 1.0)] interface Windows.Data.Json.IJsonObjectWithDefaultValues; */
+        [contract(Windows.Foundation.UniversalApiContract, 1.0)] interface Windows.Data.Json.IJsonObjectWithDefaultValues;
         [contract(Windows.Foundation.UniversalApiContract, 1.0)] interface Windows.Foundation.IStringable;
     }
 
