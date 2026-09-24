@@ -1,0 +1,115 @@
+/*
+ * Copyright (C) 2026 Olivia Ryan
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
+ */
+
+#ifdef __WIDL__
+#pragma winrt ns_prefix
+#endif
+
+import "inspectable.idl";
+import "windowscontracts.idl";
+import "windows.foundation.collections.idl";
+
+namespace Windows.ApplicationModel.Resources.Core {
+    interface IResourceContext;
+    interface IResourceContextStatics;
+    interface IResourceContextStatics2;
+    interface IResourceContextStatics3;
+    interface IResourceContextStatics4;
+
+    runtimeclass ResourceContext;
+    runtimeclass ResourceQualifier;
+
+    declare {
+        interface Windows.Foundation.Collections.IIterable<HSTRING>;
+        interface Windows.Foundation.Collections.IIterable<Windows.ApplicationModel.Resources.Core.ResourceQualifier *>;
+        interface Windows.Foundation.Collections.IIterator<HSTRING>;
+        interface Windows.Foundation.Collections.IIterator<Windows.ApplicationModel.Resources.Core.ResourceQualifier *>;
+        interface Windows.Foundation.Collections.IMapChangedEventArgs<HSTRING>;
+        interface Windows.Foundation.Collections.IObservableMap<HSTRING, HSTRING>;
+        interface Windows.Foundation.Collections.IVectorView<HSTRING>;
+        interface Windows.Foundation.Collections.MapChangedEventHandler<HSTRING, HSTRING>;
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.ApplicationModel.Resources.Core.ResourceContext),
+        uuid(2fa22f4b-707e-4b27-ad0d-d0d8cd468fd2)
+    ]
+    interface IResourceContext : IInspectable
+    {
+        [propget] HRESULT QualifierValues([out, retval] Windows.Foundation.Collections.IObservableMap<HSTRING, HSTRING> **value);
+        [overload("Reset")] HRESULT Reset();
+        [overload("Reset")] HRESULT ResetQualifierValues([in] Windows.Foundation.Collections.IIterable<HSTRING> *qualifier_names);
+        HRESULT OverrideToMatch([in] Windows.Foundation.Collections.IIterable<Windows.ApplicationModel.Resources.Core.ResourceQualifier *> *result);
+        HRESULT Clone([out, retval] Windows.ApplicationModel.Resources.Core.ResourceContext **value);
+        [propget] HRESULT Languages([out, retval] Windows.Foundation.Collections.IVectorView<HSTRING> **value);
+        [propput] HRESULT Languages([in] Windows.Foundation.Collections.IVectorView<HSTRING> *value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.ApplicationModel.Resources.Core.ResourceContext),
+        uuid(41f752ef-12af-41b9-ab36-b1eb4b512460)
+    ]
+    interface IResourceContextStatics2 : IInspectable
+    {
+        HRESULT GetForCurrentView([out, retval] Windows.ApplicationModel.Resources.Core.ResourceContext **value);
+        HRESULT SetGlobalQualifierValue([in] HSTRING key, [in] HSTRING value);
+        [overload("ResetGlobalQualifierValues")] HRESULT ResetGlobalQualifierValues();
+        [overload("ResetGlobalQualifierValues")] HRESULT ResetGlobalQualifierValuesForSpecifiedQualifiers([in] Windows.Foundation.Collections.IIterable<HSTRING> *qualifier_names);
+        HRESULT GetForViewIndependentUse([out, retval] Windows.ApplicationModel.Resources.Core.ResourceContext **value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.ApplicationModel.Resources.Core.ResourceQualifier),
+        uuid(785da5b2-4afd-4376-a888-c5f9a6b7a05c)
+    ]
+    interface IResourceQualifier : IInspectable
+    {
+        [propget] HRESULT QualifierName([out, retval] HSTRING *value);
+        [propget] HRESULT QualifierValue([out, retval] HSTRING *value);
+        [propget] HRESULT IsDefault([out, retval] boolean *value);
+        [propget] HRESULT IsMatch([out, retval] boolean *value);
+        [propget] HRESULT Score([out, retval] DOUBLE *value);
+    }
+
+    [
+        activatable(Windows.Foundation.UniversalApiContract, 1.0),
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile),
+        /* static(Windows.ApplicationModel.Resources.Core.IResourceContextStatics, Windows.Foundation.UniversalApiContract, 1.0), */
+        static(Windows.ApplicationModel.Resources.Core.IResourceContextStatics2, Windows.Foundation.UniversalApiContract, 1.0),
+        /* static(Windows.ApplicationModel.Resources.Core.IResourceContextStatics3, Windows.Foundation.UniversalApiContract, 1.0), */
+        /* static(Windows.ApplicationModel.Resources.Core.IResourceContextStatics4, Windows.Foundation.UniversalApiContract, 8.0), */
+        threading(both)
+    ]
+    runtimeclass ResourceContext
+    {
+        [default] interface Windows.ApplicationModel.Resources.Core.IResourceContext;
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile)
+    ]
+    runtimeclass ResourceQualifier
+    {
+        [default] interface Windows.ApplicationModel.Resources.Core.IResourceQualifier;
+    }
+}
