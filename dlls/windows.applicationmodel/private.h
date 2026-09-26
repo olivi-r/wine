@@ -34,6 +34,7 @@
 #include "windows.foundation.h"
 #define WIDL_using_Windows_ApplicationModel
 #define WIDL_using_Windows_Storage
+#define WIDL_using_Windows_System
 #include "windows.applicationmodel.h"
 
 extern IActivationFactory *package_factory;
