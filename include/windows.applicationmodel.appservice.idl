@@ -1,0 +1,252 @@
+/*
+ * Copyright (C) 2026 Olivia Ryan
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
+ */
+
+#ifdef __WIDL__
+#pragma winrt ns_prefix
+#endif
+
+import "inspectable.idl";
+import "windowscontracts.idl";
+import "windows.foundation.idl";
+import "windows.foundation.collections.idl";
+
+namespace Windows.ApplicationModel.AppService {
+    typedef enum AppServiceClosedStatus AppServiceClosedStatus;
+    typedef enum AppServiceConnectionStatus AppServiceConnectionStatus;
+    typedef enum AppServiceResponseStatus AppServiceResponseStatus;
+
+    interface IAppServiceClosedEventArgs;
+    interface IAppServiceConnection;
+    interface IAppServiceConnection2;
+    interface IAppServiceConnectionStatics;
+    interface IAppServiceDeferral;
+    interface IAppServiceRequest;
+    interface IAppServiceRequestReceivedEventArgs;
+    interface IAppServiceResponse;
+
+    runtimeclass AppServiceClosedEventArgs;
+    runtimeclass AppServiceConnection;
+    runtimeclass AppServiceDeferral;
+    runtimeclass AppServiceRequest;
+    runtimeclass AppServiceRequestReceivedEventArgs;
+    runtimeclass AppServiceResponse;
+
+    declare {
+        interface Windows.Foundation.AsyncOperationCompletedHandler<Windows.ApplicationModel.AppService.AppServiceConnectionStatus>;
+        interface Windows.Foundation.AsyncOperationCompletedHandler<Windows.ApplicationModel.AppService.AppServiceResponse *>;
+        interface Windows.Foundation.AsyncOperationCompletedHandler<Windows.ApplicationModel.AppService.AppServiceResponseStatus>;
+        interface Windows.Foundation.IAsyncOperation<Windows.ApplicationModel.AppService.AppServiceConnectionStatus>;
+        interface Windows.Foundation.IAsyncOperation<Windows.ApplicationModel.AppService.AppServiceResponse *>;
+        interface Windows.Foundation.IAsyncOperation<Windows.ApplicationModel.AppService.AppServiceResponseStatus>;
+        interface Windows.Foundation.TypedEventHandler<Windows.ApplicationModel.AppService.AppServiceConnection *, Windows.ApplicationModel.AppService.AppServiceClosedEventArgs *>;
+        interface Windows.Foundation.TypedEventHandler<Windows.ApplicationModel.AppService.AppServiceConnection *, Windows.ApplicationModel.AppService.AppServiceRequestReceivedEventArgs *>;
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0)
+    ]
+    enum AppServiceClosedStatus
+    {
+        Completed              = 0,
+        Canceled               = 1,
+        ResourceLimitsExceeded = 2,
+        Unknown                = 3,
+    };
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0)
+    ]
+    enum AppServiceConnectionStatus
+    {
+        Success                       = 0,
+        AppNotInstalled               = 1,
+        AppUnavailable                = 2,
+        AppServiceUnavailable         = 3,
+        Unknown                       = 4,
+        [contract(Windows.Foundation.UniversalApiContract, 3.0)]
+        RemoteSystemUnavailable       = 5,
+        [contract(Windows.Foundation.UniversalApiContract, 3.0)]
+        RemoteSystemNotSupportedByApp = 6,
+        [contract(Windows.Foundation.UniversalApiContract, 3.0)]
+        NotAuthorized                 = 7,
+        [contract(Windows.Foundation.UniversalApiContract, 10.0)]
+        AuthenticationError           = 8,
+        [contract(Windows.Foundation.UniversalApiContract, 10.0)]
+        NetworkNotAvailable           = 9,
+        [contract(Windows.Foundation.UniversalApiContract, 10.0)]
+        DisabledByPolicy              = 10,
+        [contract(Windows.Foundation.UniversalApiContract, 10.0)]
+        WebServiceUnavailable         = 11,
+    };
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0)
+    ]
+    enum AppServiceResponseStatus
+    {
+        Success                 = 0,
+        Failure                 = 1,
+        ResourceLimitsExceeded  = 2,
+        Unknown                 = 3,
+        [contract(Windows.Foundation.UniversalApiContract, 3.0)]
+        RemoteSystemUnavailable = 4,
+        [contract(Windows.Foundation.UniversalApiContract, 3.0)]
+        MessageSizeTooLarge     = 5,
+        [contract(Windows.Foundation.UniversalApiContract, 10.0)]
+        AppUnavailable          = 6,
+        [contract(Windows.Foundation.UniversalApiContract, 10.0)]
+        AuthenticationError     = 7,
+        [contract(Windows.Foundation.UniversalApiContract, 10.0)]
+        NetworkNotAvailable     = 8,
+        [contract(Windows.Foundation.UniversalApiContract, 10.0)]
+        DisabledByPolicy        = 9,
+        [contract(Windows.Foundation.UniversalApiContract, 10.0)]
+        WebServiceUnavailable   = 10,
+    };
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.ApplicationModel.AppService.AppServiceClosedEventArgs),
+        uuid(de6016f6-cb03-4d35-ac8d-cc6303239731)
+    ]
+    interface IAppServiceClosedEventArgs : IInspectable
+    {
+        [propget] HRESULT Status([out, retval] Windows.ApplicationModel.AppService.AppServiceClosedStatus *value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.ApplicationModel.AppService.AppServiceConnection),
+        uuid(9dd474a2-871f-4d52-89a9-9e090531bd27)
+    ]
+    interface IAppServiceConnection : IInspectable
+    {
+        [propget] HRESULT AppServiceName([out, retval] HSTRING *value);
+        [propput] HRESULT AppServiceName([in] HSTRING value);
+        [propget] HRESULT PackageFamilyName([out, retval] HSTRING *value);
+        [propput] HRESULT PackageFamilyName([in] HSTRING value);
+        HRESULT OpenAsync([out, retval] Windows.Foundation.IAsyncOperation<Windows.ApplicationModel.AppService.AppServiceConnectionStatus> **operation);
+        HRESULT SendMessageAsync([in] Windows.Foundation.Collections.ValueSet *message, [out, retval] Windows.Foundation.IAsyncOperation<Windows.ApplicationModel.AppService.AppServiceResponse *> **operation);
+        [eventadd] HRESULT RequestReceived([in] Windows.Foundation.TypedEventHandler<Windows.ApplicationModel.AppService.AppServiceConnection *, Windows.ApplicationModel.AppService.AppServiceRequestReceivedEventArgs *> *handler, [out, retval] EventRegistrationToken *cookie);
+        [eventremove] HRESULT RequestReceived([in] EventRegistrationToken cookie);
+        [eventadd] HRESULT ServiceClosed([in] Windows.Foundation.TypedEventHandler<Windows.ApplicationModel.AppService.AppServiceConnection *, Windows.ApplicationModel.AppService.AppServiceClosedEventArgs *> *handler, [out, retval] EventRegistrationToken *cookie);
+        [eventremove] HRESULT ServiceClosed([in] EventRegistrationToken cookie);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.ApplicationModel.AppService.AppServiceDeferral),
+        uuid(7e1b5322-eab0-4248-ae04-fdf93838e472)
+    ]
+    interface IAppServiceDeferral : IInspectable
+    {
+        HRESULT Complete();
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.ApplicationModel.AppService.AppServiceRequest),
+        uuid(20e58d9d-18de-4b01-80ba-90a76204e3c8)
+    ]
+    interface IAppServiceRequest : IInspectable
+    {
+        [propget] HRESULT Message([out, retval] Windows.Foundation.Collections.ValueSet **value);
+        HRESULT SendResponseAsync([in] Windows.Foundation.Collections.ValueSet *message, [out, retval] Windows.Foundation.IAsyncOperation<Windows.ApplicationModel.AppService.AppServiceResponseStatus> **operation);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.ApplicationModel.AppService.AppServiceRequestReceivedEventArgs),
+        uuid(6e122360-ff65-44ae-9e45-857fe4180681)
+    ]
+    interface IAppServiceRequestReceivedEventArgs : IInspectable
+    {
+        [propget] HRESULT Request([out, retval] Windows.ApplicationModel.AppService.AppServiceRequest **value);
+        HRESULT GetDeferral([out, retval] Windows.ApplicationModel.AppService.AppServiceDeferral **value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.ApplicationModel.AppService.AppServiceResponse),
+        uuid(8d503cec-9aa3-4e68-9559-9de63e372ce4)
+    ]
+    interface IAppServiceResponse : IInspectable
+    {
+        [propget] HRESULT Message([out, retval] Windows.Foundation.Collections.ValueSet **value);
+        [propget] HRESULT Status([out, retval] Windows.ApplicationModel.AppService.AppServiceResponseStatus *value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile)
+    ]
+    runtimeclass AppServiceClosedEventArgs
+    {
+        [default] interface Windows.ApplicationModel.AppService.IAppServiceClosedEventArgs;
+    }
+
+    [
+        activatable(Windows.Foundation.UniversalApiContract, 1.0),
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile),
+        /* static(Windows.ApplicationModel.AppService.IAppServiceConnectionStatics, Windows.Foundation.UniversalApiContract, 8.0), */
+        threading(both)
+    ]
+    runtimeclass AppServiceConnection
+    {
+        [default] interface Windows.ApplicationModel.AppService.IAppServiceConnection;
+        /* [contract(Windows.Foundation.UniversalApiContract, 3.0)] interface Windows.ApplicationModel.AppService.IAppServiceConnection2; */
+        interface Windows.Foundation.IClosable;
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile)
+    ]
+    runtimeclass AppServiceDeferral
+    {
+        [default] interface Windows.ApplicationModel.AppService.IAppServiceDeferral;
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile)
+    ]
+    runtimeclass AppServiceRequest
+    {
+        [default] interface Windows.ApplicationModel.AppService.IAppServiceRequest;
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile)
+    ]
+    runtimeclass AppServiceRequestReceivedEventArgs
+    {
+        [default] interface Windows.ApplicationModel.AppService.IAppServiceRequestReceivedEventArgs;
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile)
+    ]
+    runtimeclass AppServiceResponse
+    {
+        [default] interface Windows.ApplicationModel.AppService.IAppServiceResponse;
+    }
+}
