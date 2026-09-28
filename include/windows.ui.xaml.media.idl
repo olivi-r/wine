@@ -1,0 +1,185 @@
+/*
+ * Copyright 2026 Olivia Ryan
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
+ */
+
+#ifdef __WIDL__
+#pragma winrt ns_prefix
+#endif
+
+import "inspectable.idl";
+import "windowscontracts.idl";
+import "windows.foundation.idl";
+
+namespace Windows.UI.Xaml {
+    runtimeclass DependencyObject;
+}
+
+namespace Windows.UI.Xaml.Media {
+    interface ICacheMode;
+    interface ICacheModeFactory;
+    interface IGeneralTransform;
+    interface IGeneralTransformOverrides;
+    interface IGeneralTransformFactory;
+    interface IGeometry;
+    interface IGeometryFactory;
+    interface IGeometryStatics;
+    interface IProjection;
+    interface IProjectionFactory;
+    interface IRectangleGeometry;
+    interface IRectangleGeometryStatics;
+    interface ITransform;
+    interface ITransformFactory;
+
+    runtimeclass CacheMode;
+    runtimeclass GeneralTransform;
+    runtimeclass Geometry;
+    runtimeclass Projection;
+    runtimeclass RectangleGeometry;
+    runtimeclass Transform;
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.Media.CacheMode),
+        uuid(98dc8b11-c6f9-4dab-b838-5fd5ec8c7350)
+    ]
+    interface ICacheMode : IInspectable
+    {
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.Media.GeneralTransform),
+        uuid(a06798b7-a2ec-415f-ade2-eade9333f2c7)
+    ]
+    interface IGeneralTransform : IInspectable
+    {
+        [propget] HRESULT Inverse([out, retval] Windows.UI.Xaml.Media.GeneralTransform **value);
+        HRESULT TransformPoint([in] Windows.Foundation.Point point, [out, retval] Windows.Foundation.Point *value);
+        HRESULT TryTransform([in] Windows.Foundation.Point in_point, [out] Windows.Foundation.Point *out_point, [out, retval] boolean *value);
+        HRESULT TransformBounds([in] Windows.Foundation.Rect rect, [out, retval] Windows.Foundation.Rect *value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.Media.Geometry),
+        uuid(fa123889-0acd-417b-b62d-5ca1bf4dfc0e)
+    ]
+    interface IGeometry : IInspectable
+    {
+        [propget] HRESULT Transform([out, retval] Windows.UI.Xaml.Media.Transform **value);
+        [propput] HRESULT Transform([in] Windows.UI.Xaml.Media.Transform *value);
+        [propget] HRESULT Bounds([out, retval] Windows.Foundation.Rect *value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.Media.Projection),
+        uuid(b3443557-7f39-4d04-a89c-844338cac897)
+    ]
+    interface IProjection : IInspectable
+    {
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.Media.RectangleGeometry),
+        uuid(a25a1f58-c575-4196-91cf-9fdfb10445c3)
+    ]
+    interface IRectangleGeometry : IInspectable
+    {
+        [propget] HRESULT Rect([out, retval] Windows.Foundation.Rect *value);
+        [propput] HRESULT Rect([in] Windows.Foundation.Rect value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.Media.Transform),
+        uuid(4df74078-bfd6-4ed1-9682-d2fd8bf2fe6f)
+    ]
+    interface ITransform : IInspectable
+    {
+    }
+
+    [
+        /* composable(Windows.UI.Xaml.Media.ICacheModeFactory, protected, Windows.Foundation.UniversalApiContract, 1.0), */
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile),
+        threading(both)
+    ]
+    runtimeclass CacheMode : Windows.UI.Xaml.DependencyObject
+    {
+        [default] interface Windows.UI.Xaml.Media.ICacheMode;
+    }
+
+    [
+        /* composable(Windows.UI.Xaml.Media.IGeneralTransformFactory, public, Windows.UniversalApiContract, 1.0), */
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile),
+        threading(both)
+    ]
+    runtimeclass GeneralTransform : Windows.UI.Xaml.DependencyObject
+    {
+        [default] interface Windows.UI.Xaml.Media.IGeneralTransform;
+        /* [contract(Windows.Foundation.UniversalApiContract, 1.0), overridable] interface Windows.UI.Xaml.Media.IGeneralTransformOverrides; */
+    }
+
+    [
+        /* composable(Windows.UI.Xaml.Media.IGeometryFactory, public, Windows.Foundation.UniversalApiContract, 1.0), */
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile),
+        /* static(Windows.UI.Xaml.Media.IGeometryStatics, Windows.Foundation.UniversalApiContract, 1.0), */
+        threading(both)
+    ]
+    runtimeclass Geometry : Windows.UI.Xaml.DependencyObject
+    {
+        [default] interface Windows.UI.Xaml.Media.IGeometry;
+    }
+
+    [
+        /* composable(Windows.UI.Xaml.Media.IProjectionFactory, protected, Windows.Foundation.UniversalApiContract, 1.0), */
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile),
+        threading(both)
+    ]
+    runtimeclass Projection : Windows.UI.Xaml.DependencyObject
+    {
+        [default] interface Windows.UI.Xaml.Media.IProjection;
+    }
+
+    [
+        activatable(Windows.Foundation.UniversalApiContract, 1.0),
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile),
+        /* static(Windows.UI.Xaml.Media.IRectangleGeometryStatics, Windows.Foundation.UniversalApiContract, 1.0), */
+        threading(both)
+    ]
+    runtimeclass RectangleGeometry : Windows.UI.Xaml.Media.Geometry
+    {
+        [default] interface Windows.UI.Xaml.Media.IRectangleGeometry;
+    }
+
+    [
+        /* composable(Windows.UI.Xaml.Media.ITransformFactory, public, Windows.Foundation.UniversalApiContract, 1.0), */
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile),
+        threading(both)
+    ]
+    runtimeclass Transform : Windows.UI.Xaml.Media.GeneralTransform
+    {
+        [default] interface Windows.UI.Xaml.Media.ITransform;
+    }
+}

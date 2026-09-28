@@ -1023,6 +1023,7 @@ SOURCES = \
 	windows.applicationmodel.datatransfer.dragdrop.core.idl \
 	windows.applicationmodel.datatransfer.dragdrop.idl \
 	windows.applicationmodel.datatransfer.idl \
+	windows.applicationmodel.datatransfer.sharetarget.idl \
 	windows.applicationmodel.idl \
 	windows.data.json.idl \
 	windows.data.xml.dom.idl \
@@ -1088,6 +1089,8 @@ SOURCES = \
 	windows.security.isolation.idl \
 	windows.storage.fileproperties.idl \
 	windows.storage.idl \
+	windows.storage.pickers.provider.idl \
+	windows.storage.provider.idl \
 	windows.storage.search.idl \
 	windows.storage.streams.idl \
 	windows.system.idl \
@@ -1107,9 +1110,13 @@ SOURCES = \
 	windows.ui.viewmanagement.core.idl \
 	windows.ui.viewmanagement.idl \
 	windows.ui.windowmanagement.idl \
+	windows.ui.xaml.controls.primitives.idl \
 	windows.ui.xaml.hosting.desktopwindowxamlsource.idl \
 	windows.ui.xaml.idl \
+	windows.ui.xaml.input.idl \
 	windows.ui.xaml.interop.idl \
+	windows.ui.xaml.media.animation.idl \
+	windows.ui.xaml.media.idl \
 	windowscontracts.idl \
 	windowsx.h \
 	wine/afd.h \

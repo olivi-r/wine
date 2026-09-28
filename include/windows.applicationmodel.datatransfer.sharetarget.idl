@@ -1,0 +1,94 @@
+/*
+ * Copyright (C) 2026 Olivia Ryan
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
+ */
+
+#ifdef __WIDL__
+#pragma winrt ns_prefix
+#endif
+
+import "inspectable.idl";
+import "windowscontracts.idl";
+import "windows.applicationmodel.datatransfer.idl";
+import "windows.foundation.collections.idl";
+import "windows.storage.streams.idl";
+
+namespace Windows.ApplicationModel.DataTransfer.ShareTarget {
+    interface IQuickLink;
+    interface IShareOperation;
+    interface IShareOperation2;
+    interface IShareOperation3;
+
+    runtimeclass QuickLink;
+    runtimeclass ShareOperation;
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.ApplicationModel.DataTransfer.ShareTarget.QuickLink),
+        uuid(603e4308-f0be-4adc-acc9-8b27ab9cf556)
+    ]
+    interface IQuickLink : IInspectable
+    {
+        [propget] HRESULT Title([out, retval] HSTRING *value);
+        [propput] HRESULT Title([in] HSTRING value);
+        [propget] HRESULT Thumbnail([out, retval] Windows.Storage.Streams.RandomAccessStreamReference **value);
+        [propput] HRESULT Thumbnail([in] Windows.Storage.Streams.RandomAccessStreamReference *value);
+        [propget] HRESULT Id([out, retval] HSTRING *value);
+        [propput] HRESULT Id([in] HSTRING value);
+        [propget] HRESULT SupportedDataFormats([out, retval] Windows.Foundation.Collections.IVector<HSTRING> **value);
+        [propget] HRESULT SupportedFileTypes([out, retval] Windows.Foundation.Collections.IVector<HSTRING> **value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.ApplicationModel.DataTransfer.ShareTarget.ShareOperation),
+        uuid(2246bab8-d0f8-41c1-a82a-4137db6504fb)
+    ]
+    interface IShareOperation : IInspectable
+    {
+        [propget] HRESULT Data([out, retval] Windows.ApplicationModel.DataTransfer.DataPackageView **value);
+        [propget] HRESULT QuickLinkId([out, retval] HSTRING *value);
+        HRESULT RemoveThisQuickLink();
+        HRESULT ReportStarted();
+        HRESULT ReportDataRetrieved();
+        HRESULT ReportSubmittedBackgroundTask();
+        [overload("ReportCompleted")] HRESULT ReportCompletedWithQuickLink([in] Windows.ApplicationModel.DataTransfer.ShareTarget.QuickLink *quick_link);
+        [overload("ReportCompleted")] HRESULT ReportCompleted();
+        HRESULT ReportError([in] HSTRING value);
+    }
+
+    [
+        activatable(Windows.Foundation.UniversalApiContract, 1.0),
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(standard),
+        threading(both)
+    ]
+    runtimeclass QuickLink
+    {
+        [default] interface Windows.ApplicationModel.DataTransfer.ShareTarget.IQuickLink;
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(standard)
+    ]
+    runtimeclass ShareOperation
+    {
+        [default] interface Windows.ApplicationModel.DataTransfer.ShareTarget.IShareOperation;
+        /* interface Windows.ApplicationModel.DataTransfer.ShareTarget.IShareOperation2; */
+        /* [contract(Windows.Foundation.UniversalApiContract, 5.0)] interface Windows.ApplicationModel.DataTransfer.ShareTarget.IShareOperation3; */
+    }
+}

@@ -27,7 +27,10 @@ import "windowscontracts.idl";
 import "windows.foundation.idl";
 import "windows.applicationmodel.background.idl";
 import "windows.applicationmodel.core.idl";
+import "windows.applicationmodel.datatransfer.sharetarget.idl";
 import "windows.storage.idl";
+import "windows.storage.pickers.provider.idl";
+import "windows.storage.provider.idl";
 import "windows.system.idl";
 
 namespace Windows.ApplicationModel.Background {
@@ -45,10 +48,34 @@ namespace Windows.ApplicationModel.Activation {
     typedef enum ApplicationExecutionState ApplicationExecutionState;
 
     interface IActivatedEventArgs;
+    interface IActivatedEventArgsWithUser;
+    interface IApplicationViewActivatedEventArgs;
     interface IBackgroundActivatedEventArgs;
+    interface ICachedFileUpdaterActivatedEventArgs;
+    interface IFileActivatedEventArgs;
+    interface IFileActivatedEventArgsWithCallerPackageFamilyName;
+    interface IFileActivatedEventArgsWithNeighboringFiles;
+    interface IFileOpenPickerActivatedEventArgs;
+    interface IFileOpenPickerActivatedEventArgs2;
+    interface IFileSavePickerActivatedEventArgs;
+    interface IFileSavePickerActivatedEventArgs2;
+    interface ILaunchActivatedEventArgs;
+    interface ILaunchActivatedEventArgs2;
+    interface IPrelaunchActivatedEventArgs;
+    interface ISearchActivatedEventArgs;
+    interface ISearchActivatedEventArgsWithLinguisticDetails;
+    interface IShareTargetActivatedEventArgs;
     interface ISplashScreen;
+    interface IViewSwitcherProvider;
 
     runtimeclass BackgroundActivatedEventArgs;
+    runtimeclass CachedFileUpdaterActivatedEventArgs;
+    runtimeclass FileActivatedEventArgs;
+    runtimeclass FileOpenPickerActivatedEventArgs;
+    runtimeclass FileSavePickerActivatedEventArgs;
+    runtimeclass LaunchActivatedEventArgs;
+    runtimeclass SearchActivatedEventArgs;
+    runtimeclass ShareTargetActivatedEventArgs;
     runtimeclass SplashScreen;
 
     declare {
@@ -167,6 +194,79 @@ namespace Windows.ApplicationModel.Activation {
 
     [
         contract(Windows.Foundation.UniversalApiContract, 1.0),
+        uuid(d06eb1c7-3805-4ecb-b757-6cf15e26fef3)
+    ]
+    interface ICachedFileUpdaterActivatedEventArgs : IInspectable
+        requires Windows.ApplicationModel.Activation.IActivatedEventArgs
+    {
+        [propget] HRESULT CachedFileUpdaterUI([out, retval] Windows.Storage.Provider.CachedFileUpdaterUI **value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        uuid(bb2afc33-93b1-42ed-8b26-236dd9c78496)
+    ]
+    interface IFileActivatedEventArgs : IInspectable
+        requires Windows.ApplicationModel.Activation.IActivatedEventArgs
+    {
+        [propget] HRESULT Files([out, retval] Windows.Foundation.Collections.IVectorView<Windows.Storage.IStorageItem *> **value);
+        [propget] HRESULT Verb([out, retval] HSTRING *value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        uuid(72827082-5525-4bf2-bc09-1f5095d4964d)
+    ]
+    interface IFileOpenPickerActivatedEventArgs : IInspectable
+        requires Windows.ApplicationModel.Activation.IActivatedEventArgs
+    {
+        [propget] HRESULT FileOpenPickerUI([out, retval] Windows.Storage.Pickers.Provider.FileOpenPickerUI **value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        uuid(81c19cf1-74e6-4387-82eb-bb8fd64b4346)
+    ]
+    interface IFileSavePickerActivatedEventArgs : IInspectable
+        requires Windows.ApplicationModel.Activation.IActivatedEventArgs
+    {
+        [propget] HRESULT FileSavePickerUI([out, retval] Windows.Storage.Pickers.Provider.FileSavePickerUI **value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        uuid(fbc93e26-a14a-4b4f-82b0-33bed920af52)
+    ]
+    interface ILaunchActivatedEventArgs : IInspectable
+        requires Windows.ApplicationModel.Activation.IActivatedEventArgs
+    {
+        [propget] HRESULT Arguments([out, retval] HSTRING *value);
+        [propget] HRESULT TileId([out, retval] HSTRING *value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        uuid(8cb36951-58c8-43e3-94bc-41d33f8b630e)
+    ]
+    interface ISearchActivatedEventArgs : IInspectable
+        requires Windows.ApplicationModel.Activation.IActivatedEventArgs
+    {
+        [propget] HRESULT QueryText([out, retval] HSTRING *value);
+        [propget] HRESULT Language([out, retval] HSTRING *value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        uuid(4bdaf9c8-cdb2-4acb-bfc3-6648563378ec)
+    ]
+    interface IShareTargetActivatedEventArgs : IInspectable
+        requires Windows.ApplicationModel.Activation.IActivatedEventArgs
+    {
+        [propget] HRESULT ShareOperation([out, retval] Windows.ApplicationModel.DataTransfer.ShareTarget.ShareOperation **value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
         exclusiveto(Windows.ApplicationModel.Activation.SplashScreen),
         uuid(ca4d975c-d4d6-43f0-97c0-0833c6391c24)
     ]
@@ -184,6 +284,96 @@ namespace Windows.ApplicationModel.Activation {
     runtimeclass BackgroundActivatedEventArgs
     {
         [default] interface Windows.ApplicationModel.Activation.IBackgroundActivatedEventArgs;
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile)
+    ]
+    runtimeclass CachedFileUpdaterActivatedEventArgs
+    {
+        interface Windows.ApplicationModel.Activation.IActivatedEventArgs;
+        /* [contract(Windows.Foundation.UniversalApiContract, 3.0)] interface Windows.ApplicationModel.Activation.IActivatedEventArgsWithUser; */
+        [default] interface Windows.ApplicationModel.Activation.ICachedFileUpdaterActivatedEventArgs;
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile)
+    ]
+    runtimeclass FileActivatedEventArgs
+    {
+        interface Windows.ApplicationModel.Activation.IActivatedEventArgs;
+        /* [contract(Windows.Foundation.UniversalApiContract, 3.0)] interface Windows.ApplicationModel.IActivatedEventArgsWithUser; */
+        /* interface Windows.ApplicationModel.Activation.IApplicationViewActivatedEventArgs; */
+        [default] interface Windows.ApplicationModel.Activation.IFileActivatedEventArgs;
+        /* interface Windows.ApplicationModel.Activation.IFileActivatedEventArgsWithCallerPackageFamilyName; */
+        /* interface Windows.ApplicationModel.Activation.IFileActivatedEventArgsWithNeighboringFiles; */
+        /* interface Windows.ApplicationModel.Activation.IViewSwitcherProvider; */
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile)
+    ]
+    runtimeclass FileOpenPickerActivatedEventArgs
+    {
+        interface Windows.ApplicationModel.Activation.IActivatedEventArgs;
+        /* [contract(Windows.Foundation.UniversalApiContract, 3.0)] interface Windows.ApplicationModel.Activation.IActivatedEventArgsWithUser; */
+        [default] interface Windows.ApplicationModel.Activation.IFileOpenPickerActivatedEventArgs;
+        /* interface Windows.ApplicationModel.Activation.IFileOpenPickerActivatedEventArgs2; */
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile)
+    ]
+    runtimeclass FileSavePickerActivatedEventArgs
+    {
+        interface Windows.ApplicationModel.Activation.IActivatedEventArgs;
+        /* [contract(Windows.Foundation.UniversalApiContract, 3.0)] interface Windows.ApplicationModel.Activation.IActivatedEventArgsWithUser; */
+        [default] interface Windows.ApplicationModel.Activation.IFileSavePickerActivatedEventArgs;
+        /* interface Windows.ApplicationModel.Activation.IFileSavePickerActivatedEventArgs2; */
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile)
+    ]
+    runtimeclass LaunchActivatedEventArgs
+    {
+        interface Windows.ApplicationModel.Activation.IActivatedEventArgs;
+        /* [contract(Windows.Foundation.UniversalApiContract, 3.0)] interface Windows.ApplicationModel.IActivatedEventArgsWithUser; */
+        /* interface Windows.ApplicationModel.Activation.IApplicationViewActivatedEventArgs; */
+        [default] interface Windows.ApplicationModel.Activation.ILaunchActivatedEventArgs;
+        /* [contract(Windows.Foundation.UniversalApiContract, 3.0)] interface Windows.ApplicationModel.ILaunchActivatedEventArgs2; */
+        /* interface Windows.ApplicationModel.Activation.IPrelaunchActivatedEventArgs; */
+        /* interface Windows.ApplicationModel.Activation.IViewSwitcherProvider; */
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile)
+    ]
+    runtimeclass SearchActivatedEventArgs
+    {
+        interface Windows.ApplicationModel.Activation.IActivatedEventArgs;
+        /* [contract(Windows.Foundation.UniversalApiContract, 3.0)] interface Windows.ApplicationModel.IActivatedEventArgsWithUser; */
+        /* interface Windows.ApplicationModel.Activation.IApplicationViewActivatedEventArgs; */
+        [default] interface Windows.ApplicationModel.Activation.ISearchActivatedEventArgs;
+        /* interface Windows.ApplicationModel.Activation.ISearchActivatedEventArgsWithLinguisticDetails; */
+        /* interface Windows.ApplicationModel.Activation.IViewSwitcherProvider; */
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile)
+    ]
+    runtimeclass ShareTargetActivatedEventArgs
+    {
+        interface Windows.ApplicationModel.Activation.IActivatedEventArgs;
+        /* [contract(Windows.Foundation.UniversalApiContract, 3.0)] interface Windows.ApplicationModel.IActivatedEventArgsWithUser; */
+        [default] interface Windows.ApplicationModel.Activation.IShareTargetActivatedEventArgs;
     }
 
     [

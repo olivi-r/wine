@@ -1,0 +1,502 @@
+/*
+ * Copyright 2026 Olivia Ryan
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
+ */
+
+#ifdef __WIDL__
+#pragma winrt ns_prefix
+#endif
+
+import "inspectable.idl";
+import "windowscontracts.idl";
+import "windows.devices.input.idl";
+import "windows.ui.input.idl";
+import "windows.ui.xaml.idl";
+
+namespace Windows.UI.Xaml {
+    runtimeclass RoutedEventArgs;
+    runtimeclass UIElement;
+}
+
+namespace Windows.UI.Xaml.Input {
+    typedef enum ManipulationModes ManipulationModes;
+
+    interface IDoubleTappedRoutedEventArgs;
+    interface IHoldingRoutedEventArgs;
+    interface IInertiaExpansionBehavior;
+    interface IInertiaRotationBehavior;
+    interface IInertiaTranslationBehavior;
+    interface IKeyRoutedEventArgs;
+    interface IKeyRoutedEventArgs2;
+    interface IKeyRoutedEventArgs3;
+    interface IManipulationCompletedRoutedEventArgs;
+    interface IManipulationDeltaRoutedEventArgs;
+    interface IManipulationInertiaStartingRoutedEventArgs;
+    interface IManipulationPivot;
+    interface IManipulationPivotFactory;
+    interface IManipulationStartedRoutedEventArgs;
+    interface IManipulationStartedRoutedEventArgsFactory;
+    interface IManipulationStartingRoutedEventArgs;
+    interface IPointer;
+    interface IPointerRoutedEventArgs;
+    interface IPointerRoutedEventArgs2;
+    interface IRightTappedRoutedEventArgs;
+    interface ITappedRoutedEventArgs;
+
+    runtimeclass DoubleTappedRoutedEventArgs;
+    runtimeclass HoldingRoutedEventArgs;
+    runtimeclass InertiaExpansionBehavior;
+    runtimeclass InertiaRotationBehavior;
+    runtimeclass InertiaTranslationBehavior;
+    runtimeclass KeyRoutedEventArgs;
+    runtimeclass ManipulationCompletedRoutedEventArgs;
+    runtimeclass ManipulationDeltaRoutedEventArgs;
+    runtimeclass ManipulationInertiaStartingRoutedEventArgs;
+    runtimeclass ManipulationPivot;
+    runtimeclass ManipulationStartedRoutedEventArgs;
+    runtimeclass ManipulationStartingRoutedEventArgs;
+    runtimeclass Pointer;
+    runtimeclass PointerRoutedEventArgs;
+    runtimeclass RightTappedRoutedEventArgs;
+    runtimeclass TappedRoutedEventArgs;
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        flags
+    ]
+    enum ManipulationModes
+    {
+        None             = 0x00000,
+        TranslateX       = 0x00001,
+        TranslateY       = 0x00002,
+        TranslateRailsX  = 0x00004,
+        TranslateRailsY  = 0x00008,
+        Rotate           = 0x00010,
+        Scale            = 0x00020,
+        TranslateInertia = 0x00040,
+        RotateInertia    = 0x00080,
+        ScaleInertia     = 0x00100,
+        All              = 0x0ffff,
+        System           = 0x10000,
+    };
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.Input.DoubleTappedRoutedEventArgs),
+        uuid(af404424-26df-44f4-8714-9359249b62d3)
+    ]
+    interface IDoubleTappedRoutedEventArgs : IInspectable
+    {
+        [propget] HRESULT PointerDeviceType([out, retval] Windows.Devices.Input.PointerDeviceType *value);
+        [propget] HRESULT Handled([out, retval] boolean *value);
+        [propput] HRESULT Handled([in] boolean value);
+        HRESULT GetPosition([in] Windows.UI.Xaml.UIElement *relative_to, [out, retval] Windows.Foundation.Point *value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.Input.HoldingRoutedEventArgs),
+        uuid(c246ff23-d80d-44de-8db9-0d815e269ac0)
+    ]
+    interface IHoldingRoutedEventArgs : IInspectable
+    {
+        [propget] HRESULT PointerDeviceType([out, retval] Windows.Devices.Input.PointerDeviceType *value);
+        [propget] HRESULT HoldingState([out, retval] Windows.UI.Input.HoldingState *value);
+        [propget] HRESULT Handled([out, retval] boolean *value);
+        [propput] HRESULT Handled([in] boolean value);
+        HRESULT GetPosition([in] Windows.UI.Xaml.UIElement *relative_to, [out, retval] Windows.Foundation.Point *value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.Input.InertiaExpansionBehavior),
+        uuid(751d87e5-8d42-44c5-965e-3cd30cc9d6f7)
+    ]
+    interface IInertiaExpansionBehavior : IInspectable
+    {
+        [propget] HRESULT DesiredDeceleration([out, retval] DOUBLE *value);
+        [propput] HRESULT DesiredDeceleration([in] DOUBLE value);
+        [propget] HRESULT DesiredExpansion([out, retval] DOUBLE *value);
+        [propput] HRESULT DesiredExpansion([in] DOUBLE value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.Input.InertiaRotationBehavior),
+        uuid(424cfb2e-bbfd-4625-ae78-20c65bf1efaf)
+    ]
+    interface IInertiaRotationBehavior : IInspectable
+    {
+        [propget] HRESULT DesiredDeceleration([out, retval] DOUBLE *value);
+        [propput] HRESULT DesiredDeceleration([in] DOUBLE value);
+        [propget] HRESULT DesiredRotation([out, retval] DOUBLE *value);
+        [propput] HRESULT DesiredRotation([in] DOUBLE value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.Input.InertiaTranslationBehavior),
+        uuid(45d3a512-3b32-4882-a4c2-ecfa2d4b6df0)
+    ]
+    interface IInertiaTranslationBehavior : IInspectable
+    {
+        [propget] HRESULT DesiredDeceleration([out, retval] DOUBLE *value);
+        [propput] HRESULT DesiredDeceleration([in] DOUBLE value);
+        [propget] HRESULT DesiredDisplacement([out, retval] DOUBLE *value);
+        [propput] HRESULT DesiredDisplacement([in] DOUBLE value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.Input.KeyRoutedEventArgs),
+        uuid(d4cd3dfe-4079-42e9-a39a-3095d3f049c6)
+    ]
+    interface IKeyRoutedEventArgs : IInspectable
+    {
+        [propget] HRESULT Key([out, retval] Windows.System.VirtualKey *value);
+        [propget] HRESULT KeyStatus([out, retval] Windows.UI.Core.CorePhysicalKeyStatus *value);
+        [propget] HRESULT Handled([out, retval] boolean *value);
+        [propput] HRESULT Handled([in] boolean value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.Input.ManipulationCompletedRoutedEventArgs),
+        uuid(b5ad9b23-2f41-498e-8319-015ee8a75346)
+    ]
+    interface IManipulationCompletedRoutedEventArgs : IInspectable
+    {
+        [propget] HRESULT Container([out, retval] Windows.UI.Xaml.UIElement **value);
+        [propget] HRESULT Position([out, retval] Windows.Foundation.Point *value);
+        [propget] HRESULT IsInertial([out, retval] boolean *value);
+        [propget] HRESULT Cumulative([out, retval] Windows.UI.Input.ManipulationDelta **value);
+        [propget] HRESULT Velocities([out, retval] Windows.UI.Input.ManipulationVelocities *value);
+        [propget] HRESULT Handled([out, retval] boolean *value);
+        [propput] HRESULT Handled([in] boolean value);
+        [propget] HRESULT PointerDeviceType([out, retval] Windows.Devices.Input.PointerDeviceType *value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.Input.ManipulationDeltaRoutedEventArgs),
+        uuid(400d5794-4c6f-491d-82d6-3517109399c6)
+    ]
+    interface IManipulationDeltaRoutedEventArgs : IInspectable
+    {
+        [propget] HRESULT Container([out, retval] Windows.UI.Xaml.UIElement **value);
+        [propget] HRESULT Position([out, retval] Windows.Foundation.Point *value);
+        [propget] HRESULT IsInertial([out, retval] boolean *value);
+        [propget] HRESULT Delta([out, retval] Windows.UI.Input.ManipulationDelta **value);
+        [propget] HRESULT Cumulative([out, retval] Windows.UI.Input.ManipulationDelta **value);
+        [propget] HRESULT Velocities([out, retval] Windows.UI.Input.ManipulationVelocities *value);
+        [propget] HRESULT Handled([out, retval] boolean *value);
+        [propput] HRESULT Handled([in] boolean value);
+        [propget] HRESULT PointerDeviceType([out, retval] Windows.Devices.Input.PointerDeviceType *value);
+        HRESULT Complete();
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.Input.ManipulationDeltaRoutedEventArgs),
+        uuid(246a91a9-ca43-4c0b-acef-81e8b8147520)
+    ]
+    interface IManipulationInertiaStartingRoutedEventArgs : IInspectable
+    {
+        [propget] HRESULT Container([out, retval] Windows.UI.Xaml.UIElement **value);
+        [propget] HRESULT ExpansionBehavior([out, retval] Windows.UI.Xaml.Input.InertiaExpansionBehavior **value);
+        [propput] HRESULT ExpansionBehavior([in] Windows.UI.Xaml.Input.InertiaExpansionBehavior *value);
+        [propget] HRESULT RotationBehavior([out, retval] Windows.UI.Xaml.Input.InertiaRotationBehavior **value);
+        [propput] HRESULT RotationBehavior([in] Windows.UI.Xaml.Input.InertiaRotationBehavior *value);
+        [propget] HRESULT TranslationBehavior([out, retval] Windows.UI.Xaml.Input.InertiaTranslationBehavior **value);
+        [propput] HRESULT TranslationBehavior([in] Windows.UI.Xaml.Input.InertiaTranslationBehavior *value);
+        [propget] HRESULT Handled([out, retval] boolean *value);
+        [propput] HRESULT Handled([in] boolean value);
+        [propget] HRESULT PointerDeviceType([out, retval] Windows.Devices.Input.PointerDeviceType *value);
+        [propget] HRESULT Delta([out, retval] Windows.UI.Input.ManipulationDelta **value);
+        [propget] HRESULT Cumulative([out, retval] Windows.UI.Input.ManipulationDelta **value);
+        [propget] HRESULT Velocities([out, retval] Windows.UI.Input.ManipulationVelocities *value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.Input.ManipulationPivot),
+        uuid(2e3838a5-e6c2-4998-82ac-18748b141666)
+    ]
+    interface IManipulationPivot : IInspectable
+    {
+        [propget] HRESULT Center([out, retval] Windows.Foundation.Point *value);
+        [propput] HRESULT Center([in] Windows.Foundation.Point value);
+        [propget] HRESULT Radius([out, retval] DOUBLE *value);
+        [propput] HRESULT Radius([in] DOUBLE value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.Input.ManipulationStartedRoutedEventArgs),
+        uuid(5db1aa05-9f80-48b6-ae6c-4f119de8ff13)
+    ]
+    interface IManipulationStartedRoutedEventArgs : IInspectable
+    {
+        [propget] HRESULT Container([out, retval] Windows.UI.Xaml.UIElement **value);
+        [propget] HRESULT Position([out, retval] Windows.Foundation.Point *value);
+        [propget] HRESULT Handled([out, retval] boolean *value);
+        [propput] HRESULT Handled([in] boolean value);
+        [propget] HRESULT PointerDeviceType([out, retval] Windows.Devices.Input.PointerDeviceType *value);
+        [propget] HRESULT Cumulative([out, retval] Windows.UI.Input.ManipulationDelta **value);
+        HRESULT Complete();
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.Input.ManipulationStartingRoutedEventArgs),
+        uuid(18d636b7-53a4-4c15-a498-f3a9ca212a42)
+    ]
+    interface IManipulationStartingRoutedEventArgs : IInspectable
+    {
+        [propget] HRESULT Mode([out, retval] Windows.UI.Xaml.Input.ManipulationModes *value);
+        [propput] HRESULT Mode([in] Windows.UI.Xaml.Input.ManipulationModes value);
+        [propget] HRESULT Container([out, retval] Windows.UI.Xaml.UIElement **value);
+        [propput] HRESULT Container([in] Windows.UI.Xaml.UIElement *value);
+        [propget] HRESULT Pivot([out, retval] Windows.UI.Xaml.Input.ManipulationPivot **value);
+        [propput] HRESULT Pivot([in] Windows.UI.Xaml.Input.ManipulationPivot *value);
+        [propget] HRESULT Handled([out, retval] boolean *value);
+        [propput] HRESULT Handled([in] boolean value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.Input.Pointer),
+        uuid(5ee8f39f-747d-4171-90e6-cd37a9dffb11)
+    ]
+    interface IPointer : IInspectable
+    {
+        [propget] HRESULT PointerId([out, retval] UINT32 *value);
+        [propget] HRESULT PointerDeviceType([out, retval] Windows.Devices.Input.PointerDeviceType *value);
+        [propget] HRESULT IsInContact([out, retval] boolean *value);
+        [propget] HRESULT IsInRange([out, retval] boolean *value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.Input.PointerRoutedEventArgs),
+        uuid(da628f0a-9752-49e2-bde2-49eccab9194d)
+    ]
+    interface IPointerRoutedEventArgs : IInspectable
+    {
+        [propget] HRESULT Pointer([out, retval] Windows.UI.Xaml.Input.Pointer **value);
+        [propget] HRESULT KeyModifiers([out, retval] Windows.System.VirtualKeyModifiers *value);
+        [propget] HRESULT Handled([out, retval] boolean *value);
+        [propput] HRESULT Handled([in] boolean value);
+        HRESULT GetCurrentPoint([in] Windows.UI.Xaml.UIElement *relative_to, [out, retval] Windows.UI.Input.PointerPoint **value);
+        HRESULT GetIntermediatePoints([in] Windows.UI.Xaml.UIElement *relative_to, [out, retval] Windows.Foundation.Collections.IVector<Windows.UI.Input.PointerPoint *> **value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.Input.RightTappedRoutedEventArgs),
+        uuid(6834869d-7bd5-4033-b237-172f79abe393)
+    ]
+    interface IRightTappedRoutedEventArgs : IInspectable
+    {
+        [propget] HRESULT PointerDeviceType([out, retval] Windows.Devices.Input.PointerDeviceType *value);
+        [propget] HRESULT Handled([out, retval] boolean *value);
+        [propput] HRESULT Handled([in] boolean value);
+        HRESULT GetPosition([in] Windows.UI.Xaml.UIElement *relative_to, [out, retval] Windows.Foundation.Point *value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.Input.TappedRoutedEventArgs),
+        uuid(a099e6be-e624-459a-bb1d-e05c73e2cc66)
+    ]
+    interface ITappedRoutedEventArgs : IInspectable
+    {
+        [propget] HRESULT PointerDeviceType([out, retval] Windows.Devices.Input.PointerDeviceType *value);
+        [propget] HRESULT Handled([out, retval] boolean *value);
+        [propput] HRESULT Handled([in] boolean value);
+        HRESULT GetPosition([in] Windows.UI.Xaml.UIElement *relative_to, [out, retval] Windows.Foundation.Point *value);
+    }
+
+    [
+        activatable(Windows.Foundation.UniversalApiContract, 1.0),
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile),
+        threading(both)
+    ]
+    runtimeclass DoubleTappedRoutedEventArgs : Windows.UI.Xaml.RoutedEventArgs
+    {
+        [default] interface Windows.UI.Xaml.Input.IDoubleTappedRoutedEventArgs;
+    }
+
+    [
+        activatable(Windows.Foundation.UniversalApiContract, 1.0),
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile),
+        threading(both)
+    ]
+    runtimeclass HoldingRoutedEventArgs : Windows.UI.Xaml.RoutedEventArgs
+    {
+        [default] interface Windows.UI.Xaml.Input.IHoldingRoutedEventArgs;
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile)
+    ]
+    runtimeclass InertiaExpansionBehavior
+    {
+        [default] interface Windows.UI.Xaml.Input.IInertiaExpansionBehavior;
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile)
+    ]
+    runtimeclass InertiaRotationBehavior
+    {
+        [default] interface Windows.UI.Xaml.Input.IInertiaRotationBehavior;
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile)
+    ]
+    runtimeclass InertiaTranslationBehavior
+    {
+        [default] interface Windows.UI.Xaml.Input.IInertiaTranslationBehavior;
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile),
+        threading(both)
+    ]
+    runtimeclass KeyRoutedEventArgs : Windows.UI.Xaml.RoutedEventArgs
+    {
+        [default] interface Windows.UI.Xaml.Input.IKeyRoutedEventArgs;
+        /* interface Windows.UI.Xaml.Input.IKeyRoutedEventArgs2; */
+        /* [contract(Windows.Foundation.UniversalApiContract, 3.0)] interface Windows.UI.Xaml.Input.IKeyRoutedEventArgs3; */
+    }
+
+    [
+        activatable(Windows.Foundation.UniversalApiContract, 1.0),
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile),
+        threading(both)
+    ]
+    runtimeclass ManipulationCompletedRoutedEventArgs : Windows.UI.Xaml.RoutedEventArgs
+    {
+        [default] interface Windows.UI.Xaml.Input.IManipulationCompletedRoutedEventArgs;
+    }
+
+    [
+        activatable(Windows.Foundation.UniversalApiContract, 1.0),
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile),
+        threading(both)
+    ]
+    runtimeclass ManipulationDeltaRoutedEventArgs : Windows.UI.Xaml.RoutedEventArgs
+    {
+        [default] interface Windows.UI.Xaml.Input.IManipulationDeltaRoutedEventArgs;
+    }
+
+    [
+        activatable(Windows.Foundation.UniversalApiContract, 1.0),
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile),
+        threading(both)
+    ]
+    runtimeclass ManipulationInertiaStartingRoutedEventArgs : Windows.UI.Xaml.RoutedEventArgs
+    {
+        [default] interface Windows.UI.Xaml.Input.IManipulationInertiaStartingRoutedEventArgs;
+    }
+
+    [
+        activatable(Windows.Foundation.UniversalApiContract, 1.0),
+        /* activatable(Windows.UI.Xaml.Input.IManipulationPivotFactory, Windows.Foundation.UniversalApiContract, 1.0), */
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile),
+        threading(both)
+    ]
+    runtimeclass ManipulationPivot
+    {
+        [default] interface Windows.UI.Xaml.Input.IManipulationPivot;
+    }
+
+    [
+        /* composable(Windows.UI.Xaml.Input.IManipulationStartedRoutedEventArgsFactory, public, Windows.Foundation.UniversalApiContract, 1.0), */
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile),
+        threading(both)
+    ]
+    runtimeclass ManipulationStartedRoutedEventArgs : Windows.UI.Xaml.RoutedEventArgs
+    {
+        [default] interface Windows.UI.Xaml.Input.IManipulationStartedRoutedEventArgs;
+    }
+
+    [
+        activatable(Windows.Foundation.UniversalApiContract, 1.0),
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile),
+        threading(both)
+    ]
+    runtimeclass ManipulationStartingRoutedEventArgs : Windows.UI.Xaml.RoutedEventArgs
+    {
+        [default] interface Windows.UI.Xaml.Input.IManipulationStartingRoutedEventArgs;
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile)
+    ]
+    runtimeclass Pointer
+    {
+        [default] interface Windows.UI.Xaml.Input.IPointer;
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile),
+        threading(both)
+    ]
+    runtimeclass PointerRoutedEventArgs : Windows.UI.Xaml.RoutedEventArgs
+    {
+        [default] interface Windows.UI.Xaml.Input.IPointerRoutedEventArgs;
+        /* [contract(Windows.Foundation.UniversalApiContract, 5.0)] interface Windows.UI.Xaml.Input.IPointerRoutedEventArgs2; */
+    }
+
+    [
+        activatable(Windows.Foundation.UniversalApiContract, 1.0),
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile),
+        threading(both)
+    ]
+    runtimeclass RightTappedRoutedEventArgs : Windows.UI.Xaml.RoutedEventArgs
+    {
+        [default] interface Windows.UI.Xaml.Input.IRightTappedRoutedEventArgs;
+    }
+
+    [
+        activatable(Windows.Foundation.UniversalApiContract, 1.0),
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile),
+        threading(both)
+    ]
+    runtimeclass TappedRoutedEventArgs : Windows.UI.Xaml.RoutedEventArgs
+    {
+        [default] interface Windows.UI.Xaml.Input.ITappedRoutedEventArgs;
+    }
+}

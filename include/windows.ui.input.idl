@@ -30,7 +30,11 @@ import "windows.system.idl";
 import "windows.ui.core.idl";
 
 namespace Windows.UI.Input {
+    typedef enum HoldingState HoldingState;
     typedef enum PointerUpdateKind PointerUpdateKind;
+
+    typedef struct ManipulationDelta ManipulationDelta;
+    typedef struct ManipulationVelocities ManipulationVelocities;
 
     interface IPointerPoint;
     interface IPointerPointProperties;
@@ -49,6 +53,16 @@ namespace Windows.UI.Input {
     [
         contract(Windows.Foundation.UniversalApiContract, 1.0)
     ]
+    enum HoldingState
+    {
+        Started   = 0,
+        Completed = 1,
+        Canceled  = 2,
+    };
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0)
+    ]
     enum PointerUpdateKind
     {
         Other                = 0,
@@ -62,6 +76,27 @@ namespace Windows.UI.Input {
         XButton1Released     = 8,
         XButton2Pressed      = 9,
         XButton2Released     = 10
+    };
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0)
+    ]
+    struct ManipulationDelta
+    {
+        Windows.Foundation.Point *Translation;
+        FLOAT Scale;
+        FLOAT Rotation;
+        FLOAT Expansion;
+    };
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0)
+    ]
+    struct ManipulationVelocities
+    {
+        Windows.Foundation.Point *Linear;
+        FLOAT Angular;
+        FLOAT Expansion;
     };
 
     [

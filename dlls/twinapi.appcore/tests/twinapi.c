@@ -41,9 +41,8 @@
 #define WIDL_using_Windows_UI_ViewManagement
 #include "windows.ui.viewmanagement.h"
 #define WIDL_using_Windows_ApplicationModel_Core
-#include "windows.applicationmodel.core.h"
 #define WIDL_using_Windows_ApplicationModel_DataTransfer
-#include "windows.applicationmodel.datatransfer.h"
+#include "windows.applicationmodel.core.h"
 
 #include "wine/test.h"
 

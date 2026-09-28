@@ -1,5 +1,6 @@
 /*
  * Copyright 2024 Zhiyi Zhang for CodeWeavers
+ * Copyright 2026 Olivia Ryan
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -35,23 +36,211 @@ import "windows.ui.idl";
 import "windows.ui.composition.idl";
 import "windows.ui.core.idl";
 import "windows.ui.input.idl";
+import "windows.ui.xaml.controls.primitives.idl";
+import "windows.ui.xaml.input.idl";
 import "windows.ui.xaml.interop.idl";
+import "windows.ui.xaml.media.idl";
+import "windows.ui.xaml.media.animation.idl";
+
+namespace Windows.UI.Xaml.Input {
+    typedef enum ManipulationModes ManipulationModes;
+
+    runtimeclass DoubleTappedRoutedEventArgs;
+    runtimeclass HoldingRoutedEventArgs;
+    runtimeclass KeyRoutedEventArgs;
+    runtimeclass ManipulationCompletedRoutedEventArgs;
+    runtimeclass ManipulationDeltaRoutedEventArgs;
+    runtimeclass ManipulationInertiaStartingRoutedEventArgs;
+    runtimeclass ManipulationStartedRoutedEventArgs;
+    runtimeclass ManipulationStartingRoutedEventArgs;
+    runtimeclass Pointer;
+    runtimeclass PointerRoutedEventArgs;
+    runtimeclass RightTappedRoutedEventArgs;
+    runtimeclass TappedRoutedEventArgs;
+
+    declare {
+        interface Windows.Foundation.Collections.IIterable<Windows.UI.Xaml.Input.Pointer *>;
+        interface Windows.Foundation.Collections.IIterator<Windows.UI.Xaml.Input.Pointer *>;
+        interface Windows.Foundation.Collections.IVectorView<Windows.UI.Xaml.Input.Pointer *>;
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        uuid(3124d025-04a7-4d45-825e-8204a624dbf4)
+    ]
+    delegate HRESULT DoubleTappedEventHandler([in] IInspectable *sender, [in] Windows.UI.Xaml.Input.DoubleTappedRoutedEventArgs *e);
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        uuid(ecae8ccd-8e5e-4fbe-9846-30a6370afcdf)
+    ]
+    delegate HRESULT HoldingEventHandler([in] IInspectable *sender, [in] Windows.UI.Xaml.Input.HoldingRoutedEventArgs *e);
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        uuid(7c63d2e5-7a0e-4e12-b96a-7715aa6ff1c8)
+    ]
+    delegate HRESULT KeyEventHandler([in] IInspectable *sender, [in] Windows.UI.Xaml.Input.KeyRoutedEventArgs *e);
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        uuid(38ef4b0f-14f8-42df-9a1e-a4bcc4af77f4)
+    ]
+    delegate HRESULT ManipulationCompletedEventHandler([in] IInspectable *sender, [in] Windows.UI.Xaml.Input.ManipulationCompletedRoutedEventArgs *e);
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        uuid(aa1160cb-dfb9-4c56-abdc-711b63c8eb94)
+    ]
+    delegate HRESULT ManipulationDeltaEventHandler([in] IInspectable *sender, [in] Windows.UI.Xaml.Input.ManipulationDeltaRoutedEventArgs *e);
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        uuid(d39d6322-7c9c-481b-827b-c8b2d9bb6fc7)
+    ]
+    delegate HRESULT ManipulationInertiaStartingEventHandler([in] IInspectable *sender, [in] Windows.UI.Xaml.Input.ManipulationInertiaStartingRoutedEventArgs *e);
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        uuid(f88345f8-e0a3-4be2-b90c-dc20e6d8beb0)
+    ]
+    delegate HRESULT ManipulationStartedEventHandler([in] IInspectable *sender, [in] Windows.UI.Xaml.Input.ManipulationStartedRoutedEventArgs *e);
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        uuid(10d0b04e-bfe4-42cb-823c-3fecd8770ef8)
+    ]
+    delegate HRESULT ManipulationStartingEventHandler([in] IInspectable *sender, [in] Windows.UI.Xaml.Input.ManipulationStartingRoutedEventArgs *e);
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        uuid(e4385929-c004-4bcf-8970-359486e39f88)
+    ]
+    delegate HRESULT PointerEventHandler([in] IInspectable *sender, [in] Windows.UI.Xaml.Input.PointerRoutedEventArgs *e);
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        uuid(2532a062-f447-4950-9c46-f1e34a2c2238)
+    ]
+    delegate HRESULT RightTappedEventHandler([in] IInspectable *sender, [in] Windows.UI.Xaml.Input.RightTappedRoutedEventArgs *e);
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        uuid(68d940cc-9ff0-49ce-b141-3f07ec477b97)
+    ]
+    delegate HRESULT TappedEventHandler([in] IInspectable *sender, [in] Windows.UI.Xaml.Input.TappedRoutedEventArgs *e);
+}
+
+namespace Windows.UI.Xaml.Media {
+    runtimeclass CacheMode;
+    runtimeclass GeneralTransform;
+    runtimeclass Projection;
+    runtimeclass RectangleGeometry;
+    runtimeclass Transform;
+}
 
 namespace Windows.UI.Xaml {
+    typedef enum ApplicationHighContrastAdjustment ApplicationHighContrastAdjustment;
+    typedef enum ApplicationRequiresPointerMode ApplicationRequiresPointerMode;
+    typedef enum ApplicationTheme ApplicationTheme;
+    typedef enum FocusVisualKind FocusVisualKind;
+    typedef enum Visibility Visibility;
+
+    interface IApplication;
+    interface IApplication2;
+    interface IApplication3;
+    interface IApplicationFactory;
+    interface IApplicationInitializationCallbackParams;
+    interface IApplicationOverrides;
+    interface IApplicationStatics;
+    interface IBindingFailedEventArgs;
     interface IDataTemplateKey;
+    interface IDataTemplateKeyFactory;
+    interface IDebugSettings;
+    interface IDebugSettings2;
     interface IDependencyObject;
+    interface IDependencyObject2;
+    interface IDependencyObjectFactory;
     interface IDependencyProperty;
     interface IDependencyPropertyChangedEventArgs;
     interface IDependencyPropertyStatics;
+    interface IDragEventArgs;
+    interface IDragEventArgs2;
     interface IPropertyMetadata;
     interface IPropertyMetadataFactory;
     interface IPropertyMetadataStatics;
+    interface IResourceDictionary;
+    interface IRoutedEvent;
+    interface IRoutedEventArgs;
+    interface IRoutedEventArgsFactory;
+    interface IUIElement;
+    interface IUIElement2;
+    interface IUIElement3;
+    interface IUIElement4;
+    interface IUIElement5;
+    interface IUIElement6;
+    interface IUIElement7;
+    interface IUIElement8;
+    interface IUIElement9;
+    interface IUIElementStatics;
+    interface IUIElementStatics2;
+    interface IUIElementStatics3;
+    interface IUIElementStatics4;
+    interface IUIElementStatics5;
+    interface IUIElementStatics6;
+    interface IUIElementStatics7;
+    interface IUIElementStatics8;
+    interface IUIElementStatics9;
+    interface IUIElementStatics10;
+    interface IUnhandledExceptionEventArgs;
+    interface IWindow;
+    interface IWindow2;
+    interface IWindow3;
+    interface IWindow4;
+    interface IWindowCreatedEventArgs;
+    interface IWindowStatics;
 
+    runtimeclass Application;
+    runtimeclass ApplicationInitializationCallbackParams;
+    runtimeclass BindingFailedEventArgs;
     runtimeclass DataTemplateKey;
+    runtimeclass DebugSettings;
     runtimeclass DependencyObject;
     runtimeclass DependencyProperty;
     runtimeclass DependencyPropertyChangedEventArgs;
+    runtimeclass DragEventArgs;
     runtimeclass PropertyMetadata;
+    runtimeclass ResourceDictionary;
+    runtimeclass RoutedEvent;
+    runtimeclass RoutedEventArgs;
+    runtimeclass UIElement;
+    runtimeclass UnhandledExceptionEventArgs;
+    runtimeclass Window;
+    runtimeclass WindowCreatedEventArgs;
+
+    declare {
+        interface Windows.Foundation.Collections.IKeyValuePair<IInspectable *, IInspectable *>;
+        interface Windows.Foundation.Collections.IIterable<Windows.Foundation.Collections.IKeyValuePair<IInspectable *, IInspectable *> *>;
+        interface Windows.Foundation.Collections.IIterable<Windows.UI.Xaml.ResourceDictionary *>;
+        interface Windows.Foundation.Collections.IIterator<Windows.Foundation.Collections.IKeyValuePair<IInspectable *, IInspectable *> *>;
+        interface Windows.Foundation.Collections.IIterator<Windows.UI.Xaml.ResourceDictionary *>;
+        interface Windows.Foundation.Collections.IMap<IInspectable *, IInspectable *>;
+        interface Windows.Foundation.Collections.IMapView<IInspectable *, IInspectable *>;
+        interface Windows.Foundation.Collections.IVector<Windows.UI.Xaml.ResourceDictionary *>;
+        interface Windows.Foundation.Collections.IVectorView<Windows.UI.Xaml.ResourceDictionary *>;
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        uuid(b6351c55-c284-46e4-8310-fb0967fab76f)
+    ]
+    delegate HRESULT ApplicationInitializationCallback([in] Windows.UI.Xaml.ApplicationInitializationCallbackParams *p);
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        uuid(136b1782-54ba-420d-a1aa-82828721cde6)
+    ]
+    delegate HRESULT BindingFailedEventHandler([in] IInspectable *sender, [in] Windows.UI.Xaml.BindingFailedEventArgs *e);
 
     [
         contract(Windows.Foundation.UniversalApiContract, 1.0),
@@ -67,9 +256,225 @@ namespace Windows.UI.Xaml {
 
     [
         contract(Windows.Foundation.UniversalApiContract, 1.0),
+        uuid(2ab1a205-1e73-4bcf-aabc-57b97e21961d)
+    ]
+    delegate HRESULT DragEventHandler([in] IInspectable *sender, [in] Windows.UI.Xaml.DragEventArgs *e);
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 3.0),
+        uuid(93a956ae-1d7f-438b-b7b8-227d96b609c0)
+    ]
+    delegate HRESULT EnteredBackgroundEventHandler([in] IInspectable *sender, [in] Windows.ApplicationModel.EnteredBackgroundEventArgs *e);
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 3.0),
+        uuid(aaad5dad-4fc6-4aa4-b7cf-877e36ada4f6)
+    ]
+    delegate HRESULT LeavingBackgroundEventHandler([in] IInspectable *sender, [in] Windows.ApplicationModel.LeavingBackgroundEventArgs *e);
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
         uuid(5a9f8a25-d142-44a4-8231-fd676724f29b)
     ]
     delegate HRESULT PropertyChangedCallback([in] Windows.UI.Xaml.DependencyObject *obj, [in] Windows.UI.Xaml.DependencyPropertyChangedEventArgs *args);
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        uuid(a856e674-b0b6-4bc3-bba8-1ba06e40d4b5)
+    ]
+    delegate HRESULT RoutedEventHandler([in] IInspectable *sender, [in] Windows.UI.Xaml.RoutedEventArgs *e);
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        uuid(23429465-e36a-40e2-b139-a4704602a6e1)
+    ]
+    delegate HRESULT SuspendingEventHandler([in] IInspectable *sender, [in] Windows.ApplicationModel.SuspendingEventArgs *e);
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        uuid(9274e6bd-49a1-4958-beee-d0e19587b6e3)
+    ]
+    delegate HRESULT UnhandledExceptionEventHandler([in] IInspectable *sender, [in] Windows.UI.Xaml.UnhandledExceptionEventArgs *e);
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        uuid(18026348-8619-4c7b-b534-ced45d9de219)
+    ]
+    delegate HRESULT WindowActivatedEventHandler([in] IInspectable *sender, [in] Windows.UI.Core.WindowActivatedEventArgs *e);
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        uuid(0db89161-20d7-45df-9122-ba89576703ba)
+    ]
+    delegate HRESULT WindowClosedEventHandler([in] IInspectable *sender, [in] Windows.UI.Core.CoreWindowEventArgs *e);
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        uuid(5c21c742-2ced-4fd9-ba38-7118d40e966b)
+    ]
+    delegate HRESULT WindowSizeChangedEventHandler([in] IInspectable *sender, [in] Windows.UI.Core.WindowSizeChangedEventArgs *e);
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        uuid(10406ad6-b090-4a4a-b2ad-d682df27130f)
+    ]
+    delegate HRESULT WindowVisibilityChangedEventHandler([in] IInspectable *sender, [in] Windows.UI.Core.VisibilityChangedEventArgs *e);
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 4.0)
+    ]
+    enum ApplicationHighContrastAdjustment
+    {
+        None = 0x00000000,
+        Auto = 0xffffffff,
+    };
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 3.0)
+    ]
+    enum ApplicationRequiresPointerMode
+    {
+        Auto          = 0,
+        WhenRequested = 1,
+    };
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0)
+    ]
+    enum ApplicationTheme
+    {
+        Light = 0,
+        Dark  = 1,
+    };
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 3.0)
+    ]
+    enum FocusVisualKind
+    {
+        DottedLine     = 0,
+        HighVisibility = 1,
+        [contract(Windows.Foundation.UniversalApiContract, 6.0)]
+        Reveal         = 2,
+    };
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0)
+    ]
+    enum Visibility
+    {
+        Visible   = 0,
+        Collapsed = 1,
+    };
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.Application),
+        uuid(74b861a1-7487-46a9-9a6e-c78b512726c5)
+    ]
+    interface IApplication : IInspectable
+    {
+        [propget] HRESULT Resources([out, retval] Windows.UI.Xaml.ResourceDictionary **value);
+        [propput] HRESULT Resources([in] Windows.UI.Xaml.ResourceDictionary *value);
+        [propget] HRESULT DebugSettings([out, retval] Windows.UI.Xaml.DebugSettings **value);
+        [propget] HRESULT RequestedTheme([out, retval] Windows.UI.Xaml.ApplicationTheme *value);
+        [propput] HRESULT RequestedTheme([in] Windows.UI.Xaml.ApplicationTheme value);
+        [eventadd] HRESULT UnhandledException([in] Windows.UI.Xaml.UnhandledExceptionEventHandler *handler, [out, retval] EventRegistrationToken *cookie);
+        [eventremove] HRESULT UnhandledException([in] EventRegistrationToken cookie);
+        [eventadd] HRESULT Suspending([in] Windows.UI.Xaml.SuspendingEventHandler *handler, [out, retval] EventRegistrationToken *cookie);
+        [eventremove] HRESULT Suspending([in] EventRegistrationToken cookie);
+        [eventadd] HRESULT Resuming([in] Windows.Foundation.EventHandler<IInspectable *> *handler, [out, retval] EventRegistrationToken *cookie);
+        [eventremove] HRESULT Resuming([in] EventRegistrationToken cookie);
+        HRESULT Exit();
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 3.0),
+        exclusiveto(Windows.UI.Xaml.Application),
+        uuid(019104be-522a-5904-f52f-de72010429e0)
+    ]
+    interface IApplication2 : IInspectable
+    {
+        [propget] HRESULT FocusVisualKind([out, retval] Windows.UI.Xaml.FocusVisualKind *value);
+        [propput] HRESULT FocusVisualKind([in] Windows.UI.Xaml.FocusVisualKind value);
+        [propget] HRESULT RequiresPointerMode([out, retval] Windows.UI.Xaml.ApplicationRequiresPointerMode *value);
+        [propput] HRESULT RequiresPointerMode([in] Windows.UI.Xaml.ApplicationRequiresPointerMode value);
+        [eventadd] HRESULT LeavingBackground([in] Windows.UI.Xaml.LeavingBackgroundEventHandler *handler, [out, retval] EventRegistrationToken *cookie);
+        [eventremove] HRESULT LeavingBackground([in] EventRegistrationToken cookie);
+        [eventadd] HRESULT EnteredBackground([in] Windows.UI.Xaml.EnteredBackgroundEventHandler *handler, [out, retval] EventRegistrationToken *cookie);
+        [eventremove] HRESULT EnteredBackground([in] EventRegistrationToken cookie);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 4.0),
+        exclusiveto(Windows.UI.Xaml.Application),
+        uuid(b775ad7c-18b8-45ca-a1b0-dc483e4b1028)
+    ]
+    interface IApplication3 : IInspectable
+    {
+        [propget] HRESULT HighContrastAdjustment([out, retval] Windows.UI.Xaml.ApplicationHighContrastAdjustment *value);
+        [propput] HRESULT HighContrastAdjustment([in] Windows.UI.Xaml.ApplicationHighContrastAdjustment value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.Application),
+        uuid(93bbe361-be5a-4ee3-b4a3-95118dc97a89)
+    ]
+    interface IApplicationFactory : IInspectable
+    {
+        HRESULT CreateInstance([in] IInspectable *base_interface, [out] IInspectable **inner_interface, [out, retval] Windows.UI.Xaml.Application **value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.ApplicationInitializationCallbackParams),
+        uuid(751b792e-5772-4488-8b87-f547faa64474)
+    ]
+    interface IApplicationInitializationCallbackParams : IInspectable
+    {
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.Application),
+        uuid(25f99ff7-9347-459a-9fac-b2d0e11c1a0f)
+    ]
+    interface IApplicationOverrides : IInspectable
+    {
+        HRESULT OnActivated([in] Windows.ApplicationModel.Activation.IActivatedEventArgs *args);
+        HRESULT OnLaunched([in] Windows.ApplicationModel.Activation.LaunchActivatedEventArgs *args);
+        HRESULT OnFileActivated([in] Windows.ApplicationModel.Activation.FileActivatedEventArgs *args);
+        HRESULT OnSearchActivated([in] Windows.ApplicationModel.Activation.SearchActivatedEventArgs *args);
+        HRESULT OnShareTargetActivated([in] Windows.ApplicationModel.Activation.ShareTargetActivatedEventArgs *args);
+        HRESULT OnFileOpenPickerActivated([in] Windows.ApplicationModel.Activation.FileOpenPickerActivatedEventArgs *args);
+        HRESULT OnFileSavePickerActivated([in] Windows.ApplicationModel.Activation.FileSavePickerActivatedEventArgs *args);
+        HRESULT OnCachedFileUpdaterActivated([in] Windows.ApplicationModel.Activation.CachedFileUpdaterActivatedEventArgs *args);
+        HRESULT OnWindowCreated([in] Windows.UI.Xaml.WindowCreatedEventArgs *args);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.Application),
+        uuid(06499997-f7b4-45fe-b763-7577d1d3cb4a)
+    ]
+    interface IApplicationStatics : IInspectable
+    {
+        [propget] HRESULT Current([out, retval] Windows.UI.Xaml.Application **value);
+        HRESULT Start([in] Windows.UI.Xaml.ApplicationInitializationCallback *callback);
+        [overload("LoadComponent")] HRESULT LoadComponent([in] IInspectable *component, [in] Windows.Foundation.Uri *resource_locator);
+        [overload("LoadComponent")] HRESULT LoadComponentWithResourceLocation([in] IInspectable *component, [in] Windows.Foundation.Uri *resource_locator, [in] Windows.UI.Xaml.Controls.Primitives.ComponentResourceLocation component_resource_location);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.BindingFailedEventArgs),
+        uuid(32c1d013-4dbd-446d-bbb8-0de35048a449)
+    ]
+    interface IBindingFailedEventArgs : IInspectable
+    {
+        [propget] HRESULT Message([out, retval] HSTRING *value);
+    }
 
     [
         contract(Windows.Foundation.UniversalApiContract, 1.0),
@@ -91,6 +496,22 @@ namespace Windows.UI.Xaml {
     {
         HRESULT CreateInstance([in] IInspectable *base_interface, [out] IInspectable **inner_interface, [out, retval] Windows.UI.Xaml.DataTemplateKey **value);
         HRESULT CreateInstanceWithType([in] IInspectable *data_type, [in] IInspectable *base_interface, [out] IInspectable **inner_interface, [out, retval] Windows.UI.Xaml.DataTemplateKey **value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.DebugSettings),
+    ]
+    interface IDebugSettings : IInspectable
+    {
+        [propget] HRESULT EnableFrameRateCounter([out, retval] boolean *value);
+        [propput] HRESULT EnableFrameRateCounter([in] boolean value);
+        [propget] HRESULT IsBindingTracingEnabled([out, retval] boolean *value);
+        [propput] HRESULT IsBindingTracingEnabled([in] boolean value);
+        [propget] HRESULT IsOverdrawHeatMapEnabled([out, retval] boolean *value);
+        [propput] HRESULT IsOverdrawHeatMapEnabled([in] boolean value);
+        [eventadd] HRESULT BindingFailed([in] Windows.UI.Xaml.BindingFailedEventHandler *handler, [out, retval] EventRegistrationToken *cookie);
+        [eventremove] HRESULT BindingFailed([in] EventRegistrationToken cookie);
     }
 
     [
@@ -165,6 +586,16 @@ namespace Windows.UI.Xaml {
 
     [
         contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.DragEventArgs),
+    ]
+    interface IDragEventArgs : IInspectable
+    {
+        [propget] HRESULT AcceptedOperation([out, retval] Windows.ApplicationModel.DataTransfer.DataPackageOperation *value);
+        [propput] HRESULT AcceptedOperation([in] Windows.ApplicationModel.DataTransfer.DataPackageOperation value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
         exclusiveto(Windows.UI.Xaml.PropertyMetadata),
         uuid(814ef30d-8d18-448a-8644-f2cb51e70380)
     ]
@@ -198,6 +629,223 @@ namespace Windows.UI.Xaml {
         [overload("Create")] HRESULT CreateWithFactoryAndCallback([in] Windows.UI.Xaml.CreateDefaultValueCallback *create_default_value_callback, [in] Windows.UI.Xaml.PropertyChangedCallback *property_changed_callback, [out, retval] Windows.UI.Xaml.PropertyMetadata **result);
     }
 
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.ResourceDictionary),
+        uuid(c1ea4f24-d6de-4191-8e3a-f48601f7489c)
+    ]
+    interface IResourceDictionary : IInspectable
+    {
+        [propget] HRESULT Source([out, retval] Windows.Foundation.Uri **value);
+        [propput] HRESULT Source([in] Windows.Foundation.Uri *value);
+        [propget] HRESULT MergedDictionaries([out, retval] Windows.Foundation.Collections.IVector<Windows.UI.Xaml.ResourceDictionary *> **value);
+        [propget] HRESULT ThemeDictionaries([out, retval] Windows.Foundation.Collections.IMap<IInspectable *, IInspectable *> **value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.RoutedEvent),
+        uuid(a6b25818-43c1-4c70-865c-7bdd5a32e327)
+    ]
+    interface IRoutedEvent : IInspectable
+    {
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.RoutedEventArgs),
+        uuid(5c985ac6-d802-4b38-a223-bf070c43fedf)
+    ]
+    interface IRoutedEventArgs : IInspectable
+    {
+        [propget] HRESULT OriginalSource([out, retval] IInspectable **value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.UIElement),
+        uuid(676d0be9-b65c-41c6-ba40-58cf87f201c1)
+    ]
+    interface IUIElement : IInspectable
+    {
+        [propget] HRESULT DesiredSize([out, retval] Windows.Foundation.Size *result);
+        [propget] HRESULT AllowDrop([out, retval] boolean *result);
+        [propput] HRESULT AllowDrop([in] boolean value);
+        [propget] HRESULT Opacity([out, retval] DOUBLE *result);
+        [propput] HRESULT Opacity([in] DOUBLE value);
+        [propget] HRESULT Clip([out, retval] Windows.UI.Xaml.Media.RectangleGeometry **result);
+        [propput] HRESULT Clip([in] Windows.UI.Xaml.Media.RectangleGeometry *value);
+        [propget] HRESULT RenderTransform([out, retval] Windows.UI.Xaml.Media.Transform **result);
+        [propput] HRESULT RenderTransform([in] Windows.UI.Xaml.Media.Transform *value);
+        [propget] HRESULT Projection([out, retval] Windows.UI.Xaml.Media.Projection **result);
+        [propput] HRESULT Projection([in] Windows.UI.Xaml.Media.Projection *value);
+        [propget] HRESULT RenderTransformOrigin([out, retval] Windows.Foundation.Point *result);
+        [propput] HRESULT RenderTransformOrigin([in] Windows.Foundation.Point value);
+        [propget] HRESULT IsHitTestVisible([out, retval] boolean *result);
+        [propput] HRESULT IsHitTestVisible([in] boolean value);
+        [propget] HRESULT Visibility([out, retval] Windows.UI.Xaml.Visibility **result);
+        [propput] HRESULT Visibility([in] Windows.UI.Xaml.Visibility *value);
+        [propget] HRESULT RenderSize([out, retval] Windows.Foundation.Size *result);
+        [propget] HRESULT UseLayoutRounding([out, retval] boolean *result);
+        [propput] HRESULT UseLayoutRounding([in] boolean value);
+        [propget] HRESULT Transitions([out, retval] Windows.UI.Xaml.Media.Animation.TransitionCollection **result);
+        [propput] HRESULT Transitions([in] Windows.UI.Xaml.Media.Animation.TransitionCollection *value);
+        [propget] HRESULT CacheMode([out, retval] Windows.UI.Xaml.Media.CacheMode **result);
+        [propput] HRESULT CacheMode([in] Windows.UI.Xaml.Media.CacheMode *value);
+        [propget] HRESULT IsTapEnabled([out, retval] boolean *result);
+        [propput] HRESULT IsTapEnabled([in] boolean value);
+        [propget] HRESULT IsDoubleTapEnabled([out, retval] boolean *result);
+        [propput] HRESULT IsDoubleTapEnabled([in] boolean value);
+        [propget] HRESULT IsRightTapEnabled([out, retval] boolean *result);
+        [propput] HRESULT IsRightTapEnabled([in] boolean value);
+        [propget] HRESULT IsHoldingEnabled([out, retval] boolean *result);
+        [propput] HRESULT IsHoldingEnabled([in] boolean value);
+        [propget] HRESULT ManipulationMode([out, retval] Windows.UI.Xaml.Input.ManipulationModes *result);
+        [propput] HRESULT ManipulationMode([in] Windows.UI.Xaml.Input.ManipulationModes value);
+        [propget] HRESULT PointerCaptures([out, retval] Windows.Foundation.Collections.IVectorView<Windows.UI.Xaml.Input.Pointer *> **result);
+        [eventadd] HRESULT KeyUp([in] Windows.UI.Xaml.Input.KeyEventHandler *handler, [out, retval] EventRegistrationToken *cookie);
+        [eventremove] HRESULT KeyUp([in] EventRegistrationToken cookie);
+        [eventadd] HRESULT KeyDown([in] Windows.UI.Xaml.Input.KeyEventHandler *handler, [out, retval] EventRegistrationToken *cookie);
+        [eventremove] HRESULT KeyDown([in] EventRegistrationToken cookie);
+        [eventadd] HRESULT GotFocus([in] Windows.UI.Xaml.RoutedEventHandler *handler, [out, retval] EventRegistrationToken *cookie);
+        [eventremove] HRESULT GotFocus([in] EventRegistrationToken cookie);
+        [eventadd] HRESULT LostFocus([in] Windows.UI.Xaml.RoutedEventHandler *handler, [out, retval] EventRegistrationToken *cookie);
+        [eventremove] HRESULT LostFocus([in] EventRegistrationToken cookie);
+        [eventadd] HRESULT DragEnter([in] Windows.UI.Xaml.DragEventHandler *handler, [out, retval] EventRegistrationToken *cookie);
+        [eventremove] HRESULT DragEnter([in] EventRegistrationToken cookie);
+        [eventadd] HRESULT DragLeave([in] Windows.UI.Xaml.DragEventHandler *handler, [out, retval] EventRegistrationToken *cookie);
+        [eventremove] HRESULT DragLeave([in] EventRegistrationToken cookie);
+        [eventadd] HRESULT DragOver([in] Windows.UI.Xaml.DragEventHandler *handler, [out, retval] EventRegistrationToken *cookie);
+        [eventremove] HRESULT DragOver([in] EventRegistrationToken cookie);
+        [eventadd] HRESULT Drop([in] Windows.UI.Xaml.DragEventHandler *handler, [out, retval] EventRegistrationToken *cookie);
+        [eventremove] HRESULT Drop([in] EventRegistrationToken cookie);
+        [eventadd] HRESULT PointerPressed([in] Windows.UI.Xaml.Input.PointerEventHandler *handler, [out, retval] EventRegistrationToken *cookie);
+        [eventremove] HRESULT PointerPressed([in] EventRegistrationToken cookie);
+        [eventadd] HRESULT PointerMoved([in] Windows.UI.Xaml.Input.PointerEventHandler *handler, [out, retval] EventRegistrationToken *cookie);
+        [eventremove] HRESULT PointerMoved([in] EventRegistrationToken cookie);
+        [eventadd] HRESULT PointerReleased([in] Windows.UI.Xaml.Input.PointerEventHandler *handler, [out, retval] EventRegistrationToken *cookie);
+        [eventremove] HRESULT PointerReleased([in] EventRegistrationToken cookie);
+        [eventadd] HRESULT PointerEntered([in] Windows.UI.Xaml.Input.PointerEventHandler *handler, [out, retval] EventRegistrationToken *cookie);
+        [eventremove] HRESULT PointerEntered([in] EventRegistrationToken cookie);
+        [eventadd] HRESULT PointerExited([in] Windows.UI.Xaml.Input.PointerEventHandler *handler, [out, retval] EventRegistrationToken *cookie);
+        [eventremove] HRESULT PointerExited([in] EventRegistrationToken cookie);
+        [eventadd] HRESULT PointerCaptureLost([in] Windows.UI.Xaml.Input.PointerEventHandler *handler, [out, retval] EventRegistrationToken *cookie);
+        [eventremove] HRESULT PointerCaptureLost([in] EventRegistrationToken cookie);
+        [eventadd] HRESULT PointerCanceled([in] Windows.UI.Xaml.Input.PointerEventHandler *handler, [out, retval] EventRegistrationToken *cookie);
+        [eventremove] HRESULT PointerCanceled([in] EventRegistrationToken cookie);
+        [eventadd] HRESULT PointerWheelChanged([in] Windows.UI.Xaml.Input.PointerEventHandler *handler, [out, retval] EventRegistrationToken *cookie);
+        [eventremove] HRESULT PointerWheelChanged([in] EventRegistrationToken cookie);
+        [eventadd] HRESULT Tapped([in] Windows.UI.Xaml.Input.TappedEventHandler *handler, [out, retval] EventRegistrationToken *cookie);
+        [eventremove] HRESULT Tapped([in] EventRegistrationToken cookie);
+        [eventadd] HRESULT DoubleTapped([in] Windows.UI.Xaml.Input.DoubleTappedEventHandler *handler, [out, retval] EventRegistrationToken *cookie);
+        [eventremove] HRESULT DoubleTapped([in] EventRegistrationToken cookie);
+        [eventadd] HRESULT Holding([in] Windows.UI.Xaml.Input.HoldingEventHandler *handler, [out, retval] EventRegistrationToken *cookie);
+        [eventremove] HRESULT Holding([in] EventRegistrationToken cookie);
+        [eventadd] HRESULT RightTapped([in] Windows.UI.Xaml.Input.RightTappedEventHandler *handler, [out, retval] EventRegistrationToken *cookie);
+        [eventremove] HRESULT RightTapped([in] EventRegistrationToken cookie);
+        [eventadd] HRESULT ManipulationStarting([in] Windows.UI.Xaml.Input.ManipulationStartingEventHandler *handler, [out, retval] EventRegistrationToken *cookie);
+        [eventremove] HRESULT ManipulationStarting([in] EventRegistrationToken cookie);
+        [eventadd] HRESULT ManipulationInertiaStarting([in] Windows.UI.Xaml.Input.ManipulationInertiaStartingEventHandler *handler, [out, retval] EventRegistrationToken *cookie);
+        [eventremove] HRESULT ManipulationInertiaStarting([in] EventRegistrationToken cookie);
+        [eventadd] HRESULT ManipulationStarted([in] Windows.UI.Xaml.Input.ManipulationStartedEventHandler *handler, [out, retval] EventRegistrationToken *cookie);
+        [eventremove] HRESULT ManipulationStarted([in] EventRegistrationToken cookie);
+        [eventadd] HRESULT ManipulationDelta([in] Windows.UI.Xaml.Input.ManipulationDeltaEventHandler *handler, [out, retval] EventRegistrationToken *cookie);
+        [eventremove] HRESULT ManipulationDelta([in] EventRegistrationToken cookie);
+        [eventadd] HRESULT ManipulationCompleted([in] Windows.UI.Xaml.Input.ManipulationCompletedEventHandler *handler, [out, retval] EventRegistrationToken *cookie);
+        [eventremove] HRESULT ManipulationCompleted([in] EventRegistrationToken cookie);
+        HRESULT Measure([in] Windows.Foundation.Size *available_size);
+        HRESULT Arrange([in] Windows.Foundation.Rect final_rect);
+        HRESULT CapturePointer([in] Windows.UI.Xaml.Input.Pointer *value, [out, retval] boolean *result);
+        HRESULT ReleasePointerCapture([in] Windows.UI.Xaml.Input.Pointer *value);
+        HRESULT ReleasePointerCaptures();
+        HRESULT AddHandler([in] Windows.UI.Xaml.RoutedEvent *routed_event, [in] IInspectable *handler, [in] boolean handled_events_too);
+        HRESULT RemoveHandler([in] Windows.UI.Xaml.RoutedEvent *routed_event, [in] IInspectable *handler);
+        HRESULT TransformToVisual([in] Windows.UI.Xaml.UIElement *visual, [out, retval] Windows.UI.Xaml.Media.GeneralTransform **result);
+        HRESULT InvalidateMeasure();
+        HRESULT InvalidateArrange();
+        HRESULT UpdateLayout();
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.UnhandledExceptionEventArgs),
+        uuid(7230269c-054e-4cf3-86c5-be90eb6863d5)
+    ]
+    interface IUnhandledExceptionEventArgs : IInspectable
+    {
+        [propget] HRESULT Exception([out, retval] HRESULT *value);
+        [propget] HRESULT Message([out, retval] HSTRING *value);
+        [propget] HRESULT Handled([out, retval] boolean *value);
+        [propput] HRESULT Handled([in] boolean value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.Window),
+        uuid(3276167d-c9f6-462d-9de2-ae4c1fd8c2e5)
+    ]
+    interface IWindow : IInspectable
+    {
+        [propget] HRESULT Bounds([out, retval] Windows.Foundation.Rect *value);
+        [propget] HRESULT Visible([out, retval] boolean *value);
+        [propget] HRESULT Content([out, retval] Windows.UI.Xaml.UIElement **value);
+        [propput] HRESULT Content([in] Windows.UI.Xaml.UIElement *value);
+        [propget] HRESULT CoreWindow([out, retval] Windows.UI.Core.CoreWindow **value);
+        [propget] HRESULT Dispatcher([out, retval] Windows.UI.Core.CoreDispatcher **value);
+        [eventadd] HRESULT Activated([in] Windows.UI.Xaml.WindowActivatedEventHandler *handler, [out, retval] EventRegistrationToken *cookie);
+        [eventremove] HRESULT Activated([in] EventRegistrationToken cookie);
+        [eventadd] HRESULT Closed([in] Windows.UI.Xaml.WindowClosedEventHandler *handler, [out, retval] EventRegistrationToken *cookie);
+        [eventremove] HRESULT Closed([in] EventRegistrationToken cookie);
+        [eventadd] HRESULT SizeChanged([in] Windows.UI.Xaml.WindowSizeChangedEventHandler *handler, [out, retval] EventRegistrationToken *cookie);
+        [eventremove] HRESULT SizeChanged([in] EventRegistrationToken cookie);
+        [eventadd] HRESULT VisibilityChanged([in] Windows.UI.Xaml.WindowVisibilityChangedEventHandler *handler, [out, retval] EventRegistrationToken *cookie);
+        [eventremove] HRESULT VisibilityChanged([in] EventRegistrationToken cookie);
+        HRESULT Activate();
+        HRESULT Close();
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.WindowCreatedEventArgs),
+        uuid(31b71470-feff-4654-af48-9b398ab5772b)
+    ]
+    interface IWindowCreatedEventArgs : IInspectable
+    {
+        [propget] HRESULT Window([out, retval] Windows.UI.Xaml.Window **value);
+    }
+
+    [
+        composable(Windows.UI.Xaml.IApplicationFactory, public, Windows.Foundation.UniversalApiContract, 1.0),
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile),
+        static(Windows.UI.Xaml.IApplicationStatics, Windows.Foundation.UniversalApiContract, 1.0),
+        threading(both)
+    ]
+    runtimeclass Application
+    {
+        [default] interface Windows.UI.Xaml.IApplication;
+        interface Windows.UI.Xaml.IApplicationOverrides;
+        /* [contract(Windows.Foundation.UniversalApiContract, 3.0)] interface Windows.UI.Xaml.IApplication2; */
+        /* [contract(Windows.Foundation.UniversalApiContract, 4.0)] interface Windows.UI.Xaml.IApplication3; */
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile)
+    ]
+    runtimeclass ApplicationInitializationCallbackParams
+    {
+        [default] interface Windows.UI.Xaml.IApplicationInitializationCallbackParams;
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile)
+    ]
+    runtimeclass BindingFailedEventArgs
+    {
+        [default] interface Windows.UI.Xaml.IBindingFailedEventArgs;
+    }
 
     [
         composable(Windows.UI.Xaml.IDataTemplateKeyFactory, public, Windows.Foundation.UniversalApiContract, 1.0),
@@ -208,6 +856,16 @@ namespace Windows.UI.Xaml {
     runtimeclass DataTemplateKey
     {
         [default] interface Windows.UI.Xaml.IDataTemplateKey;
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile)
+    ]
+    runtimeclass DebugSettings
+    {
+        [default] interface Windows.UI.Xaml.IDebugSettings;
+        /* [contract(Windows.Foundation.UniversalApiContract, 7.0)] interface Windows.UI.Xaml.IDebugSettings2; */
     }
 
     [
@@ -243,6 +901,17 @@ namespace Windows.UI.Xaml {
     }
 
     [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile),
+        threading(both)
+    ]
+    runtimeclass DragEventArgs : Windows.UI.Xaml.RoutedEventArgs
+    {
+        [default] interface Windows.UI.Xaml.IDragEventArgs;
+        /* [contract(Windows.Foundation.UniversalApiContract, 3.0)] interface Windows.UI.Xaml.IDragEventArgs2; */
+    }
+
+    [
         composable(Windows.UI.Xaml.IPropertyMetadataFactory, public, Windows.Foundation.UniversalApiContract, 1.0),
         contract(Windows.Foundation.UniversalApiContract, 1.0),
         marshaling_behavior(agile),
@@ -252,5 +921,99 @@ namespace Windows.UI.Xaml {
     runtimeclass PropertyMetadata
     {
         [default] interface Windows.UI.Xaml.IPropertyMetadata;
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile),
+        threading(both)
+    ]
+    runtimeclass ResourceDictionary : Windows.UI.Xaml.DependencyObject
+    {
+        [default] interface Windows.UI.Xaml.IResourceDictionary;
+        /* interface Windows.Foundation.Collections.IMap<IInspectable *, IInspectable *>; */
+        /* interface Windows.Foundation.Collections.IIterable<Windows.Foundation.Collections.IKeyValuePair<IInspectable *, IInspectable *> *>; */
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile)
+    ]
+    runtimeclass RoutedEvent
+    {
+        [default] interface Windows.UI.Xaml.IRoutedEvent;
+    }
+
+    [
+        /* composable(Windows.UI.Xaml.IRoutedEventArgsFactory, public, Windows.Foundation.UniversalApiContract, 1.0), */
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile),
+        threading(both)
+    ]
+    runtimeclass RoutedEventArgs
+    {
+        [default] interface Windows.UI.Xaml.IRoutedEventArgs;
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile),
+        /* static(Windows.UI.Xaml.IUIElementStatics, Windows.Foundation.UniversalApiContract, 1.0), */
+        /* static(Windows.UI.Xaml.IUIElementStatics2, Windows.Foundation.UniversalApiContract, 1.0), */
+        /* static(Windows.UI.Xaml.IUIElementStatics3, Windows.Foundation.UniversalApiContract, 1.0), */
+        /* static(Windows.UI.Xaml.IUIElementStatics4, Windows.Foundation.UniversalApiContract, 3.0), */
+        /* static(Windows.UI.Xaml.IUIElementStatics5, Windows.Foundation.UniversalApiContract, 4.0), */
+        /* static(Windows.UI.Xaml.IUIElementStatics6, Windows.Foundation.UniversalApiContract, 4.0), */
+        /* static(Windows.UI.Xaml.IUIElementStatics7, Windows.Foundation.UniversalApiContract, 5.0), */
+        /* static(Windows.UI.Xaml.IUIElementStatics8, Windows.Foundation.UniversalApiContract, 6.0), */
+        /* static(Windows.UI.Xaml.IUIElementStatics9, Windows.Foundation.UniversalApiContract, 7.0), */
+        /* static(Windows.UI.Xaml.IUIElementStatics10, Windows.Foundation.UniversalApiContract, 8.0), */
+        threading(both)
+    ]
+    runtimeclass UIElement : Windows.UI.Xaml.DependencyObject
+    {
+        /* [contract(Windows.Foundation.UniversalApiContract, 7.0)] interface Windows.UI.Composition.IAnimationObject; */
+        /* [contract(Windows.Foundation.UniversalApiContract, 8.0)] interface Windows.UI.Composition.IVisualElement; */
+        [default] interface Windows.UI.Xaml.IUIElement;
+        /* interface Windows.UI.Xaml.IUIElement2; */
+        /* interface Windows.UI.Xaml.IUIElement3; */
+        /* [contract(Windows.Foundation.UniversalApiContract, 3.0)] interface Windows.UI.Xaml.IUIElement4; */
+        /* [contract(Windows.Foundation.UniversalApiContract, 4.0)] interface Windows.UI.Xaml.IUIElement5; */
+        /* [contract(Windows.Foundation.UniversalApiContract, 5.0)] interface Windows.UI.Xaml.IUIElement6; */
+        /* [contract(Windows.Foundation.UniversalApiContract, 6.0)] interface Windows.UI.Xaml.IUIElement7; */
+        /* [contract(Windows.Foundation.UniversalApiContract, 7.0)] interface Windows.UI.Xaml.IUIElement8; */
+        /* [contract(Windows.Foundation.UniversalApiContract, 8.0)] interface Windows.UI.Xaml.IUIElement9; */
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile)
+    ]
+    runtimeclass UnhandledExceptionEventArgs
+    {
+        [default] interface Windows.UI.Xaml.IUnhandledExceptionEventArgs;
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile),
+        /* static(Windows.UI.Xaml.IWindowStatics, Windows.Foundation.UniversalApiContract, 1.0), */
+        threading(both)
+    ]
+    runtimeclass Window
+    {
+        [default] interface Windows.UI.Xaml.IWindow;
+        /* interface Windows.UI.Xaml.IWindow2; */
+        /* [contract(Windows.Foundation.UniversalApiContract, 4.0)] interface Windows.UI.Xaml.IWindow3; */
+        /* [contract(Windows.Foundation.UniversalApiContract, 8.0)] interface Windows.UI.Xaml.IWindow4; */
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile)
+    ]
+    runtimeclass WindowCreatedEventArgs
+    {
+        [default] interface Windows.UI.Xaml.IWindowCreatedEventArgs;
     }
 }
