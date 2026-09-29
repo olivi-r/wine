@@ -1001,6 +1001,7 @@ enable_aero_msstyles
 enable_amsi
 enable_amstream
 enable_apisetschema
+enable_appcontracts
 enable_apphelp
 enable_appwiz_cpl
 enable_appxdeploymentclient
@@ -22020,6 +22021,7 @@ wine_fn_config_makefile dlls/amsi enable_amsi
 wine_fn_config_makefile dlls/amstream enable_amstream
 wine_fn_config_makefile dlls/amstream/tests enable_tests
 wine_fn_config_makefile dlls/apisetschema enable_apisetschema
+wine_fn_config_makefile dlls/appcontracts enable_appcontracts
 wine_fn_config_makefile dlls/apphelp enable_apphelp
 wine_fn_config_makefile dlls/apphelp/tests enable_tests
 wine_fn_config_makefile dlls/appwiz.cpl enable_appwiz_cpl
