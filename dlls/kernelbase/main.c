@@ -138,12 +138,19 @@ LONG WINAPI AppPolicyGetShowDeveloperDiagnostic(HANDLE token, AppPolicyShowDevel
  */
 LONG WINAPI AppPolicyGetWindowingModel(HANDLE token, AppPolicyWindowingModel *policy)
 {
+    ULONG containerized = 0, dummy;
     static int once;
+    NTSTATUS status;
 
     if(!once++)
         FIXME("%p, %p\n", token, policy);
 
-    if(policy)
+    status = NtQueryInformationToken(token, TokenIsAppContainer, &containerized, sizeof(containerized), &dummy);
+    if (status != STATUS_SUCCESS) return RtlNtStatusToDosError( status );
+
+    if(policy && containerized)
+        *policy = AppPolicyWindowingModel_Universal;
+    else if (policy)
         *policy = AppPolicyWindowingModel_ClassicDesktop;
 
     return ERROR_SUCCESS;
