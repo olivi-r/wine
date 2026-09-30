@@ -35,8 +35,10 @@
 #define WIDL_using_Windows_Foundation_Collections
 #include "windows.foundation.h"
 #define WIDL_using_Windows_UI
-#include "windows.ui.h"
+#define WIDL_using_Windows_UI_Xaml
+#include "windows.ui.xaml.h"
 
+extern IActivationFactory *application_factory;
 extern IActivationFactory *color_helper_factory;
 
 #define DEFINE_IINSPECTABLE_( pfx, iface_type, impl_type, impl_from, iface_mem, expr )             \
@@ -76,5 +78,7 @@ extern IActivationFactory *color_helper_factory;
     }
 #define DEFINE_IINSPECTABLE( pfx, iface_type, impl_type, base_iface )                              \
     DEFINE_IINSPECTABLE_( pfx, iface_type, impl_type, impl_from_##iface_type, iface_type##_iface, &impl->base_iface )
+#define DEFINE_IINSPECTABLE_OUTER( pfx, iface_type, impl_type, base_iface )                        \
+    DEFINE_IINSPECTABLE_( pfx, iface_type, impl_type, impl_from_##iface_type, iface_type##_iface, impl->base_iface )
 
 #endif
