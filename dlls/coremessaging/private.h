@@ -40,6 +40,8 @@
 
 #include "async_private.h"
 
+extern IActivationFactory *dispatcher_queue_factory;
+
 HRESULT async_action_create( IUnknown *invoker, async_operation_callback callback, IAsyncAction **out );
 
 #define DEFINE_IINSPECTABLE_( pfx, iface_type, impl_type, impl_from, iface_mem, expr )             \

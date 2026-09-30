@@ -24,5 +24,6 @@
 import "windows.system.idl";
 
 namespace Windows.System {
+    runtimeclass DispatcherQueue;
     runtimeclass DispatcherQueueController;
 }

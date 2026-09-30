@@ -6,4 +6,5 @@ SOURCES = \
 	async.c \
 	async_private.idl \
 	classes.idl \
+	dispatcher_queue.c \
 	main.c
