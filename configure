@@ -1274,6 +1274,7 @@ enable_mountmgr_sys
 enable_mp3dmod
 enable_mpr
 enable_mprapi
+enable_mrmcorer
 enable_msacm32_drv
 enable_msacm32
 enable_msado15
@@ -22451,6 +22452,7 @@ wine_fn_config_makefile dlls/mp3dmod/tests enable_tests
 wine_fn_config_makefile dlls/mpr enable_mpr
 wine_fn_config_makefile dlls/mpr/tests enable_tests
 wine_fn_config_makefile dlls/mprapi enable_mprapi
+wine_fn_config_makefile dlls/mrmcorer enable_mrmcorer
 wine_fn_config_makefile dlls/msacm.dll16 enable_win16
 wine_fn_config_makefile dlls/msacm32.drv enable_msacm32_drv
 wine_fn_config_makefile dlls/msacm32 enable_msacm32
