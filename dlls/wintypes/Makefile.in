@@ -9,4 +9,5 @@ SOURCES = \
 	map.c \
 	propertyset.c \
 	storage.c \
+	stringmap.c \
 	wintypes_private.idl
