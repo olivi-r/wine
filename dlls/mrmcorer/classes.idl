@@ -16,13 +16,11 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
  */
 
-#define COBJMACROS
-#include "winstring.h"
-#include "wine/debug.h"
+#pragma makedep register
+#pragma winrt ns_prefix
 
-#include "activation.h"
+import "windows.applicationmodel.resources.core.idl";
 
-#define WIDL_using_Windows_ApplicationModel_Resources_Core
-#include "windows.applicationmodel.resources.core.h"
-
-extern IActivationFactory *resource_context_factory;
+namespace Windows.ApplicationModel.Resources.Core {
+    runtimeclass ResourceContext;
+}
