@@ -35,6 +35,9 @@ HRESULT WINAPI DllGetActivationFactory( HSTRING class, IActivationFactory **fact
 
     *factory = NULL;
 
+    if (!wcscmp( buffer, RuntimeClass_Windows_ApplicationModel_AppService_AppServiceConnection ))
+        IActivationFactory_QueryInterface( app_service_connection_factory, &IID_IActivationFactory, (void **)factory );
+
     if (*factory) return S_OK;
     return CLASS_E_CLASSNOTAVAILABLE;
 }
