@@ -2,4 +2,6 @@ MODULE  = appcontracts.dll
 IMPORTS = combase
 
 SOURCES = \
-    main.c
+	app_service_connection.c \
+	classes.idl \
+	main.c

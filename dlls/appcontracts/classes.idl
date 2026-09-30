@@ -16,15 +16,11 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
  */
 
-#define COBJMACROS
-#include "winstring.h"
-#include "wine/debug.h"
+#pragma makedep register
+#pragma winrt ns_prefix
 
-#include "activation.h"
+import "windows.applicationmodel.appservice.idl";
 
-#define WIDL_using_Windows_ApplicationModel_AppService
-#define WIDL_using_Windows_Foundation
-#define WIDL_using_Windows_Foundation_Collections
-#include "windows.applicationmodel.appservice.h"
-
-extern IActivationFactory *app_service_connection_factory;
+namespace Windows.ApplicationModel.AppService {
+    runtimeclass AppServiceConnection;
+}
