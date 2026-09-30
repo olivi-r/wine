@@ -259,6 +259,8 @@ HRESULT WINAPI DllGetActivationFactory( HSTRING classid, IActivationFactory **fa
 
     *factory = NULL;
 
+    if (!wcscmp( name, RuntimeClass_Windows_System_DispatcherQueue ))
+        IActivationFactory_QueryInterface( dispatcher_queue_factory, &IID_IActivationFactory, (void **)factory );
     if (!wcscmp( name, RuntimeClass_Windows_System_DispatcherQueueController ))
         IActivationFactory_QueryInterface( dispatcher_queue_controller_factory, &IID_IActivationFactory, (void **)factory );
 
