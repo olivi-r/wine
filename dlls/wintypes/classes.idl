@@ -30,6 +30,7 @@ namespace Windows.Foundation {
 }
 namespace Windows.Foundation.Collections {
     runtimeclass PropertySet;
+    runtimeclass StringMap;
 }
 namespace Windows.Foundation.Metadata {
     runtimeclass ApiInformation;
