@@ -1545,6 +1545,14 @@ BOOL WINAPI GetVersionExW( OSVERSIONINFOW *info )
     }
     return TRUE;
 }
+/***********************************************************************
+ *         FindPackagesByPackageFamily  (kernelbase.@)
+ */
+LONG WINAPI FindPackagesByPackageFamily( const WCHAR *family_name, UINT32 filters, UINT32 *count, WCHAR **full_names, UINT32 *buffer_length, WCHAR *buffer, UINT32 *properties )
+{
+    FIXME( "(%p %u %p %p %p %p %p): stub\n", family_name, filters, count, full_names, buffer_length, buffer, properties );
+    return ERROR_NOT_SUPPORTED;
+}
 
 /***********************************************************************
  *         GetCurrentApplicationUserModelId   (kernelbase.@)

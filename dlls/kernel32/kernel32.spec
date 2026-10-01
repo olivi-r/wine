@@ -514,6 +514,7 @@
 @ stdcall -import FindNextVolumeW(long ptr long)
 @ stdcall -import FindNLSString(long long wstr long wstr long ptr)
 @ stdcall -import FindNLSStringEx(wstr long wstr long wstr long ptr ptr ptr long)
+@ stdcall -import FindPackagesByPackageFamily(wstr long ptr ptr ptr ptr ptr)
 @ stdcall FindResourceA(long str str)
 @ stdcall FindResourceExA(long str str long)
 @ stdcall -import FindResourceExW(long wstr wstr long)
