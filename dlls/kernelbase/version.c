@@ -1570,8 +1570,28 @@ LONG WINAPI /* DECLSPEC_HOTPATCH */ GetCurrentPackageFamilyName( UINT32 *length,
  */
 LONG WINAPI /* DECLSPEC_HOTPATCH */ GetCurrentPackageFullName( UINT32 *length, WCHAR *name )
 {
-    FIXME( "(%p %p): stub\n", length, name );
-    return APPMODEL_ERROR_NO_PACKAGE;
+    UINT32 size;
+
+    TRACE( "(%p %p)\n", length, name );
+
+    if (!length)
+        return ERROR_INVALID_PARAMETER;
+
+    if (!name && *length)
+        return ERROR_INVALID_PARAMETER;
+
+    if (!(size = GetEnvironmentVariableW( L"WINEPACKAGE", NULL, 0 )))
+        return APPMODEL_ERROR_NO_PACKAGE;
+
+    if (*length < size)
+    {
+        *length = size;
+        return ERROR_INSUFFICIENT_BUFFER;
+    }
+
+    GetEnvironmentVariableW( L"WINEPACKAGE", name, size );
+    *length = size;
+    return ERROR_SUCCESS;
 }
 
 
@@ -1580,8 +1600,15 @@ LONG WINAPI /* DECLSPEC_HOTPATCH */ GetCurrentPackageFullName( UINT32 *length, W
  */
 LONG WINAPI /* DECLSPEC_HOTPATCH */ GetCurrentPackageId( UINT32 *len, BYTE *buffer )
 {
-    FIXME( "(%p %p): stub\n", len, buffer );
-    return APPMODEL_ERROR_NO_PACKAGE;
+    UINT32 full_name_length = PACKAGE_FULL_NAME_MAX_LENGTH + 1;
+    WCHAR full_name[PACKAGE_FULL_NAME_MAX_LENGTH + 1];
+
+    TRACE( "(%p %p)\n", len, buffer );
+
+    if (GetCurrentPackageFullName( &full_name_length, full_name ))
+        return APPMODEL_ERROR_NO_PACKAGE;
+
+    return PackageIdFromFullName( full_name, 0, len, buffer );
 }
 
 /***********************************************************************
