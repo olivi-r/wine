@@ -1653,8 +1653,15 @@ LONG WINAPI /* DECLSPEC_HOTPATCH */ GetPackageFullName( HANDLE process, UINT32 *
  */
 LONG WINAPI /* DECLSPEC_HOTPATCH */ GetPackageFamilyName( HANDLE process, UINT32 *length, WCHAR *name )
 {
-    FIXME( "(%p %p %p): stub\n", process, length, name );
-    return APPMODEL_ERROR_NO_PACKAGE;
+    UINT32 full_name_length = PACKAGE_FULL_NAME_MAX_LENGTH + 1;
+    WCHAR full_name[PACKAGE_FULL_NAME_MAX_LENGTH + 1];
+
+    FIXME( "(%p %p): semi-stub!\n", length, name );
+
+    if (GetCurrentPackageFullName( &full_name_length, full_name ) != ERROR_SUCCESS)
+        return APPMODEL_ERROR_NO_PACKAGE;
+
+    return PackageFamilyNameFromFullName( full_name, length, name );
 }
 
 /***********************************************************************
