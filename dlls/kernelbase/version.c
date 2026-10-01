@@ -1652,6 +1652,52 @@ LONG WINAPI GetPackagePathByFullName(const WCHAR *name, UINT32 *len, WCHAR *path
 }
 
 /***********************************************************************
+ *          PackageFamilyNameFromFullName   (kernelbase.@)
+ */
+LONG WINAPI PackageFamilyNameFromFullName(const WCHAR *full_name, UINT32 *length, WCHAR *family_name)
+{
+    UINT32 name_length, publisher_id_length;
+    const WCHAR *name, *ptr, *publisher_id;
+
+    TRACE("full_name %s, length %p, family_name %p.\n", debugstr_w( full_name ), length, family_name);
+
+    if (!full_name || !length)
+        return ERROR_INVALID_PARAMETER;
+
+    if (!family_name && *length)
+        return ERROR_INVALID_PARAMETER;
+
+    name = full_name;
+    if (!(ptr = wcschr(name, L'_')))
+        return ERROR_INVALID_PARAMETER;
+    name_length = ptr++ - name;
+
+    if (!(ptr = wcschr(ptr, L'_')))
+        return ERROR_INVALID_PARAMETER;
+    ++ptr;
+
+    if (!(ptr = wcschr(ptr, L'_')))
+        return ERROR_INVALID_PARAMETER;
+    ++ptr;
+
+    if (!(publisher_id = wcschr(ptr, L'_')))
+        return ERROR_INVALID_PARAMETER;
+    publisher_id_length = wcslen( ++publisher_id );
+
+    *length = name_length + publisher_id_length + 2;
+
+    if (family_name)
+    {
+        memcpy( family_name, name, name_length * sizeof(WCHAR) );
+        family_name[name_length] = '_';
+        memcpy( family_name + name_length + 1, publisher_id, publisher_id_length * sizeof(WCHAR) );
+        family_name[name_length + publisher_id_length + 1] = 0;
+    }
+
+    return ERROR_SUCCESS;
+}
+
+/***********************************************************************
  *          PackageFamilyNameFromId (kernelbase.@)
  */
 LONG WINAPI PackageFamilyNameFromId(const PACKAGE_ID *id, UINT32 *length, WCHAR *family_name)
