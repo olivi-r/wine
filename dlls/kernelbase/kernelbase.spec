@@ -1049,7 +1049,7 @@
 @ stdcall OutputDebugStringA(str)
 @ stdcall OutputDebugStringW(wstr)
 # @ stub OverrideRoamingDataModificationTimesInRange
-# @ stub PackageFamilyNameFromFullName
+@ stdcall PackageFamilyNameFromFullName(wstr ptr ptr)
 @ stdcall PackageFamilyNameFromId(ptr ptr ptr)
 # @ stub PackageFamilyNameFromProductId
 @ stdcall PackageFullNameFromId(ptr ptr ptr)
