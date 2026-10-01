@@ -1910,6 +1910,22 @@ NTSTATUS WINAPI RtlCreateServiceSid( PUNICODE_STRING name, PSID pSid, LPDWORD le
     return STATUS_SUCCESS;
 }
 
+static const WCHAR *legacy_capabilities[] =
+{
+    L"INTERNETCLIENT",
+    L"INTERNETCLIENTSERVER",
+    L"PRIVATENETWORKSERVER",
+    L"PICTURESLIBRARY",
+    L"VIDEOSLIBRARY",
+    L"MUSICLIBRARY",
+    L"DOCUMENTSLIBRARY",
+    L"ENTERPRISEAUTHENTICATION",
+    L"SHAREDUSERCERTIFICATES",
+    L"REMOVABLESTORAGE",
+    L"APPOINTMENTS",
+    L"CONTRACTS",
+};
+
 /******************************************************************************
  * RtlDeriveCapabilitySidsFromName (NTDLL.@)
  */
@@ -1917,7 +1933,7 @@ NTSTATUS WINAPI RtlDeriveCapabilitySidsFromName( UNICODE_STRING *cap_name, PSID 
 {
     static const SID_IDENTIFIER_AUTHORITY app_authority = { SECURITY_APP_PACKAGE_AUTHORITY };
     static const SID_IDENTIFIER_AUTHORITY nt_authority = { SECURITY_NT_AUTHORITY };
-    UNICODE_STRING cap_upcase;
+    UNICODE_STRING cap_legacy, cap_upcase;
     NTSTATUS status;
     ULONG hash[8];
     SID *sid;
@@ -1928,6 +1944,20 @@ NTSTATUS WINAPI RtlDeriveCapabilitySidsFromName( UNICODE_STRING *cap_name, PSID 
     SymCryptSha256( (BYTE *)cap_upcase.Buffer, cap_upcase.Length, (BYTE *)hash );
     RtlFreeUnicodeString( &cap_upcase );
 
+    for (UINT32 i = 0; i < ARRAY_SIZE(legacy_capabilities); i++)
+    {
+        RtlInitUnicodeString( &cap_legacy, legacy_capabilities[i] );
+        if (RtlCompareUnicodeString( cap_name, &cap_legacy, FALSE )) continue;
+
+        sid = cap_sid;
+        sid->Revision = SID_REVISION;
+        sid->IdentifierAuthority = app_authority;
+        sid->SubAuthorityCount = 2;
+        sid->SubAuthority[0] = SECURITY_BATCH_RID;
+        sid->SubAuthority[1] = i + 1;
+        goto group;
+    }
+
     sid = cap_sid;
     sid->Revision = SID_REVISION;
     sid->IdentifierAuthority = app_authority;
@@ -1936,6 +1966,7 @@ NTSTATUS WINAPI RtlDeriveCapabilitySidsFromName( UNICODE_STRING *cap_name, PSID 
     sid->SubAuthority[1] = SECURITY_CAPABILITY_APP_RID;
     memcpy( sid->SubAuthority + 2, hash, sizeof(hash) );
 
+group:
     sid = cap_group_sid;
     sid->Revision = SID_REVISION;
     sid->IdentifierAuthority = nt_authority;
