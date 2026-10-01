@@ -1651,6 +1651,43 @@ LONG WINAPI GetPackagePathByFullName(const WCHAR *name, UINT32 *len, WCHAR *path
     return APPMODEL_ERROR_NO_PACKAGE;
 }
 
+/***********************************************************************
+ *          PackageFamilyNameFromId (kernelbase.@)
+ */
+LONG WINAPI PackageFamilyNameFromId(const PACKAGE_ID *id, UINT32 *length, WCHAR *family_name)
+{
+    UINT32 family_name_length, name_length, publisher_id_length;
+
+    TRACE("id %p, length %p, family_name %p.\n", id, length, family_name);
+
+    if (!id || !length)
+        return ERROR_INVALID_PARAMETER;
+
+    if (!family_name && *length)
+        return ERROR_INVALID_PARAMETER;
+
+    name_length = lstrlenW(id->name);
+    publisher_id_length = lstrlenW(id->publisherId);
+    family_name_length = name_length + publisher_id_length + 2;
+
+    if (*length < family_name_length)
+    {
+        *length = family_name_length;
+        return ERROR_INSUFFICIENT_BUFFER;
+    }
+
+    if (family_name)
+    {
+        memcpy(family_name, id->name, name_length * sizeof(WCHAR));
+        family_name[name_length] = '_';
+        memcpy(family_name + name_length + 1, id->publisherId, publisher_id_length * sizeof(WCHAR));
+        family_name[name_length + publisher_id_length + 1] = 0;
+    }
+
+    *length = family_name_length;
+    return ERROR_SUCCESS;
+}
+
 static const struct
 {
     UINT32 code;
