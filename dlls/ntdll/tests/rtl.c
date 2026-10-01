@@ -5446,15 +5446,40 @@ static void test_RtlDeriveCapabilitySidsFromName(void)
     struct
     {
         const WCHAR *name;
+        DWORD builtin;
         DWORD hash[8];
     }
     tests[] =
     {
-        { NULL,    { 0x42c4b0e3, 0x141cfc98, 0xc8f4fb9a, 0x24b96f99, 0xe441ae27, 0x4c939b64, 0x1b9995a4, 0x55b85278, }},
-        { L"__AB", { 0xddd798eb, 0x367bd9d0, 0x1c9e610a, 0x0c43dc7e, 0xe91d8625, 0x395e7cf8, 0xe6e7c3d2, 0x2661e620 }},
-        { L"__ab", { 0xddd798eb, 0x367bd9d0, 0x1c9e610a, 0x0c43dc7e, 0xe91d8625, 0x395e7cf8, 0xe6e7c3d2, 0x2661e620 }},
+        { NULL,    0, { 0x42c4b0e3, 0x141cfc98, 0xc8f4fb9a, 0x24b96f99, 0xe441ae27, 0x4c939b64, 0x1b9995a4, 0x55b85278 }},
+        { L"__AB", 0, { 0xddd798eb, 0x367bd9d0, 0x1c9e610a, 0x0c43dc7e, 0xe91d8625, 0x395e7cf8, 0xe6e7c3d2, 0x2661e620 }},
+        { L"__ab", 0, { 0xddd798eb, 0x367bd9d0, 0x1c9e610a, 0x0c43dc7e, 0xe91d8625, 0x395e7cf8, 0xe6e7c3d2, 0x2661e620 }},
         { L"0123456789012345678901234567890123456789",
-                   { 0x3c45e3e6, 0xa598e751, 0x2eb11e4c, 0x04e073fd, 0xb7c331a3, 0x07b1214d, 0xd8dee260, 0xa0966ecf }},
+                   0, { 0x3c45e3e6, 0xa598e751, 0x2eb11e4c, 0x04e073fd, 0xb7c331a3, 0x07b1214d, 0xd8dee260, 0xa0966ecf }},
+        { L"internetClient",
+                   1, { 0xa5aeef55, 0x72c257f9, 0x9f058876, 0x8fe9d1da, 0xca6721db, 0xef5d71fb, 0x09794e28, 0x2efd00a1 }},
+        { L"internetClientServer",
+                   2, { 0x126eec0c, 0x5ceb5abb, 0xa893b843, 0x5d6eb294, 0x61c3721a, 0xc5f8363c, 0x870e4ade, 0x8ff35c36 }},
+        { L"privateNetworkClientServer",
+                   3, { 0xcdbc8132, 0xdab33055, 0x9c5af52f, 0x1874a89d, 0x24570fd1, 0x0e9e50e6, 0x4e38e9f5, 0xeec795c7 }},
+        { L"picturesLibrary",
+                   4, { 0x53dcad47, 0x078e9379, 0xbef5d747, 0xec2a9e81, 0xe9208092, 0xafbca17b, 0x92e28851, 0x6169d99f }},
+        { L"videosLibrary",
+                   5, { 0xeb82acc1, 0xad70d5a6, 0x6592ffc3, 0x933b6282, 0xb1f4303a, 0xde442902, 0xd1867457, 0x1229518a }},
+        { L"musicLibrary",
+                   6, { 0xe6489cb9, 0xd82743b2, 0xdab74392, 0x772e6a03, 0x8f71c352, 0x676faddb, 0x4061dc91, 0x2c366e98 }},
+        { L"documentsLibrary",
+                   7, { 0xf3d1973b, 0x79109192, 0xfa2b6f32, 0xb92c6d1a, 0xd679d415, 0x11b3e1db, 0xa903b041, 0x68058609 }},
+        { L"enterpriseAuthentication",
+                   8, { 0x4ac2468a, 0x8984b6b7, 0xe38b9ded, 0x7bc0f3b2, 0x922afee2, 0xfb255105, 0x70557502, 0x8eac58c9 }},
+        { L"sharedUserCertificates",
+                   9, { 0x7a793d8e, 0x6151a729, 0xb14552d7, 0x784cfc67, 0xabbdf9dc, 0x12224a4a, 0x1bae81dc, 0x411e624f }},
+        { L"removableStorage",
+                   10, { 0x66f00dfe, 0xc4108483, 0x583a3134, 0x1cadfe3d, 0x2bc0cd6e, 0x14a6ab66, 0x0c8d2710, 0xcd0c7ec9 }},
+        { L"appointments",
+                   11, { 0xbf204fc3, 0xb253ab5c, 0xac7fbd8a, 0x8a76fe72, 0x4631bc78, 0x4cb0013d, 0x46eba98d, 0x759534ff }},
+        { L"contacts",
+                   12, { 0xeadc955c, 0xaa6129a2, 0x8bc6728a, 0x50e69e04, 0xdd65af1c, 0x52e839f3, 0x4476d524, 0xb7c3b485 }},
     };
     UNICODE_STRING cap_name;
     SID *group_sid, *sid;
@@ -5482,15 +5507,24 @@ static void test_RtlDeriveCapabilitySidsFromName(void)
 
         ok( sid->Revision == SID_REVISION, "got %u.\n", sid->Revision );
         ok( !memcmp( &sid->IdentifierAuthority, &app_authority, sizeof(app_authority) ), "mismatch.\n" );
-        ok( sid->SubAuthorityCount == 10, "got %u.\n", sid->SubAuthorityCount );
-        ok ( sid->SubAuthority[0] == SECURITY_BATCH_RID, "got %lu.\n", sid->SubAuthority[0] );
-        ok ( sid->SubAuthority[1] == SECURITY_CAPABILITY_APP_RID, "got %lu.\n", sid->SubAuthority[1] );
-        ok( !memcmp( sid->SubAuthority + 2, tests[i].hash, sizeof(tests[i].hash) ), "mismatch.\n" );
+        if (tests[i].builtin)
+        {
+            ok( sid->SubAuthorityCount == 2, "got %u.\n", sid->SubAuthorityCount );
+            ok( sid->SubAuthority[0] == SECURITY_CAPABILITY_BASE_RID, "got %lu.\n", sid->SubAuthority[0] );
+            ok( sid->SubAuthority[1] == tests[i].builtin, "got %lu.\n", sid->SubAuthority[1] );
+        }
+        else
+        {
+            ok( sid->SubAuthorityCount == 10, "got %u.\n", sid->SubAuthorityCount );
+            ok( sid->SubAuthority[0] == SECURITY_CAPABILITY_BASE_RID, "got %lu.\n", sid->SubAuthority[0] );
+            ok( sid->SubAuthority[1] == SECURITY_CAPABILITY_APP_RID, "got %lu.\n", sid->SubAuthority[1] );
+            ok( !memcmp( sid->SubAuthority + 2, tests[i].hash, sizeof(tests[i].hash) ), "mismatch.\n" );
+        }
 
         ok( group_sid->Revision == SID_REVISION, "got %u.\n", group_sid->Revision );
         ok( !memcmp( &group_sid->IdentifierAuthority, &nt_authority, sizeof(nt_authority) ), "mismatch.\n" );
         ok( group_sid->SubAuthorityCount == 9, "got %u.\n", group_sid->SubAuthorityCount );
-        ok ( group_sid->SubAuthority[0] == SECURITY_BUILTIN_DOMAIN_RID, "got %lu.\n", group_sid->SubAuthority[0] );
+        ok( group_sid->SubAuthority[0] == SECURITY_BUILTIN_DOMAIN_RID, "got %lu.\n", group_sid->SubAuthority[0] );
         ok( !memcmp( group_sid->SubAuthority + 1, tests[i].hash, sizeof(tests[i].hash) ), "mismatch.\n" );
         winetest_pop_context();
     }

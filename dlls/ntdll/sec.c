@@ -1910,6 +1910,27 @@ NTSTATUS WINAPI RtlCreateServiceSid( PUNICODE_STRING name, PSID pSid, LPDWORD le
     return STATUS_SUCCESS;
 }
 
+static struct
+{
+    const WCHAR *name;
+    DWORD rid;
+}
+builtin_capabilities[] =
+{
+    { L"INTERNETCLIENT",             SECURITY_CAPABILITY_INTERNET_CLIENT },
+    { L"INTERNETCLIENTSERVER",       SECURITY_CAPABILITY_INTERNET_CLIENT_SERVER },
+    { L"PRIVATENETWORKCLIENTSERVER", SECURITY_CAPABILITY_PRIVATE_NETWORK_CLIENT_SERVER },
+    { L"PICTURESLIBRARY",            SECURITY_CAPABILITY_PICTURES_LIBRARY },
+    { L"VIDEOSLIBRARY",              SECURITY_CAPABILITY_VIDEOS_LIBRARY },
+    { L"MUSICLIBRARY",               SECURITY_CAPABILITY_MUSIC_LIBRARY },
+    { L"DOCUMENTSLIBRARY",           SECURITY_CAPABILITY_DOCUMENTS_LIBRARY },
+    { L"ENTERPRISEAUTHENTICATION",   SECURITY_CAPABILITY_ENTERPRISE_AUTHENTICATION },
+    { L"SHAREDUSERCERTIFICATES",     SECURITY_CAPABILITY_SHARED_USER_CERTIFICATES },
+    { L"REMOVABLESTORAGE",           SECURITY_CAPABILITY_REMOVABLE_STORAGE },
+    { L"APPOINTMENTS",               SECURITY_CAPABILITY_APPOINTMENTS },
+    { L"CONTACTS",                   SECURITY_CAPABILITY_CONTACTS },
+};
+
 /******************************************************************************
  * RtlDeriveCapabilitySidsFromName (NTDLL.@)
  */
@@ -1917,7 +1938,7 @@ NTSTATUS WINAPI RtlDeriveCapabilitySidsFromName( UNICODE_STRING *cap_name, PSID 
 {
     static const SID_IDENTIFIER_AUTHORITY app_authority = { SECURITY_APP_PACKAGE_AUTHORITY };
     static const SID_IDENTIFIER_AUTHORITY nt_authority = { SECURITY_NT_AUTHORITY };
-    UNICODE_STRING cap_upcase;
+    UNICODE_STRING cap_builtin, cap_upcase;
     NTSTATUS status;
     ULONG hash[8];
     SID *sid;
@@ -1926,16 +1947,33 @@ NTSTATUS WINAPI RtlDeriveCapabilitySidsFromName( UNICODE_STRING *cap_name, PSID 
 
     if ((status = RtlUpcaseUnicodeString( &cap_upcase, cap_name, TRUE ))) return status;
     SymCryptSha256( (BYTE *)cap_upcase.Buffer, cap_upcase.Length, (BYTE *)hash );
+
+    for (UINT32 i = 0; i < ARRAY_SIZE(builtin_capabilities); i++)
+    {
+        RtlInitUnicodeString( &cap_builtin, builtin_capabilities[i].name );
+        if (RtlCompareUnicodeString( &cap_upcase, &cap_builtin, FALSE )) continue;
+        RtlFreeUnicodeString( &cap_upcase );
+
+        sid = cap_sid;
+        sid->Revision = SID_REVISION;
+        sid->IdentifierAuthority = app_authority;
+        sid->SubAuthorityCount = 2;
+        sid->SubAuthority[0] = SECURITY_CAPABILITY_BASE_RID;
+        sid->SubAuthority[1] = builtin_capabilities[i].rid;
+        goto group;
+    }
+
     RtlFreeUnicodeString( &cap_upcase );
 
     sid = cap_sid;
     sid->Revision = SID_REVISION;
     sid->IdentifierAuthority = app_authority;
     sid->SubAuthorityCount = 2 + ARRAY_SIZE(hash);
-    sid->SubAuthority[0] = SECURITY_BATCH_RID;
+    sid->SubAuthority[0] = SECURITY_CAPABILITY_BASE_RID;
     sid->SubAuthority[1] = SECURITY_CAPABILITY_APP_RID;
     memcpy( sid->SubAuthority + 2, hash, sizeof(hash) );
 
+group:
     sid = cap_group_sid;
     sid->Revision = SID_REVISION;
     sid->IdentifierAuthority = nt_authority;
