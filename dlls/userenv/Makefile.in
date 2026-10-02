@@ -1,7 +1,8 @@
 EXTRADEFS = -D_USERENV_
 MODULE    = userenv.dll
-IMPORTS   = advapi32
+IMPORTS   = advapi32 kernelbase $(SYMCRYPT_PE_LIBS)
 IMPORTLIB = userenv
+EXTRAINCL = $(SYMCRYPT_PE_CFLAGS)
 
 SOURCES = \
 	userenv_main.c

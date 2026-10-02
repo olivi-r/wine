@@ -2,6 +2,7 @@
 
 @ stdcall CreateAppContainerProfile(wstr wstr wstr ptr long ptr)
 @ stdcall CreateEnvironmentBlock(ptr ptr long)
+@ stdcall DeriveAppContainerSidFromAppContainerName(wstr ptr)
 @ stdcall DestroyEnvironmentBlock(ptr)
 @ stdcall EnterCriticalPolicySection(long)
 @ stdcall ExpandEnvironmentStringsForUserA(ptr str ptr long)

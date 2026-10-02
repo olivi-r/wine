@@ -80,6 +80,7 @@ extern "C" {
 #endif
 
 USERENVAPI BOOL WINAPI CreateEnvironmentBlock(LPVOID*,HANDLE,BOOL);
+USERENVAPI HRESULT WINAPI DeriveAppContainerSidFromAppContainerName(PCWSTR,PSID*);
 USERENVAPI BOOL WINAPI DestroyEnvironmentBlock(LPVOID);
 USERENVAPI HANDLE WINAPI EnterCriticalPolicySection(BOOL);
 USERENVAPI BOOL WINAPI ExpandEnvironmentStringsForUserA(HANDLE,LPCSTR,LPSTR,DWORD);

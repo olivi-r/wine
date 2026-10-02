@@ -29,10 +29,20 @@
 #include "sddl.h"
 #include "objbase.h"
 #include "userenv.h"
+#include "symcrypt.h"
 
 #include "wine/debug.h"
 
 WINE_DEFAULT_DEBUG_CHANNEL( userenv );
+
+/* wrappers for symcrypt */
+SYMCRYPT_CPU_FEATURES SYMCRYPT_CALL SymCryptCpuFeaturesNeverPresent(void) { return 0; }
+void SYMCRYPT_CALL SymCryptFatal( UINT32 fatalCode ) { }
+void SYMCRYPT_CALL SymCryptInjectError( PBYTE pbBuf, SIZE_T cbBuf ) { }
+#if SYMCRYPT_CPU_X86 | SYMCRYPT_CPU_AMD64
+SYMCRYPT_ERROR SYMCRYPT_CALL SymCryptSaveXmm( PSYMCRYPT_EXTENDED_SAVE_DATA pSaveArea ) { return SYMCRYPT_NO_ERROR; }
+void SYMCRYPT_CALL SymCryptRestoreXmm( PSYMCRYPT_EXTENDED_SAVE_DATA pSaveArea ) { }
+#endif
 
 static BOOL get_reg_value(WCHAR *env, HKEY hkey, const WCHAR *name, WCHAR *val, DWORD size)
 {
@@ -685,6 +695,31 @@ BOOL WINAPI USERENV_138( int csidl, LPCSTR lnk_dir, LPCSTR lnk_filename,
             debugstr_a(comment), debugstr_a(loc_filename_resfile), loc_filename_resid );
 
     return FALSE;
+}
+
+HRESULT WINAPI DeriveAppContainerSidFromAppContainerName(PCWSTR container_name, PSID *container_sid)
+{
+    SID_IDENTIFIER_AUTHORITY authority = { SECURITY_APP_PACKAGE_AUTHORITY };
+    WCHAR *lowercase_container_name;
+    DWORD hash[8];
+    DWORD length;
+
+    TRACE("%s %p\n", debugstr_w(container_name), container_sid);
+
+    length = lstrlenW(container_name);
+    if (!(lowercase_container_name = HeapAlloc(GetProcessHeap(), 0, length)))
+        return E_OUTOFMEMORY;
+
+    memcpy(lowercase_container_name, container_name, length * sizeof(WCHAR));
+    CharLowerBuffW(lowercase_container_name, length);
+    SymCryptSha256((BYTE *)lowercase_container_name, length, (BYTE *)hash);
+    HeapFree(GetProcessHeap(), 0, lowercase_container_name);
+
+    if (!AllocateAndInitializeSid(&authority, 8, SECURITY_APP_PACKAGE_BASE_RID, hash[0], hash[1],
+                                  hash[2], hash[3], hash[4], hash[5], hash[6], container_sid))
+        return HRESULT_FROM_WIN32(GetLastError());
+
+    return S_OK;
 }
 
 HRESULT WINAPI CreateAppContainerProfile(PCWSTR container_name, PCWSTR display_name, PCWSTR description,
