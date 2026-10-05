@@ -25,6 +25,7 @@ struct factory
 {
     IActivationFactory IActivationFactory_iface;
     ICoreApplication ICoreApplication_iface;
+    ICoreApplication2 ICoreApplication2_iface;
     LONG ref;
 };
 
@@ -51,6 +52,12 @@ static HRESULT WINAPI activation_factory_QueryInterface( IActivationFactory *ifa
     if (IsEqualGUID( iid, &IID_ICoreApplication ))
     {
         IInspectable_AddRef( (*out = &impl->ICoreApplication_iface) );
+        return S_OK;
+    }
+
+    if (IsEqualGUID( iid, &IID_ICoreApplication2 ))
+    {
+        IInspectable_AddRef( (*out = &impl->ICoreApplication2_iface) );
         return S_OK;
     }
 
@@ -189,10 +196,74 @@ static const struct ICoreApplicationVtbl core_application_vtbl =
     core_application_RunWithActivationFactories,
 };
 
+DEFINE_IINSPECTABLE( core_application2, ICoreApplication2, struct factory, IActivationFactory_iface )
+
+static HRESULT WINAPI core_application2_add_BackgroundActivated( ICoreApplication2 *iface, IEventHandler_BackgroundActivatedEventArgs *handler, EventRegistrationToken *token )
+{
+    FIXME( "iface %p, handler %p, token %p stub!\n", iface, handler, token );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI core_application2_remove_BackgroundActivated( ICoreApplication2 *iface, EventRegistrationToken token )
+{
+    FIXME( "iface %p, token %p stub!\n", iface, &token );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI core_application2_add_LeavingBackground( ICoreApplication2 *iface, IEventHandler_LeavingBackgroundEventArgs *handler, EventRegistrationToken *token )
+{
+    FIXME( "iface %p, handler %p, token %p stub!\n", iface, handler, token );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI core_application2_remove_LeavingBackground( ICoreApplication2 *iface, EventRegistrationToken token )
+{
+    FIXME( "iface %p, token %p stub!\n", iface, &token );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI core_application2_add_EnteredBackground( ICoreApplication2 *iface, IEventHandler_EnteredBackgroundEventArgs *handler, EventRegistrationToken *token )
+{
+    FIXME( "iface %p, handler %p, token %p stub!\n", iface, handler, token );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI core_application2_remove_EnteredBackground( ICoreApplication2 *iface, EventRegistrationToken token )
+{
+    FIXME( "iface %p, token %p stub!\n", iface, &token );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI core_application2_EnablePrelaunch( ICoreApplication2 *iface, BOOLEAN value )
+{
+    FIXME( "iface %p, value %d stub!\n", iface, value );
+    return E_NOTIMPL;
+}
+
+static const struct ICoreApplication2Vtbl core_application2_vtbl =
+{
+    core_application2_QueryInterface,
+    core_application2_AddRef,
+    core_application2_Release,
+    /* IInspectable methods */
+    core_application2_GetIids,
+    core_application2_GetRuntimeClassName,
+    core_application2_GetTrustLevel,
+    /* ICoreApplication2 methods */
+    core_application2_add_BackgroundActivated,
+    core_application2_remove_BackgroundActivated,
+    core_application2_add_LeavingBackground,
+    core_application2_remove_LeavingBackground,
+    core_application2_add_EnteredBackground,
+    core_application2_remove_EnteredBackground,
+    core_application2_EnablePrelaunch,
+};
+
 static struct factory factory =
 {
     {&activation_factory_vtbl},
     {&core_application_vtbl},
+    {&core_application2_vtbl},
     1,
 };
 
