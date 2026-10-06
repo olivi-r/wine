@@ -1,7 +1,8 @@
 EXTRADEFS = -DWINBASEAPI= -DWINADVAPI= -DWINUSERAPI= -DWINSHLWAPI=
 MODULE    = kernelbase.dll
 IMPORTLIB = kernelbase
-IMPORTS   = uuid ntdll
+IMPORTS   = uuid ntdll $(SYMCRYPT_PE_LIBS)
+EXTRAINCL = $(SYMCRYPT_PE_CFLAGS)
 
 EXTRADLLFLAGS = -nodefaultlibs -nostartfiles
 i386_EXTRADLLFLAGS = -Wl,--image-base,0x7b000000

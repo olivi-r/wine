@@ -41,7 +41,18 @@
 #include "kernelbase.h"
 #include "wine/debug.h"
 
+#include "symcrypt.h"
+
 WINE_DEFAULT_DEBUG_CHANNEL(ver);
+
+/* wrappers for symcrypt */
+SYMCRYPT_CPU_FEATURES SYMCRYPT_CALL SymCryptCpuFeaturesNeverPresent(void) { return 0; }
+void SYMCRYPT_CALL SymCryptFatal( UINT32 fatalCode ) { }
+void SYMCRYPT_CALL SymCryptInjectError( PBYTE pbBuf, SIZE_T cbBuf ) { }
+#if SYMCRYPT_CPU_X86 | SYMCRYPT_CPU_AMD64
+SYMCRYPT_ERROR SYMCRYPT_CALL SymCryptSaveXmm( PSYMCRYPT_EXTENDED_SAVE_DATA pSaveArea ) { return SYMCRYPT_NO_ERROR; }
+void SYMCRYPT_CALL SymCryptRestoreXmm( PSYMCRYPT_EXTENDED_SAVE_DATA pSaveArea ) { }
+#endif
 
 typedef struct
 {
@@ -1776,14 +1787,60 @@ LONG WINAPI PackageIdFromFullName(const WCHAR *full_name, UINT32 flags, UINT32 *
     return ERROR_SUCCESS;
 }
 
+static void encode_base32(const BYTE *bin, ULONG len, WCHAR *buf)
+{
+    static const WCHAR base32[] = L"0123456789abcdefghjkmnpqrstvwxyz";
+    ULONG i = 0, x;
+
+    while (len > 0)
+    {
+        buf[i++] = base32[(bin[0] & 0xf8) >> 3];
+        x = (bin[0] & 7) << 2;
+        if (len == 1)
+        {
+            buf[i++] = base32[x];
+            return;
+        }
+        buf[i++] = base32[x | ((bin[1] & 0xc0) >> 6)];
+        buf[i++] = base32[(bin[1] & 0x3e) >> 1];
+        x = (bin[1] & 1) << 4;
+        if (len == 2)
+        {
+            buf[i++] = base32[x];
+            return;
+        }
+        buf[i++] = base32[x | (bin[2] & 0xf0) >> 4];
+        x = (bin[2] & 0x0f) << 1;
+        if (len == 3)
+        {
+            buf[i++] = base32[x];
+            return;
+        }
+        buf[i++] = base32[x | (bin[3] & 0x80) >> 7];
+        buf[i++] = base32[(bin[3] & 0x7c) >> 2];
+        x = (bin[3] & 3) << 3;
+        if (len == 4)
+        {
+            buf[i++] = base32[x];
+            return;
+        }
+        buf[i++] = base32[x | (bin[4] & 0xe0) >> 5];
+        buf[i++] = base32[bin[4] & 0x1f];
+        bin += 5;
+        len -= 5;
+    }
+}
+
 /***********************************************************************
  *         PackageFullNameFromId   (kernelbase.@)
  */
 LONG WINAPI PackageFullNameFromId(const PACKAGE_ID *id, UINT32 *length, WCHAR *buffer)
 {
+    WCHAR publisher_id[PACKAGE_PUBLISHERID_MAX_LENGTH];
     WCHAR full_name[PACKAGE_FULL_NAME_MAX_LENGTH + 1];
     WCHAR version[PACKAGE_VERSION_MAX_LENGTH + 1];
     const WCHAR *arch;
+    BYTE hash[32];
     size_t len;
 
     TRACE("id %p, length %p, buffer %p\n", id, length, buffer);
@@ -1839,9 +1896,9 @@ LONG WINAPI PackageFullNameFromId(const PACKAGE_ID *id, UINT32 *length, WCHAR *b
         if (!id->publisher)
             return ERROR_INVALID_PARAMETER;
 
-        FIXME("Publisher ID generation is not implemented.\n");
-
-        wcscat(full_name, L"123456789abcd");
+        SymCryptSha256((BYTE *)id->publisher, wcslen(id->publisher) * sizeof(WCHAR), hash);
+        encode_base32(hash, 8, publisher_id);
+        wcsncat(full_name, publisher_id, PACKAGE_PUBLISHERID_MAX_LENGTH);
     }
 
     len = wcslen(full_name);
