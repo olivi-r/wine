@@ -1832,6 +1832,60 @@ static void encode_base32(const BYTE *bin, ULONG len, WCHAR *buf)
 }
 
 /***********************************************************************
+ *         PackageFamilyNameFromId (kernelbase.@)
+ */
+LONG WINAPI PackageFamilyNameFromId(const PACKAGE_ID *id, UINT32 *length, WCHAR *buffer)
+{
+    WCHAR family_name[PACKAGE_FAMILY_NAME_MAX_LENGTH + 1];
+    WCHAR publisher_id[PACKAGE_PUBLISHERID_MAX_LENGTH];
+    BYTE hash[32];
+    size_t len;
+
+    TRACE("id %p, length %p, buffer %p\n", id, length, buffer);
+
+    if (!id || !length)
+        return ERROR_INVALID_PARAMETER;
+
+    len = id->name ? wcslen(id->name) : 0;
+    if (len < PACKAGE_NAME_MIN_LENGTH || len > PACKAGE_NAME_MAX_LENGTH)
+        return ERROR_INVALID_PARAMETER;
+
+    *family_name = 0;
+    wcscpy(family_name, id->name);
+    wcscat(family_name, L"_");
+
+    if (id->publisherId)
+    {
+        len = wcslen(id->publisherId);
+
+        if (len != PACKAGE_PUBLISHERID_MAX_LENGTH)
+            return ERROR_INVALID_PARAMETER;
+
+        wcscat(family_name, id->publisherId);
+    }
+    else
+    {
+        if (!id->publisher)
+            return ERROR_INVALID_PARAMETER;
+
+        SymCryptSha256((BYTE *)id->publisher, wcslen(id->publisher) * sizeof(WCHAR), hash);
+        encode_base32(hash, 8, publisher_id);
+        wcsncat(family_name, publisher_id, PACKAGE_PUBLISHERID_MAX_LENGTH);
+    }
+
+    len = wcslen(family_name);
+    *length = len + 1;
+
+    if (!buffer || *length <= len)
+        return ERROR_INSUFFICIENT_BUFFER;
+
+    wcscpy(buffer, family_name);
+    *length = len + 1;
+
+    return ERROR_SUCCESS;
+}
+
+/***********************************************************************
  *         PackageFullNameFromId   (kernelbase.@)
  */
 LONG WINAPI PackageFullNameFromId(const PACKAGE_ID *id, UINT32 *length, WCHAR *buffer)
