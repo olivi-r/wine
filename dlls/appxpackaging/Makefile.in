@@ -1,0 +1,4 @@
+MODULE = appxpackaging.dll
+
+SOURCES = \
+	main.c
