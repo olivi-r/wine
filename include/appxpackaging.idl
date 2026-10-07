@@ -1,0 +1,359 @@
+/*
+ * Copyright (C) 2026 Olivia Ryan
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
+ */
+
+import "objidl.idl";
+import "unknwn.idl";
+import "urlmon.idl";
+
+typedef enum APPX_CAPABILITIES APPX_CAPABILITIES;
+typedef enum APPX_COMPRESSION_OPTION APPX_COMPRESSION_OPTION;
+typedef enum APPX_FOOTPRINT_FILE_TYPE APPX_FOOTPRINT_FILE_TYPE;
+typedef enum APPX_PACKAGE_ARCHITECTURE APPX_PACKAGE_ARCHITECTURE;
+
+typedef struct APPX_PACKAGE_SETTINGS APPX_PACKAGE_SETTINGS;
+
+interface IAppxBlockMapBlock;
+interface IAppxBlockMapBlocksEnumerator;
+interface IAppxBlockMapFile;
+interface IAppxBlockMapFilesEnumerator;
+interface IAppxBlockMapReader;
+interface IAppxFactory;
+interface IAppxFactory2;
+interface IAppxFactory3;
+interface IAppxFactory4;
+interface IAppxFile;
+interface IAppxFilesEnumerator;
+interface IAppxManifestApplication;
+interface IAppxManifestApplicationsEnumerator;
+interface IAppxManifestDeviceCapabilitiesEnumerator;
+interface IAppxManifestPackageDependenciesEnumerator;
+interface IAppxManifestPackageDependency;
+interface IAppxManifestPackageId;
+interface IAppxManifestProperties;
+interface IAppxManifestReader;
+interface IAppxManifestResourcesEnumerator;
+interface IAppxPackageReader;
+interface IAppxPackageWriter;
+
+coclass AppxFactory;
+
+enum APPX_CAPABILITIES
+{
+    APPX_CAPABILITY_INTERNET_CLIENT               = 0x001,
+    APPX_CAPABILITY_INTERNET_CLIENT_SERVER        = 0x002,
+    APPX_CAPABILITY_PRIVATE_NETWORK_CLIENT_SERVER = 0x004,
+    APPX_CAPABILITY_DOCUMENTS_LIBRARY             = 0x008,
+    APPX_CAPABILITY_PICTURES_LIBRARY              = 0x010,
+    APPX_CAPABILITY_VIDEOS_LIBRARY                = 0x020,
+    APPX_CAPABILITY_MUSIC_LIBRARY                 = 0x040,
+    APPX_CAPABILITY_ENTERPRISE_AUTHENTICATION     = 0x080,
+    APPX_CAPABILITY_SHARED_USER_CERTIFICATES      = 0x100,
+    APPX_CAPABILITY_REMOVABLE_STORAGE             = 0x200,
+    APPX_CAPABILITY_APPOINTMENTS                  = 0x400,
+    APPX_CAPABILITY_CONTACTS                      = 0x800,
+};
+
+enum APPX_COMPRESSION_OPTION
+{
+    APPX_COMPRESSION_OPTION_NONE      = 0,
+    APPX_COMPRESSION_OPTION_NORMAL    = 1,
+    APPX_COMPRESSION_OPTION_MAXIMUM   = 2,
+    APPX_COMPRESSION_OPTION_FAST      = 3,
+    APPX_COMPRESSION_OPTION_SUPERFAST = 4,
+};
+
+enum APPX_FOOTPRINT_FILE_TYPE
+{
+    APPX_FOOTPRINT_FILE_TYPE_MANIFEST        = 0,
+    APPX_FOOTPRINT_FILE_TYPE_BLOCKMAP        = 1,
+    APPX_FOOTPRINT_FILE_TYPE_SIGNATURE       = 2,
+    APPX_FOOTPRINT_FILE_TYPE_CODEINTEGRITY   = 3,
+    APPX_FOOTPRINT_FILE_TYPE_CONTENTGROUPMAP = 4,
+};
+
+enum APPX_PACKAGE_ARCHITECTURE
+{
+    APPX_PACKAGE_ARCHITECTURE_X86     = 0,
+    APPX_PACKAGE_ARCHITECTURE_ARM     = 5,
+    APPX_PACKAGE_ARCHITECTURE_X64     = 9,
+    APPX_PACKAGE_ARCHITECTURE_NEUTRAL = 11,
+    APPX_PACKAGE_ARCHITECTURE_ARM64   = 12,
+};
+
+struct APPX_PACKAGE_SETTINGS
+{
+    BOOL  forceZip32;
+    IUri *hashMethod;
+};
+
+[
+    object,
+    pointer_default(unique),
+    uuid(75cf3930-3244-4fe0-a8c8-e0bcb270b889)
+]
+interface IAppxBlockMapBlock : IUnknown
+{
+    HRESULT GetHash([out] UINT32 *size, [out, retval, size_is(, *size)] BYTE **value);
+    HRESULT GetCompressedSize([out, retval] UINT32 *value);
+}
+
+[
+    object,
+    pointer_default(ref),
+    uuid(6b429b5b-36ef-479e-b9eb-0c1482b49e16)
+]
+interface IAppxBlockMapBlocksEnumerator : IUnknown
+{
+    HRESULT GetCurrent([out, retval] IAppxBlockMapBlock **value);
+    HRESULT GetHasCurrent([out, retval] BOOL *value);
+    HRESULT MoveNext([out, retval] BOOL *value);
+}
+
+[
+    object,
+    pointer_default(ref),
+    uuid(277672ac-4f63-42c1-8abc-beae3600eb59)
+]
+interface IAppxBlockMapFile : IUnknown
+{
+    HRESULT GetBlocks([out, retval] IAppxBlockMapBlocksEnumerator **value);
+    HRESULT GetLocalFileHeaderSize([out, retval] UINT32 **value);
+    HRESULT GetName([out, retval, string] WCHAR **value);
+    HRESULT GetUncompressedSize([out, retval] UINT64 **value);
+    HRESULT ValidateFileHash([in] IStream *file_stream, [out, retval] BOOL *value);
+}
+
+[
+    object,
+    pointer_default(ref),
+    uuid(02b856a2-4262-4070-bacb-1a8cbbc42305)
+]
+interface IAppxBlockMapFilesEnumerator : IUnknown
+{
+    HRESULT GetCurrent([out, retval] IAppxBlockMapFile **value);
+    HRESULT GetHasCurrent([out, retval] BOOL *value);
+    HRESULT MoveNext([out, retval] BOOL *value);
+}
+
+[
+    object,
+    pointer_default(ref),
+    uuid(5efec991-bca3-42d1-9ec2-e92d609ec22a)
+]
+interface IAppxBlockMapReader : IUnknown
+{
+    HRESULT GetFile([in, string] const WCHAR *file_name, [out, retval] IAppxBlockMapFile **value);
+    HRESULT GetFiles([out, retval] IAppxBlockMapFilesEnumerator **value);
+    HRESULT GetHashMethod([out, retval] IUri **value);
+    HRESULT GetStream([out, retval] IStream **value);
+}
+
+[
+    object,
+    pointer_default(ref),
+    uuid(beb94909-e451-438b-b5a7-d79e767b75d8)
+]
+interface IAppxFactory : IUnknown
+{
+    HRESULT CreatePackageWriter([in] IStream *output_stream, [in] APPX_PACKAGE_SETTINGS *settings, [out, retval] IAppxPackageWriter **value);
+    HRESULT CreatePackageReader([in] IStream *input_stream, [out, retval] IAppxPackageReader **value);
+    HRESULT CreateManifestReader([in] IStream *input_stream, [out, retval] IAppxManifestReader **value);
+    HRESULT CreateBlockMapReader([in] IStream *input_stream, [out, retval] IAppxBlockMapReader **value);
+    HRESULT CreateValidatedBlockMapReader([in] IStream *input_stream, [in, string] const WCHAR *signature_file_name, [out, retval] IAppxBlockMapReader **value);
+}
+
+[
+    object,
+    pointer_default(ref),
+    uuid(91df827b-94fd-468f-827b-57f41b2f6f2e)
+]
+interface IAppxFile : IUnknown
+{
+    HRESULT GetCompressionOption([out, retval] APPX_COMPRESSION_OPTION *value);
+    HRESULT GetContentType([out, retval, string] WCHAR **value);
+    HRESULT GetName([out, retval, string] WCHAR **value);
+    HRESULT GetSize([out, retval] UINT64 *value);
+    HRESULT GetStream([out, retval] IStream **value);
+}
+
+[
+    object,
+    pointer_default(ref),
+    uuid(f007eeaf-9831-411c-9847-917cdc62d1fe)
+]
+interface IAppxFilesEnumerator : IUnknown
+{
+    HRESULT GetCurrent([out, retval] IAppxFile **value);
+    HRESULT GetHasCurrent([out, retval] BOOL *value);
+    HRESULT MoveNext([out, retval] BOOL *value);
+}
+
+[
+    object,
+    pointer_default(ref),
+    uuid(5da89bf4-3773-46be-b650-7e744863b7e8)
+]
+interface IAppxManifestApplication : IUnknown
+{
+    HRESULT GetStringValue([in, string] const WCHAR *name, [out, retval, string] WCHAR **value);
+    HRESULT GetAppUserModelId([out, retval, string] WCHAR **value);
+}
+
+[
+    object,
+    pointer_default(ref),
+    uuid(9eb8a55a-f04b-4d0d-808d-686185d4847a)
+]
+interface IAppxManifestApplicationsEnumerator : IUnknown
+{
+    HRESULT GetCurrent([out, retval] IAppxManifestApplication **value);
+    HRESULT GetHasCurrent([out, retval] BOOL *value);
+    HRESULT MoveNext([out, retval] BOOL *value);
+}
+
+[
+    object,
+    pointer_default(ref),
+    uuid(30204541-427b-4a1c-bacf-655bf463a540)
+]
+interface IAppxManifestDeviceCapabilitiesEnumerator : IUnknown
+{
+    HRESULT GetCurrent([out, retval, string] WCHAR **value);
+    HRESULT GetHasCurrent([out, retval] BOOL *value);
+    HRESULT MoveNext([out, retval] BOOL *value);
+}
+
+[
+    object,
+    pointer_default(ref),
+    uuid(b43bbcf9-65a6-42dd-bac0-8c6741e7f5a4)
+]
+interface IAppxManifestPackageDependenciesEnumerator : IUnknown
+{
+    HRESULT GetCurrent([out, retval] IAppxManifestPackageDependency **value);
+    HRESULT GetHasCurrent([out, retval] BOOL *value);
+    HRESULT MoveNext([out, retval] BOOL *value);
+}
+
+[
+    object,
+    pointer_default(ref),
+    uuid(e4946b59-733e-43f0-a724-3bde4c1285a0)
+]
+interface IAppxManifestPackageDependency : IUnknown
+{
+    HRESULT GetName([out, retval, string] WCHAR **value);
+    HRESULT GetPublisher([out, retval, string] WCHAR **value);
+    HRESULT GetMinVersion([out, retval] UINT64 *value);
+}
+
+[
+    object,
+    pointer_default(ref),
+    uuid(283ce2d7-7153-4a91-9649-7a0f7240945f)
+]
+interface IAppxManifestPackageId : IUnknown
+{
+    HRESULT GetName([out, retval, string] WCHAR **value);
+    HRESULT GetArchitecture([out, retval] APPX_PACKAGE_ARCHITECTURE *value);
+    HRESULT GetPublisher([out, retval, string] WCHAR **value);
+    HRESULT GetVersion([out, retval] UINT64 *value);
+    HRESULT GetResourceId([out, retval, string] WCHAR **value);
+    HRESULT ComparePublisher([in, string] const WCHAR *other, [out, retval] BOOL *value);
+    HRESULT GetPackageFullName([out, retval, string] WCHAR **value);
+    HRESULT GetPackageFamilyName([out, retval, string] WCHAR **value);
+}
+
+[
+    object,
+    pointer_default(ref),
+    uuid(03faf64d-f26f-4b2c-aaf7-8fe7789b8bca)
+]
+interface IAppxManifestProperties : IUnknown
+{
+    HRESULT GetBoolValue([in, string] const WCHAR *name, [out, retval] BOOL *value);
+    HRESULT GetStringValue([in, string] const WCHAR *name, [out, retval, string] WCHAR **value);
+}
+
+[
+    object,
+    pointer_default(ref),
+    uuid(4e1bd148-55a0-4480-a3d1-15544710637c)
+]
+interface IAppxManifestReader : IUnknown
+{
+    HRESULT GetPackageId([out, retval] IAppxManifestPackageId **value);
+    HRESULT GetProperties([out, retval] IAppxManifestProperties **value);
+    HRESULT GetPackageDependencies([out, retval] IAppxManifestPackageDependenciesEnumerator **value);
+    HRESULT GetCapabilities([out, retval] APPX_CAPABILITIES *value);
+    HRESULT GetResources([out, retval] IAppxManifestResourcesEnumerator **value);
+    HRESULT GetDeviceCapabilities([out, retval] IAppxManifestDeviceCapabilitiesEnumerator **value);
+    HRESULT GetPrerequisite([in, string] const WCHAR *name, [out, retval] UINT64 *value);
+    HRESULT GetApplications([out, retval] IAppxManifestApplicationsEnumerator **value);
+    HRESULT GetStream([out, retval] IStream **value);
+}
+
+[
+    object,
+    pointer_default(ref),
+    uuid(de4dfbbd-881a-48bb-858c-d6f2baeae6ed)
+]
+interface IAppxManifestResourcesEnumerator : IUnknown
+{
+    HRESULT GetCurrent([out, retval, string] WCHAR **value);
+    HRESULT GetHasCurrent([out, retval] BOOL *value);
+    HRESULT MoveNext([out, retval] BOOL *value);
+}
+
+[
+    object,
+    pointer_default(ref),
+    uuid(b5c49650-99bc-481c-9a34-3d53a4106708)
+]
+interface IAppxPackageReader : IUnknown
+{
+    HRESULT GetBlockMap([out, retval] IAppxBlockMapReader **value);
+    HRESULT GetFootprintFile([in] APPX_FOOTPRINT_FILE_TYPE type, [out, retval] IAppxFile **value);
+    HRESULT GetPayloadFile([in, string] const WCHAR *file_name, [out, retval] IAppxFile **value);
+    HRESULT GetPayloadFiles([out, retval] IAppxFilesEnumerator **value);
+    HRESULT GetManifest([out, retval] IAppxManifestReader **value);
+}
+
+[
+    object,
+    pointer_default(ref),
+    uuid(9099e33b-246f-41e4-881a-008eb613f858)
+]
+interface IAppxPackageWriter : IUnknown
+{
+    HRESULT AddPayloadFile([in, string] const WCHAR *file_name, [in, string] const WCHAR *content_type, [in] APPX_COMPRESSION_OPTION compression_option, [in] IStream *input_stream);
+    HRESULT Close([in] IStream *manifest);
+}
+
+[
+    helpstring("Appx Package API Factory Object"),
+    threading(both),
+    uuid(5842a140-ff9f-4166-8f5c-62f5b7b0c781)
+]
+coclass AppxFactory
+{
+    [default] interface IAppxFactory;
+    /* interface IAppxFactory2; */
+    /* interface IAppxFactory3; */
+    /* interface IAppxFactory4; */
+}
