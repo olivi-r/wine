@@ -124,6 +124,17 @@ typedef struct PACKAGE_ID
 }
 PACKAGE_ID;
 
+typedef struct PACKAGE_INFO
+{
+    UINT32 reserved;
+    UINT32 flags;
+    WCHAR *path;
+    WCHAR *packageFullName;
+    WCHAR *packageFamilyName;
+    PACKAGE_ID packageId;
+}
+PACKAGE_INFO;
+
 LONG WINAPI AppPolicyGetMediaFoundationCodecLoading(HANDLE token, AppPolicyMediaFoundationCodecLoading *policy);
 LONG WINAPI AppPolicyGetProcessTerminationMethod(HANDLE token, AppPolicyProcessTerminationMethod *policy);
 LONG WINAPI AppPolicyGetShowDeveloperDiagnostic(HANDLE token, AppPolicyShowDeveloperDiagnostic *policy);
