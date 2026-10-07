@@ -1,0 +1,6 @@
+TESTDLL = appxpackaging.dll
+IMPORTS = ole32 shlwapi
+
+SOURCES = \
+	appxpackaging.c \
+	resource.rc
