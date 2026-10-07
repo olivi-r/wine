@@ -26,6 +26,7 @@ struct factory
     IActivationFactory IActivationFactory_iface;
     ICoreApplication ICoreApplication_iface;
     ICoreApplication2 ICoreApplication2_iface;
+    ICoreImmersiveApplication ICoreImmersiveApplication_iface;
     LONG ref;
 };
 
@@ -58,6 +59,12 @@ static HRESULT WINAPI activation_factory_QueryInterface( IActivationFactory *ifa
     if (IsEqualGUID( iid, &IID_ICoreApplication2 ))
     {
         IInspectable_AddRef( (*out = &impl->ICoreApplication2_iface) );
+        return S_OK;
+    }
+
+    if (IsEqualGUID( iid, &IID_ICoreImmersiveApplication ))
+    {
+        IInspectable_AddRef( (*out = &impl->ICoreImmersiveApplication_iface) );
         return S_OK;
     }
 
@@ -259,11 +266,47 @@ static const struct ICoreApplication2Vtbl core_application2_vtbl =
     core_application2_EnablePrelaunch,
 };
 
+DEFINE_IINSPECTABLE( core_immersive_application, ICoreImmersiveApplication, struct factory, IActivationFactory_iface )
+
+static HRESULT WINAPI core_immersive_application_get_Views( ICoreImmersiveApplication *iface, IVectorView_CoreApplicationView **value )
+{
+    FIXME( "iface %p, value %p stub!\n", iface, value );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI core_immersive_application_CreateNewView( ICoreImmersiveApplication *iface, HSTRING runtime_type, HSTRING entry_point, ICoreApplicationView **view )
+{
+    FIXME( "iface %p, runtime_type %s, entry_point %s, view %p stub!\n", iface, debugstr_hstring( runtime_type ), debugstr_hstring( entry_point ), view );
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI core_immersive_application_get_MainView( ICoreImmersiveApplication *iface, ICoreApplicationView **value )
+{
+    FIXME( "iface %p, value %p stub!\n", iface, value );
+    return E_NOTIMPL;
+}
+
+static const struct ICoreImmersiveApplicationVtbl core_immersive_application_vtbl =
+{
+    core_immersive_application_QueryInterface,
+    core_immersive_application_AddRef,
+    core_immersive_application_Release,
+    /* IInspectable methods */
+    core_immersive_application_GetIids,
+    core_immersive_application_GetRuntimeClassName,
+    core_immersive_application_GetTrustLevel,
+    /* ICoreApplication methods */
+    core_immersive_application_get_Views,
+    core_immersive_application_CreateNewView,
+    core_immersive_application_get_MainView,
+};
+
 static struct factory factory =
 {
     {&activation_factory_vtbl},
     {&core_application_vtbl},
     {&core_application2_vtbl},
+    {&core_immersive_application_vtbl},
     1,
 };
 
