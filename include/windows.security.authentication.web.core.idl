@@ -23,12 +23,16 @@
 import "inspectable.idl";
 import "windowscontracts.idl";
 import "windows.foundation.idl";
+import "windows.security.credentials.idl";
 
 namespace Windows.Security.Authentication.Web.Core {
     interface IWebProviderError;
     interface IWebProviderErrorFactory;
+    interface IWebTokenResponse;
+    interface IWebTokenResponseFactory;
 
     runtimeclass WebProviderError;
+    runtimeclass WebTokenResponse;
 
     [
         contract(Windows.Foundation.UniversalApiContract, 1.0),
@@ -43,6 +47,19 @@ namespace Windows.Security.Authentication.Web.Core {
     }
 
     [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.Security.Authentication.Web.Core.WebTokenResponse),
+        uuid(67a7c5ca-83f6-44c6-a3b1-0eb69e41fa8a)
+    ]
+    interface IWebTokenResponse : IInspectable
+    {
+        [propget] HRESULT Token([out, retval] HSTRING *value);
+        [propget] HRESULT ProviderError([out, retval] Windows.Security.Authentication.Web.Core.WebProviderError **value);
+        [propget] HRESULT WebAccount([out, retval] Windows.Security.Credentials.WebAccount **value);
+        [propget] HRESULT Properties([out, retval] Windows.Foundation.Collections.IMap<HSTRING, HSTRING> **value);
+    }
+
+    [
         /* activatable(Windows.Security.Authentication.Web.Core.IWebProviderErrorFactory, Windows.Foundation.UniversalApiContract, 1.0), */
         contract(Windows.Foundation.UniversalApiContract, 1.0),
         marshaling_behavior(agile)
@@ -50,5 +67,17 @@ namespace Windows.Security.Authentication.Web.Core {
     runtimeclass WebProviderError
     {
         [default] interface Windows.Security.Authentication.Web.Core.IWebProviderError;
+    }
+
+    [
+        activatable(Windows.Foundation.UniversalApiContract, 1.0),
+        /* activatable(Windows.Security.Authentication.Web.Core.IWebTokenResponseFactory, Windows.Foundation.UniversalApiContract, 1.0), */
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile),
+        threading(both)
+    ]
+    runtimeclass WebTokenResponse
+    {
+        [default] interface Windows.Security.Authentication.Web.Core.IWebTokenResponse;
     }
 }
