@@ -27,6 +27,7 @@ import "windows.security.credentials.idl";
 
 namespace Windows.Security.Authentication.Web.Core {
     typedef enum WebTokenRequestPromptType WebTokenRequestPromptType;
+    typedef enum WebTokenRequestStatus WebTokenRequestStatus;
 
     interface IWebProviderError;
     interface IWebProviderErrorFactory;
@@ -34,12 +35,20 @@ namespace Windows.Security.Authentication.Web.Core {
     interface IWebTokenRequest2;
     interface IWebTokenRequest3;
     interface IWebTokenRequestFactory;
+    interface IWebTokenRequestResult;
     interface IWebTokenResponse;
     interface IWebTokenResponseFactory;
 
     runtimeclass WebProviderError;
     runtimeclass WebTokenRequest;
+    runtimeclass WebTokenRequestResult;
     runtimeclass WebTokenResponse;
+
+    declare {
+        interface Windows.Foundation.Collections.IIterable<Windows.Security.Authentication.Web.Core.WebTokenResponse *>;
+        interface Windows.Foundation.Collections.IIterator<Windows.Security.Authentication.Web.Core.WebTokenResponse *>;
+        interface Windows.Foundation.Collections.IVectorView<Windows.Security.Authentication.Web.Core.WebTokenResponse *>;
+    }
 
     [
         contract(Windows.Foundation.UniversalApiContract, 1.0)
@@ -48,6 +57,19 @@ namespace Windows.Security.Authentication.Web.Core {
     {
         Default             = 0,
         ForceAuthentication = 1,
+    };
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0)
+    ]
+    enum WebTokenRequestStatus
+    {
+        Success                     = 0,
+        UserCancel                  = 1,
+        AccountSwitch               = 2,
+        UserInteractionRequired     = 3,
+        AccountProviderNotAvailable = 4,
+        ProviderError               = 5,
     };
 
     [
@@ -74,6 +96,19 @@ namespace Windows.Security.Authentication.Web.Core {
         [propget] HRESULT ClientId([out, retval] HSTRING *value);
         [propget] HRESULT PromptType([out, retval] Windows.Security.Authentication.Web.Core.WebTokenRequestPromptType *value);
         [propget] HRESULT Properties([out, retval] Windows.Foundation.Collections.IMap<HSTRING, HSTRING> **value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.Security.Authentication.Web.Core.WebTokenRequestResult),
+        uuid(c12a8305-d1f8-4483-8d54-38fe292784ff)
+    ]
+    interface IWebTokenRequestResult : IInspectable
+    {
+        [propget] HRESULT ResponseData([out, retval] Windows.Foundation.Collections.IVectorView<Windows.Security.Authentication.Web.Core.WebTokenResponse *> **value);
+        [propget] HRESULT ResponseStatus([out, retval] Windows.Security.Authentication.Web.Core.WebTokenRequestStatus *value);
+        [propget] HRESULT ResponseError([out, retval] Windows.Security.Authentication.Web.Core.WebProviderError **value);
+        HRESULT InvalidateCacheAsync([out, retval] Windows.Foundation.IAsyncAction **operation);
     }
 
     [
@@ -110,6 +145,15 @@ namespace Windows.Security.Authentication.Web.Core {
         [default] interface Windows.Security.Authentication.Web.Core.IWebTokenRequest;
         /* [contract(Windows.Foundation.UniversalApiContract, 2.0)] interface Windows.Security.Authentication.Web.Core.IWebTokenRequest2; */
         /* [contract(Windows.Foundation.UniversalApiContract, 4.0)] interface Windows.Security.Authentication.Web.Core.IWebTokenRequest3; */
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile)
+    ]
+    runtimeclass WebTokenRequestResult
+    {
+        [default] interface Windows.Security.Authentication.Web.Core.IWebTokenRequestResult;
     }
 
     [
