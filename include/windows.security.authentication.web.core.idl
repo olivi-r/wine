@@ -26,13 +26,29 @@ import "windows.foundation.idl";
 import "windows.security.credentials.idl";
 
 namespace Windows.Security.Authentication.Web.Core {
+    typedef enum WebTokenRequestPromptType WebTokenRequestPromptType;
+
     interface IWebProviderError;
     interface IWebProviderErrorFactory;
+    interface IWebTokenRequest;
+    interface IWebTokenRequest2;
+    interface IWebTokenRequest3;
+    interface IWebTokenRequestFactory;
     interface IWebTokenResponse;
     interface IWebTokenResponseFactory;
 
     runtimeclass WebProviderError;
+    runtimeclass WebTokenRequest;
     runtimeclass WebTokenResponse;
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0)
+    ]
+    enum WebTokenRequestPromptType
+    {
+        Default             = 0,
+        ForceAuthentication = 1,
+    };
 
     [
         contract(Windows.Foundation.UniversalApiContract, 1.0),
@@ -43,6 +59,20 @@ namespace Windows.Security.Authentication.Web.Core {
     {
         [propget] HRESULT ErrorCode([out, retval] UINT32 *value);
         [propget] HRESULT ErrorMessage([out, retval] HSTRING *value);
+        [propget] HRESULT Properties([out, retval] Windows.Foundation.Collections.IMap<HSTRING, HSTRING> **value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.Security.Authentication.Web.Core.WebTokenRequest),
+        uuid(b77b4d68-adcb-4673-b364-0cf7b35caf97)
+    ]
+    interface IWebTokenRequest : IInspectable
+    {
+        [propget] HRESULT WebAccountProvider([out, retval] Windows.Security.Credentials.WebAccountProvider **value);
+        [propget] HRESULT Scope([out, retval] HSTRING *value);
+        [propget] HRESULT ClientId([out, retval] HSTRING *value);
+        [propget] HRESULT PromptType([out, retval] Windows.Security.Authentication.Web.Core.WebTokenRequestPromptType *value);
         [propget] HRESULT Properties([out, retval] Windows.Foundation.Collections.IMap<HSTRING, HSTRING> **value);
     }
 
@@ -67,6 +97,19 @@ namespace Windows.Security.Authentication.Web.Core {
     runtimeclass WebProviderError
     {
         [default] interface Windows.Security.Authentication.Web.Core.IWebProviderError;
+    }
+
+    [
+        /* activatable(Windows.Security.Authentication.Web.Core.IWebTokenRequestFactory, Windows.Foundation.UniversalApiContract, 1.0), */
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile),
+        threading(both)
+    ]
+    runtimeclass WebTokenRequest
+    {
+        [default] interface Windows.Security.Authentication.Web.Core.IWebTokenRequest;
+        /* [contract(Windows.Foundation.UniversalApiContract, 2.0)] interface Windows.Security.Authentication.Web.Core.IWebTokenRequest2; */
+        /* [contract(Windows.Foundation.UniversalApiContract, 4.0)] interface Windows.Security.Authentication.Web.Core.IWebTokenRequest3; */
     }
 
     [
