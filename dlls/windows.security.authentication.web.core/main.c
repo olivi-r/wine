@@ -16,6 +16,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
  */
 
+#include "initguid.h"
 #include "private.h"
 
 WINE_DEFAULT_DEBUG_CHANNEL(authwebcore);
@@ -28,6 +29,15 @@ HRESULT WINAPI DllGetClassObject( REFCLSID clsid, REFIID iid, void **out )
 
 HRESULT WINAPI DllGetActivationFactory( HSTRING classid, IActivationFactory **factory )
 {
-    FIXME( "classid %s, factory %p stub!\n", debugstr_hstring( classid ), factory );
+    const WCHAR *buffer = WindowsGetStringRawBuffer( classid, NULL );
+
+    TRACE( "classid %s, factory %p.\n", debugstr_hstring( classid ), factory );
+
+    *factory = NULL;
+
+    if (!wcscmp( buffer, RuntimeClass_Windows_Security_Authentication_Web_Core_WebAuthenticationCoreManager ))
+        IActivationFactory_QueryInterface( web_authentication_core_manager_factory, &IID_IActivationFactory, (void **)factory );
+
+    if (*factory) return S_OK;
     return CLASS_E_CLASSNOTAVAILABLE;
 }

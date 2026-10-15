@@ -2,4 +2,6 @@ MODULE  = windows.security.authentication.web.core.dll
 IMPORTS = combase
 
 SOURCES = \
-	main.c
+	classes.idl \
+	main.c \
+	manager.c
