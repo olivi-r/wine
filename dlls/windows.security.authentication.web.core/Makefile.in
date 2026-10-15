@@ -1,0 +1,5 @@
+MODULE  = windows.security.authentication.web.core.dll
+IMPORTS = combase
+
+SOURCES = \
+	main.c
