@@ -29,6 +29,11 @@ namespace Windows.Security.Authentication.Web.Core {
     typedef enum WebTokenRequestPromptType WebTokenRequestPromptType;
     typedef enum WebTokenRequestStatus WebTokenRequestStatus;
 
+    interface IWebAuthenticationCoreManagerStatics;
+    interface IWebAuthenticationCoreManagerStatics2;
+    interface IWebAuthenticationCoreManagerStatics3;
+    interface IWebAuthenticationCoreManagerStatics4;
+    interface IWebAuthenticationCoreManagerStatics5;
     interface IWebProviderError;
     interface IWebProviderErrorFactory;
     interface IWebTokenRequest;
@@ -39,15 +44,22 @@ namespace Windows.Security.Authentication.Web.Core {
     interface IWebTokenResponse;
     interface IWebTokenResponseFactory;
 
+    runtimeclass WebAuthenticationCoreManager;
     runtimeclass WebProviderError;
     runtimeclass WebTokenRequest;
     runtimeclass WebTokenRequestResult;
     runtimeclass WebTokenResponse;
 
     declare {
+        interface Windows.Foundation.AsyncOperationCompletedHandler<Windows.Security.Authentication.Web.Core.WebTokenRequestResult *>;
+        interface Windows.Foundation.AsyncOperationCompletedHandler<Windows.Security.Credentials.WebAccount *>;
+        interface Windows.Foundation.AsyncOperationCompletedHandler<Windows.Security.Credentials.WebAccountProvider *>;
         interface Windows.Foundation.Collections.IIterable<Windows.Security.Authentication.Web.Core.WebTokenResponse *>;
         interface Windows.Foundation.Collections.IIterator<Windows.Security.Authentication.Web.Core.WebTokenResponse *>;
         interface Windows.Foundation.Collections.IVectorView<Windows.Security.Authentication.Web.Core.WebTokenResponse *>;
+        interface Windows.Foundation.IAsyncOperation<Windows.Security.Authentication.Web.Core.WebTokenRequestResult *>;
+        interface Windows.Foundation.IAsyncOperation<Windows.Security.Credentials.WebAccount *>;
+        interface Windows.Foundation.IAsyncOperation<Windows.Security.Credentials.WebAccountProvider *>;
     }
 
     [
@@ -71,6 +83,22 @@ namespace Windows.Security.Authentication.Web.Core {
         AccountProviderNotAvailable = 4,
         ProviderError               = 5,
     };
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.Security.Authentication.Web.Core.WebAuthenticationCoreManager),
+        uuid(6aca7c92-a581-4479-9c10-752eff44fd34)
+    ]
+    interface IWebAuthenticationCoreManagerStatics : IInspectable
+    {
+        [overload("GetTokenSilentlyAsync")] HRESULT GetTokenSilentlyAsync([in] Windows.Security.Authentication.Web.Core.WebTokenRequest *request, [out, retval] Windows.Foundation.IAsyncOperation<Windows.Security.Authentication.Web.Core.WebTokenRequestResult *> **operation);
+        [overload("GetTokenSilentlyAsync")] HRESULT GetTokenSilentlyWithWebAccountAsync([in] Windows.Security.Authentication.Web.Core.WebTokenRequest *request, [in] Windows.Security.Credentials.WebAccount *web_account, [out, retval] Windows.Foundation.IAsyncOperation<Windows.Security.Authentication.Web.Core.WebTokenRequestResult *> **operation);
+        [overload("RequestTokenAsync")] HRESULT RequestTokenAsync([in] Windows.Security.Authentication.Web.Core.WebTokenRequest *request, [out, retval] Windows.Foundation.IAsyncOperation<Windows.Security.Authentication.Web.Core.WebTokenRequestResult *> **operation);
+        [overload("RequestTokenAsync")] HRESULT RequestTokenWithWebAccountAsync([in] Windows.Security.Authentication.Web.Core.WebTokenRequest *request, [in] Windows.Security.Credentials.WebAccount *web_account, [out, retval] Windows.Foundation.IAsyncOperation<Windows.Security.Authentication.Web.Core.WebTokenRequestResult *> **operation);
+        HRESULT FindAccountAsync([in] Windows.Security.Credentials.WebAccountProvider *provider, [in] HSTRING web_account_id, [out, retval] Windows.Foundation.IAsyncOperation<Windows.Security.Credentials.WebAccount *> **operation);
+        [overload("FindAccountProviderAsync")] HRESULT FindAccountProviderAsync([in] HSTRING web_account_provider_id, [out, retval] Windows.Foundation.IAsyncOperation<Windows.Security.Credentials.WebAccountProvider *> **operation);
+        [overload("FindAccountProviderAsync")] HRESULT FindAccountProviderWithAuthorityAsync([in] HSTRING web_account_provider_id, [in] HSTRING authority, [out, retval] Windows.Foundation.IAsyncOperation<Windows.Security.Credentials.WebAccountProvider *> **operation);
+    }
 
     [
         contract(Windows.Foundation.UniversalApiContract, 1.0),
@@ -122,6 +150,20 @@ namespace Windows.Security.Authentication.Web.Core {
         [propget] HRESULT ProviderError([out, retval] Windows.Security.Authentication.Web.Core.WebProviderError **value);
         [propget] HRESULT WebAccount([out, retval] Windows.Security.Credentials.WebAccount **value);
         [propget] HRESULT Properties([out, retval] Windows.Foundation.Collections.IMap<HSTRING, HSTRING> **value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile),
+        static(Windows.Security.Authentication.Web.Core.IWebAuthenticationCoreManagerStatics, Windows.Foundation.UniversalApiContract, 1.0),
+        /* static(Windows.Security.Authentication.Web.Core.IWebAuthenticationCoreManagerStatics2, Windows.Foundation.UniversalApiContract, 1.0), */
+        /* static(Windows.Security.Authentication.Web.Core.IWebAuthenticationCoreManagerStatics3, Windows.Foundation.UniversalApiContract, 3.0), */
+        /* static(Windows.Security.Authentication.Web.Core.IWebAuthenticationCoreManagerStatics4, Windows.Foundation.UniversalApiContract, 6.0), */
+        /* static(Windows.Security.Authentication.Web.Core.IWebAuthenticationCoreManagerStatics5, Windows.Foundation.UniversalApiContract, 15.0), */
+        threading(both)
+    ]
+    runtimeclass WebAuthenticationCoreManager
+    {
     }
 
     [
