@@ -30,9 +30,11 @@ namespace Windows.Storage.Provider {
     interface IFileUpdateRequest;
     interface IFileUpdateRequest2;
     interface IFileUpdateRequestDeferral;
+    interface IFileUpdateRequestedEventArgs;
 
     runtimeclass FileUpdateRequest;
     runtimeclass FileUpdateRequestDeferral;
+    runtimeclass FileUpdateRequestedEventArgs;
 
     [
         contract(Windows.Foundation.UniversalApiContract, 1.0)
@@ -73,6 +75,16 @@ namespace Windows.Storage.Provider {
     }
 
     [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.Storage.Provider.FileUpdateRequestedEventArgs),
+        uuid(7b0a9342-3905-438d-aaef-78ae265f8dd2)
+    ]
+    interface IFileUpdateRequestedEventArgs : IInspectable
+    {
+        [propget] HRESULT Request([out, retval] Windows.Storage.Provider.FileUpdateRequest **value);
+    }
+
+    [
         contract(Windows.Foundation.UniversalApiContract, 1.0)
     ]
     runtimeclass FileUpdateRequest
@@ -87,5 +99,13 @@ namespace Windows.Storage.Provider {
     runtimeclass FileUpdateRequestDeferral
     {
         [default] interface Windows.Storage.Provider.IFileUpdateRequestDeferral;
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0)
+    ]
+    runtimeclass FileUpdateRequestedEventArgs
+    {
+        [default] interface Windows.Storage.Provider.IFileUpdateRequestedEventArgs;
     }
 }
