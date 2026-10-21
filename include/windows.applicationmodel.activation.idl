@@ -29,6 +29,7 @@ import "windows.applicationmodel.background.idl";
 import "windows.applicationmodel.core.idl";
 import "windows.applicationmodel.datatransfer.sharetarget.idl";
 import "windows.storage.idl";
+import "windows.storage.pickers.provider.idl";
 import "windows.system.idl";
 
 namespace Windows.ApplicationModel.Background {
@@ -52,6 +53,8 @@ namespace Windows.ApplicationModel.Activation {
     interface IFileActivatedEventArgs;
     interface IFileActivatedEventArgsWithCallerPackageFamilyName;
     interface IFileActivatedEventArgsWithNeighboringFiles;
+    interface IFileOpenPickerActivatedEventArgs;
+    interface IFileOpenPickerActivatedEventArgs2;
     interface ILaunchActivatedEventArgs;
     interface ILaunchActivatedEventArgs2;
     interface IPrelaunchActivatedEventArgs;
@@ -63,6 +66,7 @@ namespace Windows.ApplicationModel.Activation {
 
     runtimeclass BackgroundActivatedEventArgs;
     runtimeclass FileActivatedEventArgs;
+    runtimeclass FileOpenPickerActivatedEventArgs;
     runtimeclass LaunchActivatedEventArgs;
     runtimeclass SearchActivatedEventArgs;
     runtimeclass ShareTargetActivatedEventArgs;
@@ -195,6 +199,16 @@ namespace Windows.ApplicationModel.Activation {
 
     [
         contract(Windows.Foundation.UniversalApiContract, 1.0),
+        uuid(72827082-5525-4bf2-bc09-1f5095d4964d)
+    ]
+    interface IFileOpenPickerActivatedEventArgs : IInspectable
+        requires Windows.ApplicationModel.Activation.IActivatedEventArgs
+    {
+        [propget] HRESULT FileOpenPickerUI([out, retval] Windows.Storage.Pickers.Provider.FileOpenPickerUI **value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
         uuid(fbc93e26-a14a-4b4f-82b0-33bed920af52)
     ]
     interface ILaunchActivatedEventArgs : IInspectable
@@ -259,6 +273,18 @@ namespace Windows.ApplicationModel.Activation {
         /* interface Windows.ApplicationModel.Activation.IFileActivatedEventArgsWithCallerPackageFamilyName; */
         /* interface Windows.ApplicationModel.Activation.IFileActivatedEventArgsWithNeighboringFiles; */
         /* interface Windows.ApplicationModel.Activation.IViewSwitcherProvider; */
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile)
+    ]
+    runtimeclass FileOpenPickerActivatedEventArgs
+    {
+        interface Windows.ApplicationModel.Activation.IActivatedEventArgs;
+        /* [contract(Windows.Foundation.UniversalApiContract, 3.0)] interface Windows.ApplicationModel.Activation.IActivatedEventArgsWithUser; */
+        [default] interface Windows.ApplicationModel.Activation.IFileOpenPickerActivatedEventArgs;
+        /* interface Windows.ApplicationModel.Activation.IFileOpenPickerActivatedEventArgs2; */
     }
 
     [
