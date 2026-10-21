@@ -54,12 +54,15 @@ namespace Windows.ApplicationModel.Activation {
     interface ILaunchActivatedEventArgs;
     interface ILaunchActivatedEventArgs2;
     interface IPrelaunchActivatedEventArgs;
+    interface ISearchActivatedEventArgs;
+    interface ISearchActivatedEventArgsWithLinguisticDetails;
     interface ISplashScreen;
     interface IViewSwitcherProvider;
 
     runtimeclass BackgroundActivatedEventArgs;
     runtimeclass FileActivatedEventArgs;
     runtimeclass LaunchActivatedEventArgs;
+    runtimeclass SearchActivatedEventArgs;
     runtimeclass SplashScreen;
 
     declare {
@@ -200,6 +203,17 @@ namespace Windows.ApplicationModel.Activation {
 
     [
         contract(Windows.Foundation.UniversalApiContract, 1.0),
+        uuid(8cb36951-58c8-43e3-94bc-41d33f8b630e)
+    ]
+    interface ISearchActivatedEventArgs : IInspectable
+        requires Windows.ApplicationModel.Activation.IActivatedEventArgs
+    {
+        [propget] HRESULT QueryText([out, retval] HSTRING *value);
+        [propget] HRESULT Language([out, retval] HSTRING *value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
         exclusiveto(Windows.ApplicationModel.Activation.SplashScreen),
         uuid(ca4d975c-d4d6-43f0-97c0-0833c6391c24)
     ]
@@ -246,6 +260,20 @@ namespace Windows.ApplicationModel.Activation {
         [default] interface Windows.ApplicationModel.Activation.ILaunchActivatedEventArgs;
         /* [contract(Windows.Foundation.UniversalApiContract, 3.0)] interface Windows.ApplicationModel.ILaunchActivatedEventArgs2; */
         /* interface Windows.ApplicationModel.Activation.IPrelaunchActivatedEventArgs; */
+        /* interface Windows.ApplicationModel.Activation.IViewSwitcherProvider; */
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile)
+    ]
+    runtimeclass SearchActivatedEventArgs
+    {
+        interface Windows.ApplicationModel.Activation.IActivatedEventArgs;
+        /* [contract(Windows.Foundation.UniversalApiContract, 3.0)] interface Windows.ApplicationModel.IActivatedEventArgsWithUser; */
+        /* interface Windows.ApplicationModel.Activation.IApplicationViewActivatedEventArgs; */
+        [default] interface Windows.ApplicationModel.Activation.ISearchActivatedEventArgs;
+        /* interface Windows.ApplicationModel.Activation.ISearchActivatedEventArgsWithLinguisticDetails; */
         /* interface Windows.ApplicationModel.Activation.IViewSwitcherProvider; */
     }
 
