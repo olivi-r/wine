@@ -29,6 +29,8 @@ namespace Windows.UI.Xaml {
 }
 
 namespace Windows.UI.Xaml.Media {
+    interface ICacheMode;
+    interface ICacheModeFactory;
     interface IGeneralTransform;
     interface IGeneralTransformOverrides;
     interface IGeneralTransformFactory;
@@ -42,11 +44,31 @@ namespace Windows.UI.Xaml.Media {
     interface ITransform;
     interface ITransformFactory;
 
+    runtimeclass CacheMode;
     runtimeclass GeneralTransform;
     runtimeclass Geometry;
     runtimeclass Projection;
     runtimeclass RectangleGeometry;
     runtimeclass Transform;
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.Media.CacheMode),
+        uuid(98dc8b11-c6f9-4dab-b838-5fd5ec8c7350)
+    ]
+    interface ICacheMode : IInspectable
+    {
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.Media.CacheMode),
+        uuid(eb1f8c5b-0abb-4e70-b8a8-620d0d953ab2)
+    ]
+    interface ICacheModeFactory : IInspectable
+    {
+        HRESULT CreateInstance([in] IInspectable *base_interface, [out] IInspectable **inner_interface, [out, retval] Windows.UI.Xaml.Media.CacheMode **value);
+    }
 
     [
         contract(Windows.Foundation.UniversalApiContract, 1.0),
@@ -138,6 +160,17 @@ namespace Windows.UI.Xaml.Media {
     ]
     interface ITransformFactory : IInspectable
     {
+    }
+
+    [
+        composable(Windows.UI.Xaml.Media.ICacheModeFactory, protected, Windows.Foundation.UniversalApiContract, 1.0),
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile),
+        threading(both)
+    ]
+    runtimeclass CacheMode : Windows.UI.Xaml.DependencyObject
+    {
+        [default] interface Windows.UI.Xaml.Media.ICacheMode;
     }
 
     [
