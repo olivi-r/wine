@@ -34,6 +34,7 @@ namespace Windows.Storage.Pickers.Provider {
     interface IPickerClosingDeferral;
     interface IPickerClosingEventArgs;
     interface IPickerClosingOperation;
+    interface ITargetFileRequest;
     interface ITargetFileRequestDeferral;
 
     runtimeclass FileOpenPickerUI;
@@ -41,6 +42,7 @@ namespace Windows.Storage.Pickers.Provider {
     runtimeclass PickerClosingDeferral;
     runtimeclass PickerClosingEventArgs;
     runtimeclass PickerClosingOperation;
+    runtimeclass TargetFileRequest;
     runtimeclass TargetFileRequestDeferral;
 
     declare {
@@ -134,6 +136,18 @@ namespace Windows.Storage.Pickers.Provider {
 
     [
         contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.Storage.Pickers.Provider.TargetFileRequest),
+        uuid(42bd3355-7f88-478b-8e81-690b20340678)
+    ]
+    interface ITargetFileRequest : IInspectable
+    {
+        [propget] HRESULT TargetFile([out, retval] Windows.Storage.IStorageFile **value);
+        [propput] HRESULT TargetFile([in] Windows.Storage.IStorageFile *value);
+        HRESULT GetDeferral([out, retval] Windows.Storage.Pickers.Provider.TargetFileRequestDeferral **value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
         exclusiveto(Windows.Storage.Pickers.Provider.TargetFileRequestDeferral),
         uuid(4aee9d91-bf15-4da9-95f6-f6b7d558225b)
     ]
@@ -180,6 +194,14 @@ namespace Windows.Storage.Pickers.Provider {
     runtimeclass PickerClosingOperation
     {
         [default] interface Windows.Storage.Pickers.Provider.IPickerClosingOperation;
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0)
+    ]
+    runtimeclass TargetFileRequest
+    {
+        [default] interface Windows.Storage.Pickers.Provider.ITargetFileRequest;
     }
 
     [
