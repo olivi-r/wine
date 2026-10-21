@@ -32,8 +32,11 @@ namespace Windows.UI.Xaml.Media {
     interface IGeneralTransform;
     interface IGeneralTransformOverrides;
     interface IGeneralTransformFactory;
+    interface ITransform;
+    interface ITransformFactory;
 
     runtimeclass GeneralTransform;
+    runtimeclass Transform;
 
     [
         contract(Windows.Foundation.UniversalApiContract, 1.0),
@@ -59,6 +62,24 @@ namespace Windows.UI.Xaml.Media {
     }
 
     [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.Media.Transform),
+        uuid(4df74078-bfd6-4ed1-9682-d2fd8bf2fe6f)
+    ]
+    interface ITransform : IInspectable
+    {
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.Media.Transform),
+        uuid(1a955a66-7cf4-4320-b416-6181192fcc6d)
+    ]
+    interface ITransformFactory : IInspectable
+    {
+    }
+
+    [
         composable(Windows.UI.Xaml.Media.IGeneralTransformFactory, public, Windows.Foundation.UniversalApiContract, 1.0),
         contract(Windows.Foundation.UniversalApiContract, 1.0),
         marshaling_behavior(agile),
@@ -68,5 +89,16 @@ namespace Windows.UI.Xaml.Media {
     {
         [default] interface Windows.UI.Xaml.Media.IGeneralTransform;
         /* [contract(Windows.Foundation.UniversalApiContract, 1.0)] interface Windows.UI.Xaml.Media.IGeneralTransformOverrides; */
+    }
+
+    [
+        composable(Windows.UI.Xaml.Media.ITransformFactory, public, Windows.Foundation.UniversalApiContract, 1.0),
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile),
+        threading(both)
+    ]
+    runtimeclass Transform : Windows.UI.Xaml.Media.GeneralTransform
+    {
+        [default] interface Windows.UI.Xaml.Media.ITransform;
     }
 }
