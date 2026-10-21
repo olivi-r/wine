@@ -42,6 +42,10 @@ namespace Windows.UI.Xaml {
     interface IBindingFailedEventArgs;
     interface IDataTemplateKey;
     interface IDataTemplateKeyFactory;
+    interface IDebugSettings;
+    interface IDebugSettings2;
+    interface IDebugSettings3;
+    interface IDebugSettings4;
     interface IDependencyObject;
     interface IDependencyObject2;
     interface IDependencyObjectFactory;
@@ -56,6 +60,7 @@ namespace Windows.UI.Xaml {
 
     runtimeclass BindingFailedEventArgs;
     runtimeclass DataTemplateKey;
+    runtimeclass DebugSettings;
     runtimeclass DependencyObject;
     runtimeclass DependencyProperty;
     runtimeclass DependencyPropertyChangedEventArgs;
@@ -73,6 +78,12 @@ namespace Windows.UI.Xaml {
         interface Windows.Foundation.Collections.IVector<Windows.UI.Xaml.ResourceDictionary *>;
         interface Windows.Foundation.Collections.IVectorView<Windows.UI.Xaml.ResourceDictionary *>;
     }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        uuid(136b1782-54ba-420d-a1aa-82828721cde6)
+    ]
+    delegate HRESULT BindingFailedEventHandler([in] IInspectable *sender, [in] Windows.UI.Xaml.BindingFailedEventArgs *e);
 
     [
         contract(Windows.Foundation.UniversalApiContract, 1.0),
@@ -122,6 +133,23 @@ namespace Windows.UI.Xaml {
     {
         HRESULT CreateInstance([in] IInspectable *base_interface, [out] IInspectable **inner_interface, [out, retval] Windows.UI.Xaml.DataTemplateKey **value);
         HRESULT CreateInstanceWithType([in] IInspectable *data_type, [in] IInspectable *base_interface, [out] IInspectable **inner_interface, [out, retval] Windows.UI.Xaml.DataTemplateKey **value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.DebugSettings),
+        uuid(3d451f98-c6a7-4d17-8398-d83a067183d8)
+    ]
+    interface IDebugSettings : IInspectable
+    {
+        [propget] HRESULT EnableFrameRateCounter([out, retval] boolean *value);
+        [propput] HRESULT EnableFrameRateCounter([in] boolean value);
+        [propget] HRESULT IsBindingTracingEnabled([out, retval] boolean *value);
+        [propput] HRESULT IsBindingTracingEnabled([in] boolean value);
+        [propget] HRESULT IsOverdrawHeatMapEnabled([out, retval] boolean *value);
+        [propput] HRESULT IsOverdrawHeatMapEnabled([in] boolean value);
+        [eventadd] HRESULT BindingFailed([in] Windows.UI.Xaml.BindingFailedEventHandler *handler, [out, retval] EventRegistrationToken *cookie);
+        [eventremove] HRESULT BindingFailed([in] EventRegistrationToken cookie);
     }
 
     [
@@ -270,6 +298,18 @@ namespace Windows.UI.Xaml {
     runtimeclass DataTemplateKey
     {
         [default] interface Windows.UI.Xaml.IDataTemplateKey;
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile)
+    ]
+    runtimeclass DebugSettings
+    {
+        [default] interface Windows.UI.Xaml.IDebugSettings;
+        /* interface Windows.UI.Xaml.IDebugSettings2; */
+        /* interface Windows.UI.Xaml.IDebugSettings3; */
+        /* [contract(Windows.Foundation.UniversalApiContract, 7.0)] interface Windows.UI.Xaml.IDebugSettings4; */
     }
 
     [
