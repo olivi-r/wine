@@ -25,16 +25,35 @@ import "windowscontracts.idl";
 import "windows.storage.idl";
 
 namespace Windows.Storage.Provider {
+    typedef enum CachedFileTarget CachedFileTarget;
     typedef enum FileUpdateStatus FileUpdateStatus;
+    typedef enum UIStatus UIStatus;
 
+    interface ICachedFileUpdaterUI;
+    interface ICachedFileUpdaterUI2;
     interface IFileUpdateRequest;
     interface IFileUpdateRequest2;
     interface IFileUpdateRequestDeferral;
     interface IFileUpdateRequestedEventArgs;
 
+    runtimeclass CachedFileUpdaterUI;
     runtimeclass FileUpdateRequest;
     runtimeclass FileUpdateRequestDeferral;
     runtimeclass FileUpdateRequestedEventArgs;
+
+    declare {
+        interface Windows.Foundation.TypedEventHandler<Windows.Storage.Provider.CachedFileUpdaterUI *, IInspectable *>;
+        interface Windows.Foundation.TypedEventHandler<Windows.Storage.Provider.CachedFileUpdaterUI *, Windows.Storage.Provider.FileUpdateRequestedEventArgs *>;
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0)
+    ]
+    enum CachedFileTarget
+    {
+        Local  = 0,
+        Remote = 1,
+    };
 
     [
         contract(Windows.Foundation.UniversalApiContract, 1.0)
@@ -48,6 +67,34 @@ namespace Windows.Storage.Provider {
         Failed               = 4,
         CompleteAndRenamed   = 5,
     };
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0)
+    ]
+    enum UIStatus
+    {
+        Unavailable = 0,
+        Hidden      = 1,
+        Visible     = 2,
+        Complete    = 3,
+    };
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.Storage.Provider.CachedFileUpdaterUI),
+        uuid(9e6f41e6-baf2-4a97-b600-9333f5df80fd)
+    ]
+    interface ICachedFileUpdaterUI : IInspectable
+    {
+        [propget] HRESULT Title([out, retval] HSTRING *value);
+        [propput] HRESULT Title([in] HSTRING value);
+        [propget] HRESULT UpdateTarget([out, retval] Windows.Storage.Provider.CachedFileTarget *value);
+        [eventadd] HRESULT FileUpdateRequested([in] Windows.Foundation.TypedEventHandler<Windows.Storage.Provider.CachedFileUpdaterUI *, Windows.Storage.Provider.FileUpdateRequestedEventArgs *> *handler, [out, retval] EventRegistrationToken *cookie);
+        [eventremove] HRESULT FileUpdateRequested([in] EventRegistrationToken cookie);
+        [eventadd] HRESULT UIRequested([in] Windows.Foundation.TypedEventHandler<Windows.Storage.Provider.CachedFileUpdaterUI *, IInspectable *> *handler, [out, retval] EventRegistrationToken *cookie);
+        [eventremove] HRESULT UIRequested([in] EventRegistrationToken cookie);
+        [propget] HRESULT UIStatus([out, retval] Windows.Storage.Provider.UIStatus *value);
+    }
 
     [
         contract(Windows.Foundation.UniversalApiContract, 1.0),
@@ -82,6 +129,15 @@ namespace Windows.Storage.Provider {
     interface IFileUpdateRequestedEventArgs : IInspectable
     {
         [propget] HRESULT Request([out, retval] Windows.Storage.Provider.FileUpdateRequest **value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0)
+    ]
+    runtimeclass CachedFileUpdaterUI
+    {
+        [default] interface Windows.Storage.Provider.ICachedFileUpdaterUI;
+        /* interface Windows.Storage.Provider.ICachedFileUpdaterUI2; */
     }
 
     [
