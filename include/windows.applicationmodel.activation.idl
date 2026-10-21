@@ -30,6 +30,7 @@ import "windows.applicationmodel.core.idl";
 import "windows.applicationmodel.datatransfer.sharetarget.idl";
 import "windows.storage.idl";
 import "windows.storage.pickers.provider.idl";
+import "windows.storage.provider.idl";
 import "windows.system.idl";
 
 namespace Windows.ApplicationModel.Background {
@@ -50,6 +51,7 @@ namespace Windows.ApplicationModel.Activation {
     interface IActivatedEventArgsWithUser;
     interface IApplicationViewActivatedEventArgs;
     interface IBackgroundActivatedEventArgs;
+    interface ICachedFileUpdaterActivatedEventArgs;
     interface IFileActivatedEventArgs;
     interface IFileActivatedEventArgsWithCallerPackageFamilyName;
     interface IFileActivatedEventArgsWithNeighboringFiles;
@@ -67,6 +69,7 @@ namespace Windows.ApplicationModel.Activation {
     interface IViewSwitcherProvider;
 
     runtimeclass BackgroundActivatedEventArgs;
+    runtimeclass CachedFileUpdaterActivatedEventArgs;
     runtimeclass FileActivatedEventArgs;
     runtimeclass FileOpenPickerActivatedEventArgs;
     runtimeclass FileSavePickerActivatedEventArgs;
@@ -191,6 +194,16 @@ namespace Windows.ApplicationModel.Activation {
 
     [
         contract(Windows.Foundation.UniversalApiContract, 1.0),
+        uuid(d06eb1c7-3805-4ecb-b757-6cf15e26fef3)
+    ]
+    interface ICachedFileUpdaterActivatedEventArgs : IInspectable
+        requires Windows.ApplicationModel.Activation.IActivatedEventArgs
+    {
+        [propget] HRESULT CachedFileUpdaterUI([out, retval] Windows.Storage.Provider.CachedFileUpdaterUI **value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
         uuid(bb2afc33-93b1-42ed-8b26-236dd9c78496)
     ]
     interface IFileActivatedEventArgs : IInspectable
@@ -271,6 +284,17 @@ namespace Windows.ApplicationModel.Activation {
     runtimeclass BackgroundActivatedEventArgs
     {
         [default] interface Windows.ApplicationModel.Activation.IBackgroundActivatedEventArgs;
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile)
+    ]
+    runtimeclass CachedFileUpdaterActivatedEventArgs
+    {
+        interface Windows.ApplicationModel.Activation.IActivatedEventArgs;
+        /* [contract(Windows.Foundation.UniversalApiContract, 3.0)] interface Windows.ApplicationModel.Activation.IActivatedEventArgsWithUser; */
+        [default] interface Windows.ApplicationModel.Activation.ICachedFileUpdaterActivatedEventArgs;
     }
 
     [
