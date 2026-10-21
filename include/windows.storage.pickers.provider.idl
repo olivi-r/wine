@@ -28,9 +28,11 @@ import "windows.storage.idl";
 namespace Windows.Storage.Pickers.Provider {
     typedef enum AddFileResult AddFileResult;
     typedef enum FileSelectionMode FileSelectionMode;
+    typedef enum SetFileNameResult SetFileNameResult;
 
     interface IFileOpenPickerUI;
     interface IFileRemovedEventArgs;
+    interface IFileSavePickerUI;
     interface IPickerClosingDeferral;
     interface IPickerClosingEventArgs;
     interface IPickerClosingOperation;
@@ -40,6 +42,7 @@ namespace Windows.Storage.Pickers.Provider {
 
     runtimeclass FileOpenPickerUI;
     runtimeclass FileRemovedEventArgs;
+    runtimeclass FileSavePickerUI;
     runtimeclass PickerClosingDeferral;
     runtimeclass PickerClosingEventArgs;
     runtimeclass PickerClosingOperation;
@@ -50,6 +53,8 @@ namespace Windows.Storage.Pickers.Provider {
     declare {
         interface Windows.Foundation.TypedEventHandler<Windows.Storage.Pickers.Provider.FileOpenPickerUI *, Windows.Storage.Pickers.Provider.FileRemovedEventArgs *>;
         interface Windows.Foundation.TypedEventHandler<Windows.Storage.Pickers.Provider.FileOpenPickerUI *, Windows.Storage.Pickers.Provider.PickerClosingEventArgs *>;
+        interface Windows.Foundation.TypedEventHandler<Windows.Storage.Pickers.Provider.FileSavePickerUI *, IInspectable *>;
+        interface Windows.Foundation.TypedEventHandler<Windows.Storage.Pickers.Provider.FileSavePickerUI *, Windows.Storage.Pickers.Provider.TargetFileRequestedEventArgs *>;
     }
 
     [
@@ -70,6 +75,16 @@ namespace Windows.Storage.Pickers.Provider {
     {
         Single   = 0,
         Multiple = 1,
+    };
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0)
+    ]
+    enum SetFileNameResult
+    {
+        Succeeded   = 0,
+        NotAllowed  = 1,
+        Unavailable = 2,
     };
 
     [
@@ -102,6 +117,25 @@ namespace Windows.Storage.Pickers.Provider {
     interface IFileRemovedEventArgs : IInspectable
     {
         [propget] HRESULT Id([out, retval] HSTRING *value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.Storage.Pickers.Provider.FileSavePickerUI),
+        uuid(9656c1e7-3e56-43cc-8a39-33c73d9d542b)
+    ]
+    interface IFileSavePickerUI : IInspectable
+    {
+        [propget] HRESULT Title([out, retval] HSTRING *result);
+        [propput] HRESULT Title([in] HSTRING value);
+        [propget] HRESULT AllowedFileTypes([out, retval] Windows.Foundation.Collections.IVectorView<HSTRING> **result);
+        [propget] HRESULT SettingsIdentifier([out, retval] HSTRING *result);
+        [propget] HRESULT FileName([out, retval] HSTRING *result);
+        HRESULT TrySetFileName([in] HSTRING value, [out, retval] Windows.Storage.Pickers.Provider.SetFileNameResult *result);
+        [eventadd] HRESULT FileNameChanged([in] Windows.Foundation.TypedEventHandler<Windows.Storage.Pickers.Provider.FileSavePickerUI *, IInspectable *> *handler, [out, retval] EventRegistrationToken *cookie);
+        [eventremove] HRESULT FileNameChanged([in] EventRegistrationToken cookie);
+        [eventadd] HRESULT TargetFileRequested([in] Windows.Foundation.TypedEventHandler<Windows.Storage.Pickers.Provider.FileSavePickerUI *, Windows.Storage.Pickers.Provider.TargetFileRequestedEventArgs *> *handler, [out, retval] EventRegistrationToken *cookie);
+        [eventremove] HRESULT TargetFileRequested([in] EventRegistrationToken cookie);
     }
 
     [
@@ -182,6 +216,14 @@ namespace Windows.Storage.Pickers.Provider {
     runtimeclass FileRemovedEventArgs
     {
         [default] interface Windows.Storage.Pickers.Provider.IFileRemovedEventArgs;
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0)
+    ]
+    runtimeclass FileSavePickerUI
+    {
+        [default] interface Windows.Storage.Pickers.Provider.IFileSavePickerUI;
     }
 
     [
