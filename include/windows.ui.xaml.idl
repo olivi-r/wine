@@ -1,5 +1,6 @@
 /*
  * Copyright 2024 Zhiyi Zhang for CodeWeavers
+ * Copyright 2026 Olivia Ryan
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -39,19 +40,37 @@ import "windows.ui.xaml.interop.idl";
 
 namespace Windows.UI.Xaml {
     interface IDataTemplateKey;
+    interface IDataTemplateKeyFactory;
     interface IDependencyObject;
+    interface IDependencyObject2;
+    interface IDependencyObjectFactory;
     interface IDependencyProperty;
     interface IDependencyPropertyChangedEventArgs;
     interface IDependencyPropertyStatics;
     interface IPropertyMetadata;
     interface IPropertyMetadataFactory;
     interface IPropertyMetadataStatics;
+    interface IResourceDictionary;
+    interface IResourceDictionaryFactory;
 
     runtimeclass DataTemplateKey;
     runtimeclass DependencyObject;
     runtimeclass DependencyProperty;
     runtimeclass DependencyPropertyChangedEventArgs;
     runtimeclass PropertyMetadata;
+    runtimeclass ResourceDictionary;
+
+    declare {
+        interface Windows.Foundation.Collections.IKeyValuePair<IInspectable *, IInspectable *>;
+        interface Windows.Foundation.Collections.IIterable<Windows.Foundation.Collections.IKeyValuePair<IInspectable *, IInspectable *> *>;
+        interface Windows.Foundation.Collections.IIterable<Windows.UI.Xaml.ResourceDictionary *>;
+        interface Windows.Foundation.Collections.IIterator<Windows.Foundation.Collections.IKeyValuePair<IInspectable *, IInspectable *> *>;
+        interface Windows.Foundation.Collections.IIterator<Windows.UI.Xaml.ResourceDictionary *>;
+        interface Windows.Foundation.Collections.IMap<IInspectable *, IInspectable *>;
+        interface Windows.Foundation.Collections.IMapView<IInspectable *, IInspectable *>;
+        interface Windows.Foundation.Collections.IVector<Windows.UI.Xaml.ResourceDictionary *>;
+        interface Windows.Foundation.Collections.IVectorView<Windows.UI.Xaml.ResourceDictionary *>;
+    }
 
     [
         contract(Windows.Foundation.UniversalApiContract, 1.0),
@@ -198,6 +217,28 @@ namespace Windows.UI.Xaml {
         [overload("Create")] HRESULT CreateWithFactoryAndCallback([in] Windows.UI.Xaml.CreateDefaultValueCallback *create_default_value_callback, [in] Windows.UI.Xaml.PropertyChangedCallback *property_changed_callback, [out, retval] Windows.UI.Xaml.PropertyMetadata **result);
     }
 
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.ResourceDictionary),
+        uuid(c1ea4f24-d6de-4191-8e3a-f48601f7489c)
+    ]
+    interface IResourceDictionary : IInspectable
+    {
+        [propget] HRESULT Source([out, retval] Windows.Foundation.Uri **value);
+        [propput] HRESULT Source([in] Windows.Foundation.Uri *value);
+        [propget] HRESULT MergedDictionaries([out, retval] Windows.Foundation.Collections.IVector<Windows.UI.Xaml.ResourceDictionary *> **value);
+        [propget] HRESULT ThemeDictionaries([out, retval] Windows.Foundation.Collections.IMap<IInspectable *, IInspectable *> **value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.ResourceDictionary),
+        uuid(ea3639b5-31b7-4271-92c9-7c9584a91c22)
+    ]
+    interface IResourceDictionaryFactory : IInspectable
+    {
+        HRESULT CreateInstance([in] IInspectable *base_interface, [out] IInspectable **inner_interface, [out, retval] Windows.UI.Xaml.ResourceDictionary **value);
+    }
 
     [
         composable(Windows.UI.Xaml.IDataTemplateKeyFactory, public, Windows.Foundation.UniversalApiContract, 1.0),
@@ -252,5 +293,18 @@ namespace Windows.UI.Xaml {
     runtimeclass PropertyMetadata
     {
         [default] interface Windows.UI.Xaml.IPropertyMetadata;
+    }
+
+    [
+        composable(Windows.UI.Xaml.IResourceDictionaryFactory, public, Windows.Foundation.UniversalApiContract, 1.0),
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile),
+        threading(both)
+    ]
+    runtimeclass ResourceDictionary : Windows.UI.Xaml.DependencyObject
+    {
+        [default] interface Windows.UI.Xaml.IResourceDictionary;
+        /* interface Windows.Foundation.Collections.IMap<IInspectable *, IInspectable *>; */
+        /* interface Windows.Foundation.Collections.IIterable<Windows.Foundation.Collections.IKeyValuePair<IInspectable *, IInspectable *> *>; */
     }
 }
