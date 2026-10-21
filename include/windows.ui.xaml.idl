@@ -57,6 +57,7 @@ namespace Windows.UI.Xaml {
     interface IPropertyMetadataStatics;
     interface IResourceDictionary;
     interface IResourceDictionaryFactory;
+    interface IUnhandledExceptionEventArgs;
 
     runtimeclass BindingFailedEventArgs;
     runtimeclass DataTemplateKey;
@@ -66,6 +67,7 @@ namespace Windows.UI.Xaml {
     runtimeclass DependencyPropertyChangedEventArgs;
     runtimeclass PropertyMetadata;
     runtimeclass ResourceDictionary;
+    runtimeclass UnhandledExceptionEventArgs;
 
     declare {
         interface Windows.Foundation.Collections.IKeyValuePair<IInspectable *, IInspectable *>;
@@ -282,6 +284,19 @@ namespace Windows.UI.Xaml {
 
     [
         contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.UnhandledExceptionEventArgs),
+        uuid(7230269c-054e-4cf3-86c5-be90eb6863d5)
+    ]
+    interface IUnhandledExceptionEventArgs : IInspectable
+    {
+        [propget] HRESULT Exception([out, retval] HRESULT *value);
+        [propget] HRESULT Message([out, retval] HSTRING *value);
+        [propget] HRESULT Handled([out, retval] boolean *value);
+        [propput] HRESULT Handled([in] boolean value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
         marshaling_behavior(agile)
     ]
     runtimeclass BindingFailedEventArgs
@@ -367,5 +382,14 @@ namespace Windows.UI.Xaml {
         [default] interface Windows.UI.Xaml.IResourceDictionary;
         /* interface Windows.Foundation.Collections.IMap<IInspectable *, IInspectable *>; */
         /* interface Windows.Foundation.Collections.IIterable<Windows.Foundation.Collections.IKeyValuePair<IInspectable *, IInspectable *> *>; */
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile)
+    ]
+    runtimeclass UnhandledExceptionEventArgs
+    {
+        [default] interface Windows.UI.Xaml.IUnhandledExceptionEventArgs;
     }
 }
