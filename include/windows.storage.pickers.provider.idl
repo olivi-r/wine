@@ -25,8 +25,10 @@ import "windowscontracts.idl";
 
 namespace Windows.Storage.Pickers.Provider {
     interface IFileRemovedEventArgs;
+    interface IPickerClosingDeferral;
 
     runtimeclass FileRemovedEventArgs;
+    runtimeclass PickerClosingDeferral;
 
     [
         contract(Windows.Foundation.UniversalApiContract, 1.0),
@@ -39,10 +41,28 @@ namespace Windows.Storage.Pickers.Provider {
     }
 
     [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.Storage.Pickers.Provider.PickerClosingDeferral),
+        uuid(7af7f71e-1a67-4a31-ae80-e907708a619b)
+    ]
+    interface IPickerClosingDeferral : IInspectable
+    {
+        HRESULT Complete();
+    }
+
+    [
         contract(Windows.Foundation.UniversalApiContract, 1.0)
     ]
     runtimeclass FileRemovedEventArgs
     {
         [default] interface Windows.Storage.Pickers.Provider.IFileRemovedEventArgs;
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0)
+    ]
+    runtimeclass PickerClosingDeferral
+    {
+        [default] interface Windows.Storage.Pickers.Provider.IPickerClosingDeferral;
     }
 }
