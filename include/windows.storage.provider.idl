@@ -22,11 +22,45 @@
 
 import "inspectable.idl";
 import "windowscontracts.idl";
+import "windows.storage.idl";
 
 namespace Windows.Storage.Provider {
+    typedef enum FileUpdateStatus FileUpdateStatus;
+
+    interface IFileUpdateRequest;
+    interface IFileUpdateRequest2;
     interface IFileUpdateRequestDeferral;
 
+    runtimeclass FileUpdateRequest;
     runtimeclass FileUpdateRequestDeferral;
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0)
+    ]
+    enum FileUpdateStatus
+    {
+        Incomplete           = 0,
+        Complete             = 1,
+        UserInputNeeded      = 2,
+        CurrentlyUnavailable = 3,
+        Failed               = 4,
+        CompleteAndRenamed   = 5,
+    };
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.Storage.Provider.FileUpdateRequest),
+        uuid(40c82536-c1fe-4d93-a792-1e736bc70837)
+    ]
+    interface IFileUpdateRequest : IInspectable
+    {
+        [propget] HRESULT ContentId([out, retval] HSTRING *value);
+        [propget] HRESULT File([out, retval] Windows.Storage.StorageFile **value);
+        [propget] HRESULT Status([out, retval] Windows.Storage.Provider.FileUpdateStatus *value);
+        [propput] HRESULT Status([in] Windows.Storage.Provider.FileUpdateStatus value);
+        HRESULT GetDeferral([out, retval] Windows.Storage.Provider.FileUpdateRequestDeferral **value);
+        HRESULT UpdateLocalFile([in] Windows.Storage.IStorageFile *value);
+    }
 
     [
         contract(Windows.Foundation.UniversalApiContract, 1.0),
@@ -36,6 +70,15 @@ namespace Windows.Storage.Provider {
     interface IFileUpdateRequestDeferral : IInspectable
     {
         HRESULT Complete();
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0)
+    ]
+    runtimeclass FileUpdateRequest
+    {
+        [default] interface Windows.Storage.Provider.IFileUpdateRequest;
+        /* interface Windows.Storage.Provider.IFileUpdateRequest2; */
     }
 
     [
