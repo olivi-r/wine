@@ -35,11 +35,14 @@ namespace Windows.UI.Xaml.Media {
     interface IGeometry;
     interface IGeometryFactory;
     interface IGeometryStatics;
+    interface IRectangleGeometry;
+    interface IRectangleGeometryStatics;
     interface ITransform;
     interface ITransformFactory;
 
     runtimeclass GeneralTransform;
     runtimeclass Geometry;
+    runtimeclass RectangleGeometry;
     runtimeclass Transform;
 
     [
@@ -88,6 +91,17 @@ namespace Windows.UI.Xaml.Media {
 
     [
         contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.Media.RectangleGeometry),
+        uuid(a25a1f58-c575-4196-91cf-9fdfb10445c3)
+    ]
+    interface IRectangleGeometry : IInspectable
+    {
+        [propget] HRESULT Rect([out, retval] Windows.Foundation.Rect *value);
+        [propput] HRESULT Rect([in] Windows.Foundation.Rect value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
         exclusiveto(Windows.UI.Xaml.Media.Transform),
         uuid(4df74078-bfd6-4ed1-9682-d2fd8bf2fe6f)
     ]
@@ -126,6 +140,18 @@ namespace Windows.UI.Xaml.Media {
     runtimeclass Geometry : Windows.UI.Xaml.DependencyObject
     {
         [default] interface Windows.UI.Xaml.Media.IGeometry;
+    }
+
+    [
+        activatable(Windows.Foundation.UniversalApiContract, 1.0),
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile),
+        /* static(Windows.UI.Xaml.Media.IRectangleGeometryStatics, Windows.Foundation.UniversalApiContract, 1.0), */
+        threading(both)
+    ]
+    runtimeclass RectangleGeometry : Windows.UI.Xaml.Media.Geometry
+    {
+        [default] interface Windows.UI.Xaml.Media.IRectangleGeometry;
     }
 
     [
