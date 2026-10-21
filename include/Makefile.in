@@ -1024,6 +1024,7 @@ SOURCES = \
 	windows.applicationmodel.datatransfer.dragdrop.core.idl \
 	windows.applicationmodel.datatransfer.dragdrop.idl \
 	windows.applicationmodel.datatransfer.idl \
+	windows.applicationmodel.datatransfer.sharetarget.idl \
 	windows.applicationmodel.idl \
 	windows.data.json.idl \
 	windows.data.xml.dom.idl \
