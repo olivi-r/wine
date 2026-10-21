@@ -32,10 +32,14 @@ namespace Windows.UI.Xaml.Media {
     interface IGeneralTransform;
     interface IGeneralTransformOverrides;
     interface IGeneralTransformFactory;
+    interface IGeometry;
+    interface IGeometryFactory;
+    interface IGeometryStatics;
     interface ITransform;
     interface ITransformFactory;
 
     runtimeclass GeneralTransform;
+    runtimeclass Geometry;
     runtimeclass Transform;
 
     [
@@ -59,6 +63,27 @@ namespace Windows.UI.Xaml.Media {
     interface IGeneralTransformFactory : IInspectable
     {
         HRESULT CreateInstance([in] IInspectable *base_interface, [out] IInspectable **inner_interface, [out, retval] Windows.UI.Xaml.Media.GeneralTransform **value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.Media.Geometry),
+        uuid(fa123889-0acd-417b-b62d-5ca1bf4dfc0e)
+    ]
+    interface IGeometry : IInspectable
+    {
+        [propget] HRESULT Transform([out, retval] Windows.UI.Xaml.Media.Transform **value);
+        [propput] HRESULT Transform([in] Windows.UI.Xaml.Media.Transform *value);
+        [propget] HRESULT Bounds([out, retval] Windows.Foundation.Rect *value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.Media.Geometry),
+        uuid(f65daf23-d5fd-42f9-b32a-929c5a4b54e1)
+    ]
+    interface IGeometryFactory : IInspectable
+    {
     }
 
     [
@@ -89,6 +114,18 @@ namespace Windows.UI.Xaml.Media {
     {
         [default] interface Windows.UI.Xaml.Media.IGeneralTransform;
         /* [contract(Windows.Foundation.UniversalApiContract, 1.0)] interface Windows.UI.Xaml.Media.IGeneralTransformOverrides; */
+    }
+
+    [
+        composable(Windows.UI.Xaml.Media.IGeometryFactory, public, Windows.Foundation.UniversalApiContract, 1.0),
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile),
+        /* static(Windows.UI.Xaml.Media.IGeometryStatics, Windows.Foundation.UniversalApiContract, 1.0), */
+        threading(both)
+    ]
+    runtimeclass Geometry : Windows.UI.Xaml.DependencyObject
+    {
+        [default] interface Windows.UI.Xaml.Media.IGeometry;
     }
 
     [
