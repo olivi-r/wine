@@ -39,6 +39,7 @@ import "windows.ui.input.idl";
 import "windows.ui.xaml.interop.idl";
 
 namespace Windows.UI.Xaml {
+    interface IBindingFailedEventArgs;
     interface IDataTemplateKey;
     interface IDataTemplateKeyFactory;
     interface IDependencyObject;
@@ -53,6 +54,7 @@ namespace Windows.UI.Xaml {
     interface IResourceDictionary;
     interface IResourceDictionaryFactory;
 
+    runtimeclass BindingFailedEventArgs;
     runtimeclass DataTemplateKey;
     runtimeclass DependencyObject;
     runtimeclass DependencyProperty;
@@ -89,6 +91,16 @@ namespace Windows.UI.Xaml {
         uuid(5a9f8a25-d142-44a4-8231-fd676724f29b)
     ]
     delegate HRESULT PropertyChangedCallback([in] Windows.UI.Xaml.DependencyObject *obj, [in] Windows.UI.Xaml.DependencyPropertyChangedEventArgs *args);
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.BindingFailedEventArgs),
+        uuid(32c1d013-4dbd-446d-bbb8-0de35048a449)
+    ]
+    interface IBindingFailedEventArgs : IInspectable
+    {
+        [propget] HRESULT Message([out, retval] HSTRING *value);
+    }
 
     [
         contract(Windows.Foundation.UniversalApiContract, 1.0),
@@ -238,6 +250,15 @@ namespace Windows.UI.Xaml {
     interface IResourceDictionaryFactory : IInspectable
     {
         HRESULT CreateInstance([in] IInspectable *base_interface, [out] IInspectable **inner_interface, [out, retval] Windows.UI.Xaml.ResourceDictionary **value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile)
+    ]
+    runtimeclass BindingFailedEventArgs
+    {
+        [default] interface Windows.UI.Xaml.IBindingFailedEventArgs;
     }
 
     [
