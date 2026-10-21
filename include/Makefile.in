@@ -1091,6 +1091,7 @@ SOURCES = \
 	windows.storage.fileproperties.idl \
 	windows.storage.idl \
 	windows.storage.pickers.provider.idl \
+	windows.storage.provider.idl \
 	windows.storage.search.idl \
 	windows.storage.streams.idl \
 	windows.system.idl \
