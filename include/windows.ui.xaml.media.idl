@@ -35,6 +35,8 @@ namespace Windows.UI.Xaml.Media {
     interface IGeometry;
     interface IGeometryFactory;
     interface IGeometryStatics;
+    interface IProjection;
+    interface IProjectionFactory;
     interface IRectangleGeometry;
     interface IRectangleGeometryStatics;
     interface ITransform;
@@ -42,6 +44,7 @@ namespace Windows.UI.Xaml.Media {
 
     runtimeclass GeneralTransform;
     runtimeclass Geometry;
+    runtimeclass Projection;
     runtimeclass RectangleGeometry;
     runtimeclass Transform;
 
@@ -87,6 +90,25 @@ namespace Windows.UI.Xaml.Media {
     ]
     interface IGeometryFactory : IInspectable
     {
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.Media.Projection),
+        uuid(b3443557-7f39-4d04-a89c-844338cac897)
+    ]
+    interface IProjection : IInspectable
+    {
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.Media.Projection),
+        uuid(c4f29cab-60ad-4f24-bd27-9d69c3127c9a)
+    ]
+    interface IProjectionFactory : IInspectable
+    {
+        HRESULT CreateInstance([in] IInspectable *base_interface, [out] IInspectable **inner_interface, [out, retval] Windows.UI.Xaml.Media.Projection **value);
     }
 
     [
@@ -140,6 +162,17 @@ namespace Windows.UI.Xaml.Media {
     runtimeclass Geometry : Windows.UI.Xaml.DependencyObject
     {
         [default] interface Windows.UI.Xaml.Media.IGeometry;
+    }
+
+    [
+        composable(Windows.UI.Xaml.Media.IProjectionFactory, protected, Windows.Foundation.UniversalApiContract, 1.0),
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile),
+        threading(both)
+    ]
+    runtimeclass Projection : Windows.UI.Xaml.DependencyObject
+    {
+        [default] interface Windows.UI.Xaml.Media.IProjection;
     }
 
     [
