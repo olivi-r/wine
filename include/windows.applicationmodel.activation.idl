@@ -45,10 +45,17 @@ namespace Windows.ApplicationModel.Activation {
     typedef enum ApplicationExecutionState ApplicationExecutionState;
 
     interface IActivatedEventArgs;
+    interface IActivatedEventArgsWithUser;
+    interface IApplicationViewActivatedEventArgs;
     interface IBackgroundActivatedEventArgs;
+    interface ILaunchActivatedEventArgs;
+    interface ILaunchActivatedEventArgs2;
+    interface IPrelaunchActivatedEventArgs;
     interface ISplashScreen;
+    interface IViewSwitcherProvider;
 
     runtimeclass BackgroundActivatedEventArgs;
+    runtimeclass LaunchActivatedEventArgs;
     runtimeclass SplashScreen;
 
     declare {
@@ -167,6 +174,17 @@ namespace Windows.ApplicationModel.Activation {
 
     [
         contract(Windows.Foundation.UniversalApiContract, 1.0),
+        uuid(fbc93e26-a14a-4b4f-82b0-33bed920af52)
+    ]
+    interface ILaunchActivatedEventArgs : IInspectable
+        requires Windows.ApplicationModel.Activation.IActivatedEventArgs
+    {
+        [propget] HRESULT Arguments([out, retval] HSTRING *value);
+        [propget] HRESULT TileId([out, retval] HSTRING *value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
         exclusiveto(Windows.ApplicationModel.Activation.SplashScreen),
         uuid(ca4d975c-d4d6-43f0-97c0-0833c6391c24)
     ]
@@ -184,6 +202,21 @@ namespace Windows.ApplicationModel.Activation {
     runtimeclass BackgroundActivatedEventArgs
     {
         [default] interface Windows.ApplicationModel.Activation.IBackgroundActivatedEventArgs;
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile)
+    ]
+    runtimeclass LaunchActivatedEventArgs
+    {
+        interface Windows.ApplicationModel.Activation.IActivatedEventArgs;
+        /* [contract(Windows.Foundation.UniversalApiContract, 3.0)] interface Windows.ApplicationModel.IActivatedEventArgsWithUser; */
+        /* interface Windows.ApplicationModel.Activation.IApplicationViewActivatedEventArgs; */
+        [default] interface Windows.ApplicationModel.Activation.ILaunchActivatedEventArgs;
+        /* [contract(Windows.Foundation.UniversalApiContract, 3.0)] interface Windows.ApplicationModel.ILaunchActivatedEventArgs2; */
+        /* interface Windows.ApplicationModel.Activation.IPrelaunchActivatedEventArgs; */
+        /* interface Windows.ApplicationModel.Activation.IViewSwitcherProvider; */
     }
 
     [
