@@ -57,6 +57,8 @@ namespace Windows.UI.Xaml {
     interface IPropertyMetadataStatics;
     interface IResourceDictionary;
     interface IResourceDictionaryFactory;
+    interface IRoutedEventArgs;
+    interface IRoutedEventArgsFactory;
     interface IUnhandledExceptionEventArgs;
 
     runtimeclass BindingFailedEventArgs;
@@ -67,6 +69,7 @@ namespace Windows.UI.Xaml {
     runtimeclass DependencyPropertyChangedEventArgs;
     runtimeclass PropertyMetadata;
     runtimeclass ResourceDictionary;
+    runtimeclass RoutedEventArgs;
     runtimeclass UnhandledExceptionEventArgs;
 
     declare {
@@ -284,6 +287,26 @@ namespace Windows.UI.Xaml {
 
     [
         contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.RoutedEventArgs),
+        uuid(5c985ac6-d802-4b38-a223-bf070c43fedf)
+    ]
+    interface IRoutedEventArgs : IInspectable
+    {
+        [propget] HRESULT OriginalSource([out, retval] IInspectable **value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.RoutedEventArgs),
+        uuid(b61c4d87-70e5-412e-b520-1a41ee76bbf4)
+    ]
+    interface IRoutedEventArgsFactory : IInspectable
+    {
+        HRESULT CreateInstance([in] IInspectable *base_interface, [out] IInspectable **inner_interface, [out, retval] Windows.UI.Xaml.RoutedEventArgs **value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
         exclusiveto(Windows.UI.Xaml.UnhandledExceptionEventArgs),
         uuid(7230269c-054e-4cf3-86c5-be90eb6863d5)
     ]
@@ -382,6 +405,17 @@ namespace Windows.UI.Xaml {
         [default] interface Windows.UI.Xaml.IResourceDictionary;
         /* interface Windows.Foundation.Collections.IMap<IInspectable *, IInspectable *>; */
         /* interface Windows.Foundation.Collections.IIterable<Windows.Foundation.Collections.IKeyValuePair<IInspectable *, IInspectable *> *>; */
+    }
+
+    [
+        composable(Windows.UI.Xaml.IRoutedEventArgsFactory, public, Windows.Foundation.UniversalApiContract, 1.0),
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile),
+        threading(both)
+    ]
+    runtimeclass RoutedEventArgs
+    {
+        [default] interface Windows.UI.Xaml.IRoutedEventArgs;
     }
 
     [
