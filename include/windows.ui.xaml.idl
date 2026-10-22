@@ -57,6 +57,7 @@ namespace Windows.UI.Xaml {
     interface IPropertyMetadataStatics;
     interface IResourceDictionary;
     interface IResourceDictionaryFactory;
+    interface IRoutedEvent;
     interface IRoutedEventArgs;
     interface IRoutedEventArgsFactory;
     interface IUnhandledExceptionEventArgs;
@@ -69,6 +70,7 @@ namespace Windows.UI.Xaml {
     runtimeclass DependencyPropertyChangedEventArgs;
     runtimeclass PropertyMetadata;
     runtimeclass ResourceDictionary;
+    runtimeclass RoutedEvent;
     runtimeclass RoutedEventArgs;
     runtimeclass UnhandledExceptionEventArgs;
 
@@ -287,6 +289,15 @@ namespace Windows.UI.Xaml {
 
     [
         contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.RoutedEvent),
+        uuid(a6b25818-43c1-4c70-865c-7bdd5a32e327)
+    ]
+    interface IRoutedEvent : IInspectable
+    {
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
         exclusiveto(Windows.UI.Xaml.RoutedEventArgs),
         uuid(5c985ac6-d802-4b38-a223-bf070c43fedf)
     ]
@@ -405,6 +416,15 @@ namespace Windows.UI.Xaml {
         [default] interface Windows.UI.Xaml.IResourceDictionary;
         /* interface Windows.Foundation.Collections.IMap<IInspectable *, IInspectable *>; */
         /* interface Windows.Foundation.Collections.IIterable<Windows.Foundation.Collections.IKeyValuePair<IInspectable *, IInspectable *> *>; */
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile)
+    ]
+    runtimeclass RoutedEvent
+    {
+        [default] interface Windows.UI.Xaml.IRoutedEvent;
     }
 
     [
