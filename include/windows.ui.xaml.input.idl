@@ -23,11 +23,29 @@
 import "inspectable.idl";
 import "windowscontracts.idl";
 import "windows.devices.input.idl";
+import "windows.ui.xaml.idl";
 
 namespace Windows.UI.Xaml.Input {
+    interface IKeyRoutedEventArgs;
+    interface IKeyRoutedEventArgs2;
+    interface IKeyRoutedEventArgs3;
     interface IPointer;
 
+    runtimeclass KeyRoutedEventArgs;
     runtimeclass Pointer;
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.Input.KeyRoutedEventArgs),
+        uuid(d4cd3dfe-4079-42e9-a39a-3095d3f049c6)
+    ]
+    interface IKeyRoutedEventArgs : IInspectable
+    {
+        [propget] HRESULT Key([out, retval] Windows.System.VirtualKey *value);
+        [propget] HRESULT KeyStatus([out, retval] Windows.UI.Core.CorePhysicalKeyStatus *value);
+        [propget] HRESULT Handled([out, retval] boolean *value);
+        [propput] HRESULT Handled([in] boolean value);
+    }
 
     [
         contract(Windows.Foundation.UniversalApiContract, 1.0),
@@ -40,6 +58,18 @@ namespace Windows.UI.Xaml.Input {
         [propget] HRESULT PointerDeviceType([out, retval] Windows.Devices.Input.PointerDeviceType *value);
         [propget] HRESULT IsInContact([out, retval] boolean *value);
         [propget] HRESULT IsInRange([out, retval] boolean *value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile),
+        threading(both)
+    ]
+    runtimeclass KeyRoutedEventArgs : Windows.UI.Xaml.RoutedEventArgs
+    {
+        [default] interface Windows.UI.Xaml.Input.IKeyRoutedEventArgs;
+        /* interface Windows.UI.Xaml.Input.IKeyRoutedEventArgs2; */
+        /* [contract(Windows.Foundation.UniversalApiContract, 3.0)] interface Windows.UI.Xaml.Input.IKeyRoutedEventArgs3; */
     }
 
     [
