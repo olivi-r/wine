@@ -131,6 +131,7 @@ namespace Windows.UI.Xaml.Input {
 namespace Windows.UI.Xaml {
     typedef enum Visibility Visibility;
 
+    interface IApplicationInitializationCallbackParams;
     interface IBindingFailedEventArgs;
     interface IDataTemplateKey;
     interface IDataTemplateKeyFactory;
@@ -182,6 +183,7 @@ namespace Windows.UI.Xaml {
     interface IWindowCreatedEventArgs;
     interface IWindowStatics;
 
+    runtimeclass ApplicationInitializationCallbackParams;
     runtimeclass BindingFailedEventArgs;
     runtimeclass DataTemplateKey;
     runtimeclass DebugSettings;
@@ -278,6 +280,15 @@ namespace Windows.UI.Xaml {
         Visible   = 0,
         Collapsed = 1,
     };
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.ApplicationInitializationCallbackParams),
+        uuid(751b792e-5772-4488-8b87-f547faa64474)
+    ]
+    interface IApplicationInitializationCallbackParams : IInspectable
+    {
+    }
 
     [
         contract(Windows.Foundation.UniversalApiContract, 1.0),
@@ -650,6 +661,15 @@ namespace Windows.UI.Xaml {
     interface IWindowCreatedEventArgs : IInspectable
     {
         [propget] HRESULT Window([out, retval] Windows.UI.Xaml.Window **value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile)
+    ]
+    runtimeclass ApplicationInitializationCallbackParams
+    {
+        [default] interface Windows.UI.Xaml.IApplicationInitializationCallbackParams;
     }
 
     [
