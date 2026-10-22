@@ -179,6 +179,7 @@ namespace Windows.UI.Xaml {
     interface IWindow2;
     interface IWindow3;
     interface IWindow4;
+    interface IWindowCreatedEventArgs;
     interface IWindowStatics;
 
     runtimeclass BindingFailedEventArgs;
@@ -195,6 +196,7 @@ namespace Windows.UI.Xaml {
     runtimeclass UIElement;
     runtimeclass UnhandledExceptionEventArgs;
     runtimeclass Window;
+    runtimeclass WindowCreatedEventArgs;
 
     declare {
         interface Windows.Foundation.Collections.IKeyValuePair<IInspectable *, IInspectable *>;
@@ -642,6 +644,16 @@ namespace Windows.UI.Xaml {
 
     [
         contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.WindowCreatedEventArgs),
+        uuid(31b71470-feff-4654-af48-9b398ab5772b)
+    ]
+    interface IWindowCreatedEventArgs : IInspectable
+    {
+        [propget] HRESULT Window([out, retval] Windows.UI.Xaml.Window **value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
         marshaling_behavior(agile)
     ]
     runtimeclass BindingFailedEventArgs
@@ -812,5 +824,14 @@ namespace Windows.UI.Xaml {
         /* interface Windows.UI.Xaml.IWindow2; */
         /* [contract(Windows.Foundation.UniversalApiContract, 4.0)] interface Windows.UI.Xaml.IWindow3; */
         /* [contract(Windows.Foundation.UniversalApiContract, 8.0)] interface Windows.UI.Xaml.IWindow4; */
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile)
+    ]
+    runtimeclass WindowCreatedEventArgs
+    {
+        [default] interface Windows.UI.Xaml.IWindowCreatedEventArgs;
     }
 }
