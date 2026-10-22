@@ -175,6 +175,11 @@ namespace Windows.UI.Xaml {
     interface IUIElementStatics9;
     interface IUIElementStatics10;
     interface IUnhandledExceptionEventArgs;
+    interface IWindow;
+    interface IWindow2;
+    interface IWindow3;
+    interface IWindow4;
+    interface IWindowStatics;
 
     runtimeclass BindingFailedEventArgs;
     runtimeclass DataTemplateKey;
@@ -189,6 +194,7 @@ namespace Windows.UI.Xaml {
     runtimeclass RoutedEventArgs;
     runtimeclass UIElement;
     runtimeclass UnhandledExceptionEventArgs;
+    runtimeclass Window;
 
     declare {
         interface Windows.Foundation.Collections.IKeyValuePair<IInspectable *, IInspectable *>;
@@ -237,6 +243,30 @@ namespace Windows.UI.Xaml {
         uuid(a856e674-b0b6-4bc3-bba8-1ba06e40d4b5)
     ]
     delegate HRESULT RoutedEventHandler([in] IInspectable *sender, [in] Windows.UI.Xaml.RoutedEventArgs *e);
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        uuid(18026348-8619-4c7b-b534-ced45d9de219)
+    ]
+    delegate HRESULT WindowActivatedEventHandler([in] IInspectable *sender, [in] Windows.UI.Core.WindowActivatedEventArgs *e);
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        uuid(0db89161-20d7-45df-9122-ba89576703ba)
+    ]
+    delegate HRESULT WindowClosedEventHandler([in] IInspectable *sender, [in] Windows.UI.Core.CoreWindowEventArgs *e);
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        uuid(5c21c742-2ced-4fd9-ba38-7118d40e966b)
+    ]
+    delegate HRESULT WindowSizeChangedEventHandler([in] IInspectable *sender, [in] Windows.UI.Core.WindowSizeChangedEventArgs *e);
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        uuid(10406ad6-b090-4a4a-b2ad-d682df27130f)
+    ]
+    delegate HRESULT WindowVisibilityChangedEventHandler([in] IInspectable *sender, [in] Windows.UI.Core.VisibilityChangedEventArgs *e);
 
     [
         contract(Windows.Foundation.UniversalApiContract, 1.0)
@@ -587,6 +617,31 @@ namespace Windows.UI.Xaml {
 
     [
         contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.Window),
+        uuid(3276167d-c9f6-462d-9de2-ae4c1fd8c2e5)
+    ]
+    interface IWindow : IInspectable
+    {
+        [propget] HRESULT Bounds([out, retval] Windows.Foundation.Rect *value);
+        [propget] HRESULT Visible([out, retval] boolean *value);
+        [propget] HRESULT Content([out, retval] Windows.UI.Xaml.UIElement **value);
+        [propput] HRESULT Content([in] Windows.UI.Xaml.UIElement *value);
+        [propget] HRESULT CoreWindow([out, retval] Windows.UI.Core.CoreWindow **value);
+        [propget] HRESULT Dispatcher([out, retval] Windows.UI.Core.CoreDispatcher **value);
+        [eventadd] HRESULT Activated([in] Windows.UI.Xaml.WindowActivatedEventHandler *handler, [out, retval] EventRegistrationToken *cookie);
+        [eventremove] HRESULT Activated([in] EventRegistrationToken cookie);
+        [eventadd] HRESULT Closed([in] Windows.UI.Xaml.WindowClosedEventHandler *handler, [out, retval] EventRegistrationToken *cookie);
+        [eventremove] HRESULT Closed([in] EventRegistrationToken cookie);
+        [eventadd] HRESULT SizeChanged([in] Windows.UI.Xaml.WindowSizeChangedEventHandler *handler, [out, retval] EventRegistrationToken *cookie);
+        [eventremove] HRESULT SizeChanged([in] EventRegistrationToken cookie);
+        [eventadd] HRESULT VisibilityChanged([in] Windows.UI.Xaml.WindowVisibilityChangedEventHandler *handler, [out, retval] EventRegistrationToken *cookie);
+        [eventremove] HRESULT VisibilityChanged([in] EventRegistrationToken cookie);
+        HRESULT Activate();
+        HRESULT Close();
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
         marshaling_behavior(agile)
     ]
     runtimeclass BindingFailedEventArgs
@@ -743,5 +798,19 @@ namespace Windows.UI.Xaml {
     runtimeclass UnhandledExceptionEventArgs
     {
         [default] interface Windows.UI.Xaml.IUnhandledExceptionEventArgs;
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile),
+        /* static(Windows.UI.Xaml.IWindowStatics, Windows.Foundation.UniversalApiContract, 1.0), */
+        threading(both)
+    ]
+    runtimeclass Window
+    {
+        [default] interface Windows.UI.Xaml.IWindow;
+        /* interface Windows.UI.Xaml.IWindow2; */
+        /* [contract(Windows.Foundation.UniversalApiContract, 4.0)] interface Windows.UI.Xaml.IWindow3; */
+        /* [contract(Windows.Foundation.UniversalApiContract, 8.0)] interface Windows.UI.Xaml.IWindow4; */
     }
 }
