@@ -26,6 +26,7 @@ import "windows.devices.input.idl";
 import "windows.ui.xaml.idl";
 
 namespace Windows.UI.Xaml.Input {
+    interface IInertiaExpansionBehavior;
     interface IKeyRoutedEventArgs;
     interface IKeyRoutedEventArgs2;
     interface IKeyRoutedEventArgs3;
@@ -33,9 +34,23 @@ namespace Windows.UI.Xaml.Input {
     interface IManipulationPivotFactory;
     interface IPointer;
 
+    runtimeclass InertiaExpansionBehavior;
     runtimeclass KeyRoutedEventArgs;
     runtimeclass ManipulationPivot;
     runtimeclass Pointer;
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.Input.InertiaExpansionBehavior),
+        uuid(751d87e5-8d42-44c5-965e-3cd30cc9d6f7)
+    ]
+    interface IInertiaExpansionBehavior : IInspectable
+    {
+        [propget] HRESULT DesiredDeceleration([out, retval] DOUBLE *value);
+        [propput] HRESULT DesiredDeceleration([in] DOUBLE value);
+        [propget] HRESULT DesiredExpansion([out, retval] DOUBLE *value);
+        [propput] HRESULT DesiredExpansion([in] DOUBLE value);
+    }
 
     [
         contract(Windows.Foundation.UniversalApiContract, 1.0),
@@ -74,6 +89,15 @@ namespace Windows.UI.Xaml.Input {
         [propget] HRESULT PointerDeviceType([out, retval] Windows.Devices.Input.PointerDeviceType *value);
         [propget] HRESULT IsInContact([out, retval] boolean *value);
         [propget] HRESULT IsInRange([out, retval] boolean *value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile)
+    ]
+    runtimeclass InertiaExpansionBehavior
+    {
+        [default] interface Windows.UI.Xaml.Input.IInertiaExpansionBehavior;
     }
 
     [
