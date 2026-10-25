@@ -28,6 +28,7 @@ import "windows.ui.xaml.idl";
 namespace Windows.UI.Xaml.Input {
     interface IInertiaExpansionBehavior;
     interface IInertiaRotationBehavior;
+    interface IInertiaTranslationBehavior;
     interface IKeyRoutedEventArgs;
     interface IKeyRoutedEventArgs2;
     interface IKeyRoutedEventArgs3;
@@ -37,6 +38,7 @@ namespace Windows.UI.Xaml.Input {
 
     runtimeclass InertiaExpansionBehavior;
     runtimeclass InertiaRotationBehavior;
+    runtimeclass InertiaTranslationBehavior;
     runtimeclass KeyRoutedEventArgs;
     runtimeclass ManipulationPivot;
     runtimeclass Pointer;
@@ -65,6 +67,19 @@ namespace Windows.UI.Xaml.Input {
         [propput] HRESULT DesiredDeceleration([in] DOUBLE value);
         [propget] HRESULT DesiredRotation([out, retval] DOUBLE *value);
         [propput] HRESULT DesiredRotation([in] DOUBLE value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.Input.InertiaTranslationBehavior),
+        uuid(45d3a512-3b32-4882-a4c2-ecfa2d4b6df0)
+    ]
+    interface IInertiaTranslationBehavior : IInspectable
+    {
+        [propget] HRESULT DesiredDeceleration([out, retval] DOUBLE *value);
+        [propput] HRESULT DesiredDeceleration([in] DOUBLE value);
+        [propget] HRESULT DesiredDisplacement([out, retval] DOUBLE *value);
+        [propput] HRESULT DesiredDisplacement([in] DOUBLE value);
     }
 
     [
@@ -122,6 +137,15 @@ namespace Windows.UI.Xaml.Input {
     runtimeclass InertiaRotationBehavior
     {
         [default] interface Windows.UI.Xaml.Input.IInertiaRotationBehavior;
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile)
+    ]
+    runtimeclass InertiaTranslationBehavior
+    {
+        [default] interface Windows.UI.Xaml.Input.IInertiaTranslationBehavior;
     }
 
     [
