@@ -36,6 +36,7 @@ import "windows.ui.idl";
 import "windows.ui.composition.idl";
 import "windows.ui.core.idl";
 import "windows.ui.input.idl";
+import "windows.ui.xaml.controls.primitives.idl";
 import "windows.ui.xaml.input.idl";
 import "windows.ui.xaml.interop.idl";
 import "windows.ui.xaml.media.idl";
@@ -129,9 +130,19 @@ namespace Windows.UI.Xaml.Input {
 }
 
 namespace Windows.UI.Xaml {
+    typedef enum ApplicationHighContrastAdjustment ApplicationHighContrastAdjustment;
+    typedef enum ApplicationRequiresPointerMode ApplicationRequiresPointerMode;
+    typedef enum ApplicationTheme ApplicationTheme;
+    typedef enum FocusVisualKind FocusVisualKind;
     typedef enum Visibility Visibility;
 
+    interface IApplication;
+    interface IApplication2;
+    interface IApplication3;
+    interface IApplicationFactory;
     interface IApplicationInitializationCallbackParams;
+    interface IApplicationOverrides;
+    interface IApplicationStatics;
     interface IBindingFailedEventArgs;
     interface IDataTemplateKey;
     interface IDataTemplateKeyFactory;
@@ -183,6 +194,7 @@ namespace Windows.UI.Xaml {
     interface IWindowCreatedEventArgs;
     interface IWindowStatics;
 
+    runtimeclass Application;
     runtimeclass ApplicationInitializationCallbackParams;
     runtimeclass BindingFailedEventArgs;
     runtimeclass DataTemplateKey;
@@ -214,6 +226,12 @@ namespace Windows.UI.Xaml {
 
     [
         contract(Windows.Foundation.UniversalApiContract, 1.0),
+        uuid(b6351c55-c284-46e4-8310-fb0967fab76f)
+    ]
+    delegate HRESULT ApplicationInitializationCallback([in] Windows.UI.Xaml.ApplicationInitializationCallbackParams *p);
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
         uuid(136b1782-54ba-420d-a1aa-82828721cde6)
     ]
     delegate HRESULT BindingFailedEventHandler([in] IInspectable *sender, [in] Windows.UI.Xaml.BindingFailedEventArgs *e);
@@ -229,6 +247,18 @@ namespace Windows.UI.Xaml {
         uuid(45883d16-27bf-4bc1-ac26-94c1601f3a49)
     ]
     delegate HRESULT DependencyPropertyChangedCallback([in] Windows.UI.Xaml.DependencyObject *sender, [in] Windows.UI.Xaml.DependencyProperty *dp);
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 3.0),
+        uuid(93a956ae-1d7f-438b-b7b8-227d96b609c0)
+    ]
+    delegate HRESULT EnteredBackgroundEventHandler([in] IInspectable *sender, [in] Windows.ApplicationModel.EnteredBackgroundEventArgs *e);
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 3.0),
+        uuid(aaad5dad-4fc6-4aa4-b7cf-877e36ada4f6)
+    ]
+    delegate HRESULT LeavingBackgroundEventHandler([in] IInspectable *sender, [in] Windows.ApplicationModel.LeavingBackgroundEventArgs *e);
 
     [
         contract(Windows.Foundation.UniversalApiContract, 1.0),
@@ -247,6 +277,18 @@ namespace Windows.UI.Xaml {
         uuid(a856e674-b0b6-4bc3-bba8-1ba06e40d4b5)
     ]
     delegate HRESULT RoutedEventHandler([in] IInspectable *sender, [in] Windows.UI.Xaml.RoutedEventArgs *e);
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        uuid(23429465-e36a-40e2-b139-a4704602a6e1)
+    ]
+    delegate HRESULT SuspendingEventHandler([in] IInspectable *sender, [in] Windows.ApplicationModel.SuspendingEventArgs *e);
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        uuid(9274e6bd-49a1-4958-beee-d0e19587b6e3)
+    ]
+    delegate HRESULT UnhandledExceptionEventHandler([in] IInspectable *sender, [in] Windows.UI.Xaml.UnhandledExceptionEventArgs *e);
 
     [
         contract(Windows.Foundation.UniversalApiContract, 1.0),
@@ -273,6 +315,44 @@ namespace Windows.UI.Xaml {
     delegate HRESULT WindowVisibilityChangedEventHandler([in] IInspectable *sender, [in] Windows.UI.Core.VisibilityChangedEventArgs *e);
 
     [
+        contract(Windows.Foundation.UniversalApiContract, 4.0)
+    ]
+    enum ApplicationHighContrastAdjustment
+    {
+        None = 0x00000000,
+        Auto = 0xffffffff,
+    };
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 3.0)
+    ]
+    enum ApplicationRequiresPointerMode
+    {
+        Auto          = 0,
+        WhenRequested = 1,
+    };
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0)
+    ]
+    enum ApplicationTheme
+    {
+        Light = 0,
+        Dark  = 1,
+    };
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 3.0)
+    ]
+    enum FocusVisualKind
+    {
+        DottedLine     = 0,
+        HighVisibility = 1,
+        [contract(Windows.Foundation.UniversalApiContract, 6.0)]
+        Reveal         = 2,
+    };
+
+    [
         contract(Windows.Foundation.UniversalApiContract, 1.0)
     ]
     enum Visibility
@@ -283,11 +363,101 @@ namespace Windows.UI.Xaml {
 
     [
         contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.Application),
+        uuid(74b861a1-7487-46a9-9a6e-c78b512726c5)
+    ]
+    interface IApplication : IInspectable
+    {
+        [propget] HRESULT Resources([out, retval] Windows.UI.Xaml.ResourceDictionary **value);
+        [propput] HRESULT Resources([in] Windows.UI.Xaml.ResourceDictionary *value);
+        [propget] HRESULT DebugSettings([out, retval] Windows.UI.Xaml.DebugSettings **value);
+        [propget] HRESULT RequestedTheme([out, retval] Windows.UI.Xaml.ApplicationTheme *value);
+        [propput] HRESULT RequestedTheme([in] Windows.UI.Xaml.ApplicationTheme value);
+        [eventadd] HRESULT UnhandledException([in] Windows.UI.Xaml.UnhandledExceptionEventHandler *handler, [out, retval] EventRegistrationToken *cookie);
+        [eventremove] HRESULT UnhandledException([in] EventRegistrationToken cookie);
+        [eventadd] HRESULT Suspending([in] Windows.UI.Xaml.SuspendingEventHandler *handler, [out, retval] EventRegistrationToken *cookie);
+        [eventremove] HRESULT Suspending([in] EventRegistrationToken cookie);
+        [eventadd] HRESULT Resuming([in] Windows.Foundation.EventHandler<IInspectable *> *handler, [out, retval] EventRegistrationToken *cookie);
+        [eventremove] HRESULT Resuming([in] EventRegistrationToken cookie);
+        HRESULT Exit();
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 3.0),
+        exclusiveto(Windows.UI.Xaml.Application),
+        uuid(019104be-522a-5904-f52f-de72010429e0)
+    ]
+    interface IApplication2 : IInspectable
+    {
+        [propget] HRESULT FocusVisualKind([out, retval] Windows.UI.Xaml.FocusVisualKind *value);
+        [propput] HRESULT FocusVisualKind([in] Windows.UI.Xaml.FocusVisualKind value);
+        [propget] HRESULT RequiresPointerMode([out, retval] Windows.UI.Xaml.ApplicationRequiresPointerMode *value);
+        [propput] HRESULT RequiresPointerMode([in] Windows.UI.Xaml.ApplicationRequiresPointerMode value);
+        [eventadd] HRESULT LeavingBackground([in] Windows.UI.Xaml.LeavingBackgroundEventHandler *handler, [out, retval] EventRegistrationToken *cookie);
+        [eventremove] HRESULT LeavingBackground([in] EventRegistrationToken cookie);
+        [eventadd] HRESULT EnteredBackground([in] Windows.UI.Xaml.EnteredBackgroundEventHandler *handler, [out, retval] EventRegistrationToken *cookie);
+        [eventremove] HRESULT EnteredBackground([in] EventRegistrationToken cookie);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 4.0),
+        exclusiveto(Windows.UI.Xaml.Application),
+        uuid(b775ad7c-18b8-45ca-a1b0-dc483e4b1028)
+    ]
+    interface IApplication3 : IInspectable
+    {
+        [propget] HRESULT HighContrastAdjustment([out, retval] Windows.UI.Xaml.ApplicationHighContrastAdjustment *value);
+        [propput] HRESULT HighContrastAdjustment([in] Windows.UI.Xaml.ApplicationHighContrastAdjustment value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.Application),
+        uuid(93bbe361-be5a-4ee3-b4a3-95118dc97a89)
+    ]
+    interface IApplicationFactory : IInspectable
+    {
+        HRESULT CreateInstance([in] IInspectable *base_interface, [out] IInspectable **inner_interface, [out, retval] Windows.UI.Xaml.Application **value);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
         exclusiveto(Windows.UI.Xaml.ApplicationInitializationCallbackParams),
         uuid(751b792e-5772-4488-8b87-f547faa64474)
     ]
     interface IApplicationInitializationCallbackParams : IInspectable
     {
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.Application),
+        uuid(25f99ff7-9347-459a-9fac-b2d0e11c1a0f)
+    ]
+    interface IApplicationOverrides : IInspectable
+    {
+        HRESULT OnActivated([in] Windows.ApplicationModel.Activation.IActivatedEventArgs *args);
+        HRESULT OnLaunched([in] Windows.ApplicationModel.Activation.LaunchActivatedEventArgs *args);
+        HRESULT OnFileActivated([in] Windows.ApplicationModel.Activation.FileActivatedEventArgs *args);
+        HRESULT OnSearchActivated([in] Windows.ApplicationModel.Activation.SearchActivatedEventArgs *args);
+        HRESULT OnShareTargetActivated([in] Windows.ApplicationModel.Activation.ShareTargetActivatedEventArgs *args);
+        HRESULT OnFileOpenPickerActivated([in] Windows.ApplicationModel.Activation.FileOpenPickerActivatedEventArgs *args);
+        HRESULT OnFileSavePickerActivated([in] Windows.ApplicationModel.Activation.FileSavePickerActivatedEventArgs *args);
+        HRESULT OnCachedFileUpdaterActivated([in] Windows.ApplicationModel.Activation.CachedFileUpdaterActivatedEventArgs *args);
+        HRESULT OnWindowCreated([in] Windows.UI.Xaml.WindowCreatedEventArgs *args);
+    }
+
+    [
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        exclusiveto(Windows.UI.Xaml.Application),
+        uuid(06499997-f7b4-45fe-b763-7577d1d3cb4a)
+    ]
+    interface IApplicationStatics : IInspectable
+    {
+        [propget] HRESULT Current([out, retval] Windows.UI.Xaml.Application **value);
+        HRESULT Start([in] Windows.UI.Xaml.ApplicationInitializationCallback *callback);
+        [overload("LoadComponent")] HRESULT LoadComponent([in] IInspectable *component, [in] Windows.Foundation.Uri *resource_locator);
+        [overload("LoadComponent")] HRESULT LoadComponentWithResourceLocation([in] IInspectable *component, [in] Windows.Foundation.Uri *resource_locator, [in] Windows.UI.Xaml.Controls.Primitives.ComponentResourceLocation component_resource_location);
     }
 
     [
@@ -661,6 +831,21 @@ namespace Windows.UI.Xaml {
     interface IWindowCreatedEventArgs : IInspectable
     {
         [propget] HRESULT Window([out, retval] Windows.UI.Xaml.Window **value);
+    }
+
+    [
+        composable(Windows.UI.Xaml.IApplicationFactory, public, Windows.Foundation.UniversalApiContract, 1.0),
+        contract(Windows.Foundation.UniversalApiContract, 1.0),
+        marshaling_behavior(agile),
+        static(Windows.UI.Xaml.IApplicationStatics, Windows.Foundation.UniversalApiContract, 1.0),
+        threading(both)
+    ]
+    runtimeclass Application
+    {
+        [default] interface Windows.UI.Xaml.IApplication;
+        interface Windows.UI.Xaml.IApplicationOverrides;
+        [contract(Windows.Foundation.UniversalApiContract, 3.0)] interface Windows.UI.Xaml.IApplication2;
+        [contract(Windows.Foundation.UniversalApiContract, 4.0)] interface Windows.UI.Xaml.IApplication3;
     }
 
     [
